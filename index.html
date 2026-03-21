@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Corporate ID Card</title>
     
-    <!-- Google Fonts: Adding Bold (700) and Extra Bold (800) for high readability -->
+    <!-- Google Fonts: Bold (700) and Extra Bold (800) -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@500;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- html2canvas & jsPDF -->
@@ -19,8 +19,8 @@
         :root {
             --primary: #0f3460;
             --secondary: #2563eb;
-            --text-dark: #0f172a; /* Darker for better print contrast */
-            --text-light: #334155; /* Darker labels */
+            --text-dark: #0f172a; 
+            --text-light: #334155; 
             --bg-body: #f8fafc;
             
             /* High-Res Web Base Size (Maintains exactly 85.6 x 54 ratio) */
@@ -107,17 +107,15 @@
             width: var(--card-w);
             height: var(--card-h);
             background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%);
-            position: relative;
+            position: relative; /* REQUIRED for Absolute Footer */
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
             padding: 12px 16px;
-            
-            /* Stylish Corners & Border Fixes */
             border-radius: 10px;
             border: 1.5px solid #cbd5e1;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* Premium Light Shadow */
-            overflow: hidden; /* Ensures elements don't go out of rounded corners */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); 
+            overflow: hidden; 
         }
 
         /* --- Card Header --- */
@@ -132,7 +130,7 @@
             margin: 0 0 3px 0;
             font-size: 11.5px;
             color: var(--primary);
-            font-weight: 800; /* Extra Bold */
+            font-weight: 800; 
             letter-spacing: 0.3px;
         }
 
@@ -140,7 +138,7 @@
             margin: 0;
             font-size: 7.5px;
             color: var(--text-dark);
-            font-weight: 700; /* Bold */
+            font-weight: 700; 
             line-height: 1.3;
         }
 
@@ -148,7 +146,7 @@
             margin: 2px 0 0 0;
             font-size: 6.8px;
             color: #b91c1c; 
-            font-weight: 800; /* Extra Bold */
+            font-weight: 800; 
         }
 
         /* --- Card Body --- */
@@ -156,8 +154,8 @@
             display: grid;
             grid-template-columns: 50px 1fr 70px;
             gap: 12px;
-            flex: 1;
             align-items: start;
+            margin-bottom: 35px; /* Prevent text overlapping with fixed footer */
         }
 
         .logo-box img {
@@ -167,7 +165,7 @@
             margin-top: 2px;
         }
 
-        /* --- Details List (Typography Improved for Print) --- */
+        /* --- Details List --- */
         .details-box {
             display: flex;
             flex-direction: column;
@@ -193,17 +191,17 @@
 
         .detail-label {
             color: var(--text-light);
-            font-weight: 700; /* Bold Labels */
-            width: 65px; /* Slightly wider for bold fonts */
+            font-weight: 700; 
+            width: 65px; 
         }
 
         .detail-value {
             color: var(--text-dark);
-            font-weight: 800; /* Extra Bold Values for high readability */
+            font-weight: 800; 
             flex: 1;
         }
 
-        /* --- Photo Box (Full Frame Fix) --- */
+        /* --- Photo Box (Full Frame Square/Rectangle) --- */
         .photo-box {
             display: flex;
             justify-content: flex-end;
@@ -212,49 +210,61 @@
 
         .photo-box img {
             width: 66px;
-            height: 88px; /* Proper Passport Aspect Ratio */
-            border-radius: 4px; /* Slight premium curve inside */
-            object-fit: cover; /* Fit completely without stretching */
+            height: 88px; 
+            border-radius: 4px; 
+            object-fit: cover; 
             border: 2px solid var(--secondary);
-            padding: 0; /* NO GAP */
+            padding: 0; 
             margin: 0;
             display: block;
             box-shadow: 0 3px 8px rgba(0,0,0,0.1);
         }
 
-        /* --- Card Footer --- */
+        /* --- FIXED CARD FOOTER --- */
         .card-footer {
+            position: absolute;
+            bottom: 8px; /* Fixed spacing from bottom */
+            left: 0;
+            width: 100%;
+            padding: 0 16px;
+            box-sizing: border-box; /* Keeps padding inside 100% width */
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: auto;
-            border-top: 1px solid #cbd5e1;
-            padding-top: 5px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 6px;
+            background: linear-gradient(to top, #f4f7fb 80%, rgba(244,247,251,0) 100%);
         }
 
         .sign-block {
-            text-align: center;
-            width: 105px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center align image and text */
         }
 
+        .sign-block.left { align-items: flex-start; }
+        .sign-block.right { align-items: flex-end; }
+
         .sign-block img {
-            height: 22px;
-            width: 80px;
+            height: 20px;
+            width: auto;
+            max-width: 80px;
             object-fit: contain;
             margin-bottom: 2px;
         }
 
         .sign-block p {
             margin: 0;
-            font-size: 9px;
+            font-size: 8.5px;
             color: var(--text-dark);
             font-weight: 800;
+            white-space: nowrap; /* CRITICAL: Force text in one single line */
         }
 
         .sign-block span {
-            font-size: 8px;
+            font-weight: 600;
             color: var(--text-light);
-            font-weight: 700;
+            font-size: 8px;
         }
 
         /* --- Buttons --- */
@@ -283,13 +293,10 @@
         }
 
         .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-        
         .btn-img { background-color: #10b981; }
         .btn-img:hover { background-color: #059669; }
-        
         .btn-pdf { background-color: #ef4444; }
         .btn-pdf:hover { background-color: #dc2626; }
-        
         .btn-print { background-color: var(--secondary); }
         .btn-print:hover { background-color: #1e3a8a; }
 
@@ -381,7 +388,7 @@
                         <img id="img-logo" src="https://via.placeholder.com/100?text=Logo" alt="Logo">
                     </div>
 
-                    <!-- Middle Details (Bold Typography) -->
+                    <!-- Middle Details -->
                     <div class="details-box">
                         <div class="detail-item">
                             <i class="fa-solid fa-id-card detail-icon"></i>
@@ -413,23 +420,21 @@
                         </div>
                     </div>
 
-                    <!-- Right Photo (Full Frame) -->
+                    <!-- Right Photo -->
                     <div class="photo-box">
                         <img id="img-photo" src="https://via.placeholder.com/150x200?text=Photo" alt="Photo">
                     </div>
                 </div>
 
-                <!-- Footer -->
+                <!-- Fixed Footer (Name and Designation in ONE Line) -->
                 <div class="card-footer">
-                    <div class="sign-block">
-                        <img id="img-sign1" src="https://via.placeholder.com/100x40?text=Sign+1" alt="Signature">
-                        <p>સંદીપ એમ. શાહ</p>
-                        <span>(કન્વીનર)</span>
+                    <div class="sign-block left">
+                        <img id="img-sign1" src="https://via.placeholder.com/80x25?text=Sign+1" alt="Signature">
+                        <p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p>
                     </div>
-                    <div class="sign-block">
-                        <img id="img-sign2" src="https://via.placeholder.com/100x40?text=Sign+2" alt="Signature">
-                        <p>મયંક આર. શાહ</p>
-                        <span>(મંત્રી)</span>
+                    <div class="sign-block right">
+                        <img id="img-sign2" src="https://via.placeholder.com/80x25?text=Sign+2" alt="Signature">
+                        <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
                     </div>
                 </div>
 
@@ -464,14 +469,12 @@
             }
         }
 
-        // Generate Configuration for html2canvas
         const canvasOptions = { 
-            scale: 5, // High resolution
+            scale: 5, 
             useCORS: true, 
             backgroundColor: null 
         };
 
-        // 1. Export High Res JPG
         function exportImage() {
             const card = document.getElementById('print-card');
             html2canvas(card, canvasOptions).then(canvas => {
@@ -482,52 +485,32 @@
             });
         }
 
-        // 2. Export Exact PVC Size PDF
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const card = document.getElementById('print-card');
             
             html2canvas(card, canvasOptions).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
-                
-                // Forces exact 85.6mm x 54mm regardless of shadows
                 const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
                 pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
                 pdf.save('Premium_ID_Card.pdf');
             });
         }
 
-        // 3. Exact Size Centered Print
         function printCard() {
             const card = document.getElementById('print-card');
             html2canvas(card, canvasOptions).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 let printWin = window.open('', '_blank');
                 
-                // Print CSS strict rules to align and size perfectly
                 printWin.document.write(`
                     <html>
                         <head>
                             <title>Print ID Card</title>
                             <style>
-                                @page { 
-                                    size: 85.6mm 54mm; 
-                                    margin: 0; 
-                                }
-                                body { 
-                                    margin: 0; 
-                                    padding: 0;
-                                    display: flex; 
-                                    justify-content: center; 
-                                    align-items: center; 
-                                    height: 100vh; 
-                                    background: white; 
-                                }
-                                img { 
-                                    width: 85.6mm; 
-                                    height: 54mm; 
-                                    display: block; 
-                                }
+                                @page { size: 85.6mm 54mm; margin: 0; }
+                                body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: white; }
+                                img { width: 85.6mm; height: 54mm; display: block; }
                             </style>
                         </head>
                         <body>
