@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Corporate ID Card</title>
     
-    <!-- Google Fonts: Added 400 and 500 weights for clean, unclipped Gujarati Text -->
-    <link href="https://fonts.googleapis.com/css2?family=Anek+Gujarati:wght@600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Added 'Mogra' for the main Title, and kept others for details -->
+    <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -107,7 +107,7 @@
             width: var(--card-w);
             height: var(--card-h);
             background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%);
-            position: relative; /* REQUIRED for Absolute Footer */
+            position: relative; 
             overflow: hidden; 
             box-sizing: border-box;
             border-radius: 10px;
@@ -124,15 +124,17 @@
             background: rgba(255,255,255,0.8);
         }
 
+        /* Title with Mogra Font */
         .card-header h2 {
             margin: 0 0 4px 0;
-            font-family: 'Anek Gujarati', sans-serif;
-            font-size: 13.5px;
+            font-family: 'Mogra', serif; /* Set to Mogra */
+            font-size: 13px; /* Adjusted for Mogra's natural width */
             color: var(--primary);
-            font-weight: 800; 
-            letter-spacing: 0.5px;
-            text-shadow: 0px 0px 1px rgba(15, 52, 96, 0.2); 
-            line-height: 1.3;
+            font-weight: 400; /* Mogra looks best at normal weight */
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+            padding-top: 4px;
+            overflow: visible;
         }
 
         .card-header .address {
@@ -140,7 +142,7 @@
             font-size: 7px;
             color: var(--text-dark);
             font-weight: 600; 
-            line-height: 1.5; /* Breathing space */
+            line-height: 1.5; 
             padding-top: 2px;
             overflow: visible;
         }
@@ -168,21 +170,21 @@
             margin-top: 2px;
         }
 
-        /* --- Details List (FIXED CLIPPING ISSUE) --- */
+        /* --- Details List --- */
         .details-box {
             display: flex;
             flex-direction: column;
-            gap: 0px; /* Reduced gap because padding-top takes care of spacing */
+            gap: 0px; 
         }
 
         .detail-item {
             display: flex;
-            align-items: flex-start; /* Changed to flex-start */
+            align-items: flex-start; 
             font-size: 10px;
-            line-height: 1.65; /* Increased Line Height */
-            padding-top: 4px; /* Essential Top Padding for Matras */
+            line-height: 1.65; 
+            padding-top: 4px; 
             padding-bottom: 1px;
-            overflow: visible; /* Prevent hidden clipping */
+            overflow: visible; 
         }
 
         .detail-icon {
@@ -191,21 +193,21 @@
             font-size: 9px;
             text-align: center;
             margin-right: 5px;
-            margin-top: 6px; /* Pushed down slightly to align with flex-start text */
+            margin-top: 6px; 
         }
 
         .detail-label {
             color: var(--text-light);
-            font-weight: 600; /* Semi-bold instead of Extra Bold */
+            font-weight: 600; 
             width: 60px; 
             overflow: visible;
         }
 
         .detail-value {
             color: var(--text-dark);
-            font-weight: 500; /* Medium Weight (Perfect for Gujarati without bleeding) */
+            font-weight: 500; 
             flex: 1;
-            overflow: visible; /* Text will flow naturally, no clipping */
+            overflow: visible; 
         }
 
         /* --- Photo Box --- */
@@ -230,7 +232,7 @@
         /* --- STRICTLY LOCKED FOOTER --- */
         .card-footer {
             position: absolute;
-            bottom: 8px; /* Locked to Bottom */
+            bottom: 8px; 
             left: 0;
             width: 100%;
             padding: 0 16px;
@@ -383,9 +385,9 @@
             
             <div class="id-card" id="print-card">
                 
-                <!-- Premium Header Segment -->
+                <!-- Premium Header Segment (Updated to Mogra Font) -->
                 <div class="card-header">
-                    <h2>શ્રી બત્રીસી જૈન કો-ઓ. એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
+                    <h2>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
                     <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
                     <p class="contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
                 </div>
@@ -397,7 +399,7 @@
                         <img id="img-logo" src="https://via.placeholder.com/100?text=Logo" alt="Logo">
                     </div>
 
-                    <!-- Middle Details (Clipping Fixed) -->
+                    <!-- Middle Details -->
                     <div class="details-box">
                         <div class="detail-item">
                             <i class="fa-solid fa-id-card detail-icon"></i>
