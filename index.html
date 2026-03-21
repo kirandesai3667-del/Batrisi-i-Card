@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Corporate ID Card</title>
+    <title>આઈડી કાર્ડ જનરેટર</title>
     
-    <!-- Google Fonts: 'Mogra' only for the Main Title. 'Noto Sans Gujarati' as a fallback for Dwarika -->
+    <!-- Google Fonts: 'Mogra' for Title, 'Noto Sans Gujarati' as fallback for Dwarika -->
     <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@700;800&display=swap" rel="stylesheet">
     
     <!-- FontAwesome -->
@@ -85,7 +85,7 @@
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             font-size: 16px;
-            font-weight: bold; /* Bold Input Data */
+            font-weight: bold;
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
             transition: all 0.3s ease;
             outline: none;
@@ -210,7 +210,7 @@
 
         .detail-value {
             color: var(--text-dark);
-            font-weight: bold; /* Bold Data Value */
+            font-weight: bold; 
             flex: 1;
             overflow: visible; 
         }
@@ -271,7 +271,7 @@
             margin: 0;
             font-size: 10.5px;
             color: var(--text-dark);
-            font-weight: bold; /* Bold Sign Text */
+            font-weight: bold; 
             line-height: 1.4;
             padding-top: 2px;
             white-space: nowrap; 
@@ -321,7 +321,7 @@
 </head>
 <body>
 
-    <h1 class="header-title">Premium Corporate ID Card</h1>
+    <h1 class="header-title">આઈડી કાર્ડ જનરેટર</h1>
 
     <div class="container">
         
@@ -329,7 +329,7 @@
         <div class="form-panel">
             <div class="form-group full-width">
                 <label>સભ્ય નંબર</label>
-                <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updateField('memberNo', 'val-memberNo')">
+                <input type="text" id="memberNo" placeholder="દા.ત. ૧૦૦૧" oninput="updateField('memberNo', 'val-memberNo')">
             </div>
             
             <div class="form-group full-width">
@@ -369,11 +369,11 @@
             </div>
 
             <div class="form-group">
-                <label>લોગો અપલોડ</label>
+                <label>સંસ્થાનો લોગો અપલોડ</label>
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-logo')">
             </div>
             <div class="form-group">
-                <label>વ્યક્તિનો ફોટો (Passport)</label>
+                <label>વ્યક્તિનો ફોટો (પાસપોર્ટ સાઇઝ)</label>
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-photo')">
             </div>
             <div class="form-group">
@@ -402,10 +402,10 @@
                 <div class="card-body">
                     <!-- Left Logo -->
                     <div class="logo-box">
-                        <img id="img-logo" src="https://via.placeholder.com/100?text=Logo" alt="Logo">
+                        <img id="img-logo" src="https://via.placeholder.com/100?text=લોગો" alt="લોગો">
                     </div>
 
-                    <!-- Middle Details (Dwarika Bold Font) -->
+                    <!-- Middle Details -->
                     <div class="details-box">
                         <div class="detail-item">
                             <i class="fa-solid fa-id-card detail-icon"></i>
@@ -439,18 +439,18 @@
 
                     <!-- Right Photo -->
                     <div class="photo-box">
-                        <img id="img-photo" src="https://via.placeholder.com/150x200?text=Photo" alt="Photo">
+                        <img id="img-photo" src="https://via.placeholder.com/150x200?text=ફોટો" alt="ફોટો">
                     </div>
                 </div>
 
-                <!-- STRICTLY LOCKED FOOTER (Dwarika Bold Font) -->
+                <!-- STRICTLY LOCKED FOOTER -->
                 <div class="card-footer">
                     <div class="sign-block left">
-                        <img id="img-sign1" src="https://via.placeholder.com/80x25?text=Sign+1" alt="Signature">
+                        <img id="img-sign1" src="https://via.placeholder.com/80x25?text=સહી+1" alt="સહી 1">
                         <p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p>
                     </div>
                     <div class="sign-block right">
-                        <img id="img-sign2" src="https://via.placeholder.com/80x25?text=Sign+2" alt="Signature">
+                        <img id="img-sign2" src="https://via.placeholder.com/80x25?text=સહી+2" alt="સહી 2">
                         <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
                     </div>
                 </div>
@@ -459,12 +459,12 @@
 
             <!-- Action Buttons -->
             <div class="btn-group">
-                <button class="btn btn-img" onclick="exportImage()"><i class="fa-solid fa-image"></i> Image Download</button>
-                <button class="btn btn-pdf" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> PDF Download</button>
-                <button class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> Direct Print</button>
+                <button class="btn btn-img" onclick="exportImage()"><i class="fa-solid fa-image"></i> ઇમેજ ડાઉનલોડ</button>
+                <button class="btn btn-pdf" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> PDF ડાઉનલોડ</button>
+                <button class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> પ્રિન્ટ કાઢો</button>
             </div>
             
-            <span style="font-size: 14px; font-weight: bold; color: #475569; margin-top: 5px; font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;">* Exact Print & PDF Size: 85.6mm × 54mm</span>
+            <span style="font-size: 14px; font-weight: bold; color: #475569; margin-top: 5px; font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;">* ચોક્કસ પ્રિન્ટ અને PDF સાઇઝ: 85.6mm × 54mm</span>
         </div>
     </div>
 
@@ -496,7 +496,7 @@
             const card = document.getElementById('print-card');
             html2canvas(card, canvasOptions).then(canvas => {
                 let link = document.createElement('a');
-                link.download = 'Premium_ID_Card.jpg';
+                link.download = 'ID_Card.jpg';
                 link.href = canvas.toDataURL('image/jpeg', 1.0);
                 link.click();
             });
@@ -510,7 +510,7 @@
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
                 pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
-                pdf.save('Premium_ID_Card.pdf');
+                pdf.save('ID_Card.pdf');
             });
         }
 
