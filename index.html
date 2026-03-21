@@ -16,6 +16,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
+        /* --- EXACT COLOR OUTPUT FIX --- */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
+
         :root {
             --primary: #0f3460;
             --secondary: #2563eb;
@@ -479,11 +486,12 @@
             }
         }
 
-        // Shared high-quality configuration for generation
+        // Shared high-quality configuration for generation preserving original colors
         const canvasOptions = { 
             scale: 4, 
             useCORS: true, 
-            backgroundColor: "#ffffff"
+            backgroundColor: "#ffffff",
+            logging: false
         };
 
         // ==========================================
@@ -497,7 +505,7 @@
                 const targetWidth = 1011; 
                 const targetHeight = 638;
 
-                // Create off-screen canvas to enforce specific pixel sizing
+                // Create off-screen canvas to enforce specific pixel sizing & maintain colors
                 const resizedCanvas = document.createElement('canvas');
                 resizedCanvas.width = targetWidth;
                 resizedCanvas.height = targetHeight;
@@ -506,7 +514,7 @@
                 // Draw the generated HTML layout perfectly mapped into standard pixels
                 ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
 
-                // Download JPEG Image
+                // Download JPEG Image (Using quality 1.0 ensures no color loss)
                 let link = document.createElement('a');
                 link.download = 'Premium_ID_Card.jpg';
                 link.href = resizedCanvas.toDataURL('image/jpeg', 1.0);
@@ -522,13 +530,15 @@
             const card = document.getElementById('print-card');
             
             html2canvas(card, canvasOptions).then(canvas => {
+                // To maintain perfect colors in PDF, keep format as high-quality JPEG
                 const imgData = canvas.toDataURL('image/jpeg', 1.0);
                 
                 // Set explicit sizing to 85.6mm x 54mm
                 const pdf = new jsPDF({ 
                     orientation: 'landscape', 
                     unit: 'mm', 
-                    format: [85.6, 54] 
+                    format: [85.6, 54],
+                    compress: false // Ensure no aggressive color compression occurs
                 });
                 
                 // Map the image EXACTLY to coordinates: (x:0, y:0, w:85.6, h:54) (No Margins)
@@ -538,7 +548,7 @@
         }
 
         // ==========================================
-        // 3. PRINT OUTPUT FIX - EXACT PAGE CSS MARGINS
+        // 3. PRINT OUTPUT FIX - EXACT PAGE CSS MARGINS & COLOR SETTINGS
         // ==========================================
         function printCard() {
             const card = document.getElementById('print-card');
@@ -546,12 +556,18 @@
                 const imgData = canvas.toDataURL('image/jpeg', 1.0);
                 let printWin = window.open('', '_blank');
                 
-                // Setup print window with exact @page rules and 0 margins
+                // Setup print window with exact @page rules, 0 margins, and color-adjust
                 printWin.document.write(`
                     <html>
                         <head>
                             <title>Print ID Card</title>
                             <style>
+                                /* Force printer to include background graphics & colors */
+                                * {
+                                    -webkit-print-color-adjust: exact !important;
+                                    print-color-adjust: exact !important;
+                                    color-adjust: exact !important;
+                                }
                                 @page { 
                                     size: 85.6mm 54mm; 
                                     margin: 0; 
