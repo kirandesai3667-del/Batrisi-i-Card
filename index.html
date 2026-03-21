@@ -126,7 +126,7 @@
         .card-header {
             text-align: center;
             border-bottom: 2px solid var(--secondary);
-            padding: 8px 16px 5px 16px;
+            padding: 6px 16px 4px 16px; /* Reduced padding to make space */
             margin-bottom: 4px;
             background: rgba(255,255,255,0.8);
         }
@@ -139,7 +139,7 @@
             font-weight: 400; 
             letter-spacing: 0.3px;
             line-height: 1.4;
-            padding-top: 4px;
+            padding-top: 2px;
             overflow: visible;
         }
 
@@ -149,7 +149,6 @@
             color: var(--text-dark);
             font-weight: 600; 
             line-height: 1.5; 
-            padding-top: 2px;
             overflow: visible;
         }
 
@@ -176,7 +175,7 @@
             margin-top: 2px;
         }
 
-        /* --- Details List --- */
+        /* --- Details List (Fixed Spacing for Blood Group) --- */
         .details-box {
             display: flex;
             flex-direction: column;
@@ -187,9 +186,9 @@
             display: flex;
             align-items: flex-start; 
             font-size: 10px;
-            line-height: 1.65; 
-            padding-top: 4px; 
-            padding-bottom: 1px;
+            line-height: 1.35; /* Adjusted so all 7 items fit perfectly */
+            padding-top: 2px; /* Adjusted padding */
+            padding-bottom: 0px;
             overflow: visible; 
         }
 
@@ -199,7 +198,7 @@
             font-size: 9px;
             text-align: center;
             margin-right: 5px;
-            margin-top: 6px; 
+            margin-top: 3px; 
         }
 
         .detail-label {
@@ -238,7 +237,7 @@
         /* --- STRICTLY LOCKED FOOTER --- */
         .card-footer {
             position: absolute;
-            bottom: 8px; 
+            bottom: 4px; /* Lowered slightly */
             left: 0;
             width: 100%;
             padding: 0 16px;
@@ -247,7 +246,7 @@
             justify-content: space-between;
             align-items: flex-end;
             border-top: 1px solid #cbd5e1;
-            padding-top: 6px;
+            padding-top: 4px;
             background: linear-gradient(to top, #f4f7fb 90%, rgba(244,247,251,0) 100%);
         }
 
@@ -349,7 +348,7 @@
 
             <div class="form-group">
                 <label>જન્મ તારીખ</label>
-                <input type="text" id="dob" placeholder="DD/MM/YYYY અથવા ૦૧/૦૧/૨૦૦૦" oninput="updateField('dob', 'val-dob')">
+                <input type="text" id="dob" placeholder="DD/MM/YYYY" oninput="updateField('dob', 'val-dob')">
             </div>
 
             <div class="form-group">
@@ -373,7 +372,7 @@
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-logo')">
             </div>
             <div class="form-group">
-                <label>વ્યક્તિનો ફોટો (Passport)</label>
+                <label>વ્યક્તિનો ફોટો</label>
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-photo')">
             </div>
             <div class="form-group">
@@ -486,7 +485,6 @@
             }
         }
 
-        // Shared high-quality configuration for generation preserving original colors
         const canvasOptions = { 
             scale: 4, 
             useCORS: true, 
@@ -494,27 +492,16 @@
             logging: false
         };
 
-        // ==========================================
-        // 1. JPEG (IMAGE) FIX - EXACT 1011px x 638px (300 DPI)
-        // ==========================================
         function exportImage() {
             const card = document.getElementById('print-card');
-            
             html2canvas(card, canvasOptions).then(canvas => {
-                // Exact dimensions mapped to 85.6mm x 54mm @ 300 DPI
                 const targetWidth = 1011; 
                 const targetHeight = 638;
-
-                // Create off-screen canvas to enforce specific pixel sizing & maintain colors
                 const resizedCanvas = document.createElement('canvas');
                 resizedCanvas.width = targetWidth;
                 resizedCanvas.height = targetHeight;
                 const ctx = resizedCanvas.getContext('2d');
-                
-                // Draw the generated HTML layout perfectly mapped into standard pixels
                 ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
-
-                // Download JPEG Image (Using quality 1.0 ensures no color loss)
                 let link = document.createElement('a');
                 link.download = 'Premium_ID_Card.jpg';
                 link.href = resizedCanvas.toDataURL('image/jpeg', 1.0);
@@ -522,63 +509,58 @@
             });
         }
 
-        // ==========================================
-        // 2. EXACT PDF FIX - EXACT BOUNDS 0, 0, 85.6, 54
-        // ==========================================
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const card = document.getElementById('print-card');
-            
             html2canvas(card, canvasOptions).then(canvas => {
-                // To maintain perfect colors in PDF, keep format as high-quality JPEG
                 const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                
-                // Set explicit sizing to 85.6mm x 54mm
                 const pdf = new jsPDF({ 
                     orientation: 'landscape', 
                     unit: 'mm', 
                     format: [85.6, 54],
-                    compress: false // Ensure no aggressive color compression occurs
+                    compress: false
                 });
-                
-                // Map the image EXACTLY to coordinates: (x:0, y:0, w:85.6, h:54) (No Margins)
                 pdf.addImage(imgData, 'JPEG', 0, 0, 85.6, 54);
                 pdf.save('Premium_ID_Card.pdf');
             });
         }
 
-        // ==========================================
-        // 3. PRINT OUTPUT FIX - EXACT PAGE CSS MARGINS & COLOR SETTINGS
-        // ==========================================
+        // --- NEW IMPROVED DIRECT PRINT FOR COLOR ---
         function printCard() {
             const card = document.getElementById('print-card');
             html2canvas(card, canvasOptions).then(canvas => {
-                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                // Using PNG for better print colors
+                const imgData = canvas.toDataURL('image/png'); 
                 let printWin = window.open('', '_blank');
                 
-                // Setup print window with exact @page rules, 0 margins, and color-adjust
                 printWin.document.write(`
+                    <!DOCTYPE html>
                     <html>
                         <head>
                             <title>Print ID Card</title>
                             <style>
-                                /* Force printer to include background graphics & colors */
-                                * {
-                                    -webkit-print-color-adjust: exact !important;
-                                    print-color-adjust: exact !important;
-                                    color-adjust: exact !important;
-                                }
-                                @page { 
-                                    size: 85.6mm 54mm; 
-                                    margin: 0; 
+                                @media print {
+                                    * {
+                                        -webkit-print-color-adjust: exact !important;
+                                        print-color-adjust: exact !important;
+                                        color-adjust: exact !important;
+                                    }
+                                    @page { 
+                                        size: 85.6mm 54mm landscape; 
+                                        margin: 0; 
+                                    }
+                                    body { 
+                                        margin: 0; 
+                                        padding: 0; 
+                                        background: white; 
+                                    }
                                 }
                                 body { 
-                                    margin: 0; 
-                                    padding: 0; 
                                     display: flex; 
                                     justify-content: center; 
                                     align-items: center; 
                                     height: 100vh; 
+                                    margin: 0; 
                                     background: white; 
                                 }
                                 img { 
@@ -592,7 +574,12 @@
                         <body>
                             <img src="${imgData}" />
                             <script>
-                                setTimeout(() => { window.print(); window.close(); }, 500);
+                                window.onload = function() {
+                                    setTimeout(() => { 
+                                        window.print(); 
+                                        window.close(); 
+                                    }, 500);
+                                };
                             <\/script>
                         </body>
                     </html>
