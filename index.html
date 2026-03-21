@@ -1,3 +1,19 @@
+માફ કરજો ભાઈ! મેં ડિઝાઇનને પ્રોફેશનલ બનાવવાની લ્હાયમાં હેડિંગ અને બટનનાં નામ ઇંગ્લિશ કરી દીધા હતા. તમારી મૂળ જરૂરિયાત "સંપૂર્ણ ગુજરાતી ફોર્મેટ" હતી તે મુજબ મેં બધું જ ફરીથી શુદ્ધ ગુજરાતીમાં કરી દીધું છે.
+
+સાથે જ તમારી છેલ્લી સૂચના મુજબ:
+
+સંસ્થાના નામ (Title) માં Mogra ફોન્ટ છે.
+
+બાકીના આખા ફોર્મ અને કાર્ડમાં Dwarika Bold (જો કમ્પ્યુટરમાં ન હોય તો Noto Sans Gujarati Bold) સેટ કરેલ છે.
+
+અહીં તમારો 100% ગુજરાતી અને અપડેટેડ કોડ છે:
+
+code
+Html
+play_circle
+download
+content_copy
+expand_less
 <!DOCTYPE html>
 <html lang="gu">
 <head>
@@ -5,8 +21,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>આઈડી કાર્ડ જનરેટર</title>
     
-    <!-- Google Fonts: 'Mogra' for Title, 'Noto Sans Gujarati' as fallback -->
-    <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@700;800;900&display=swap" rel="stylesheet">
+    <!-- Google Fonts: 'Mogra' for Title, 'Noto Sans Gujarati' as fallback for Dwarika -->
+    <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@700;800&display=swap" rel="stylesheet">
     
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -31,7 +47,7 @@
         /* GLOBALLY SET TO DWARIKA BOLD */
         body {
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: 900; /* Extra Bold */
+            font-weight: bold;
             background-color: var(--bg-body);
             margin: 0;
             padding: 20px;
@@ -41,7 +57,7 @@
         .header-title {
             text-align: center;
             color: var(--primary);
-            font-weight: 900;
+            font-weight: bold;
             margin-bottom: 30px;
             font-size: 32px;
             letter-spacing: 0.5px;
@@ -75,7 +91,7 @@
         
         .form-group label {
             font-size: 15px;
-            font-weight: 900;
+            font-weight: bold;
             color: var(--text-light);
             margin-bottom: 5px;
         }
@@ -85,7 +101,7 @@
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             font-size: 16px;
-            font-weight: 900; /* Bold Input Data */
+            font-weight: bold;
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
             transition: all 0.3s ease;
             outline: none;
@@ -126,13 +142,13 @@
             background: rgba(255,255,255,0.8);
         }
 
-        /* ONLY Title is Mogra */
+        /* ONLY Title is Mogra (Regular weight) */
         .card-header h2 {
             margin: 0 0 4px 0;
             font-family: 'Mogra', serif; 
             font-size: 13px; 
             color: var(--primary);
-            font-weight: normal; 
+            font-weight: normal; /* Mogra looks best normal */
             letter-spacing: 0.3px;
             line-height: 1.4;
             padding-top: 4px;
@@ -144,7 +160,7 @@
             font-size: 8px; 
             color: var(--text-dark);
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: 900; /* Bold */
+            font-weight: bold; 
             line-height: 1.4; 
             padding-top: 2px;
             overflow: visible;
@@ -155,7 +171,7 @@
             font-size: 7.5px;
             color: #b91c1c; 
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: 900; /* Bold */
+            font-weight: bold; 
         }
 
         /* --- Card Body --- */
@@ -203,14 +219,14 @@
 
         .detail-label {
             color: var(--text-light);
-            font-weight: 900; /* Extra Bold */
+            font-weight: bold; 
             width: 60px; 
             overflow: visible;
         }
 
         .detail-value {
             color: var(--text-dark);
-            font-weight: 900; /* Extra Bold */
+            font-weight: bold; 
             flex: 1;
             overflow: visible; 
         }
@@ -271,7 +287,7 @@
             margin: 0;
             font-size: 10.5px;
             color: var(--text-dark);
-            font-weight: 900; /* Bold */
+            font-weight: bold; 
             line-height: 1.4;
             padding-top: 2px;
             white-space: nowrap; 
@@ -279,7 +295,7 @@
         }
 
         .sign-block span {
-            font-weight: 900; /* Bold */
+            font-weight: bold; 
             color: var(--text-light);
             font-size: 9px;
         }
@@ -296,7 +312,7 @@
         .btn {
             padding: 10px 20px;
             font-size: 15px;
-            font-weight: 900; /* Bold */
+            font-weight: bold;
             border: none;
             border-radius: 8px;
             cursor: pointer;
