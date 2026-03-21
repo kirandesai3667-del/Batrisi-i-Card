@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Corporate ID Card</title>
     
-    <!-- Google Fonts: Added 'Mogra' for the main Title, and kept others for details -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- FontAwesome -->
@@ -124,13 +124,12 @@
             background: rgba(255,255,255,0.8);
         }
 
-        /* Title with Mogra Font */
         .card-header h2 {
             margin: 0 0 4px 0;
-            font-family: 'Mogra', serif; /* Set to Mogra */
-            font-size: 13px; /* Adjusted for Mogra's natural width */
+            font-family: 'Mogra', serif; 
+            font-size: 13px; 
             color: var(--primary);
-            font-weight: 400; /* Mogra looks best at normal weight */
+            font-weight: 400; 
             letter-spacing: 0.3px;
             line-height: 1.4;
             padding-top: 4px;
@@ -385,7 +384,7 @@
             
             <div class="id-card" id="print-card">
                 
-                <!-- Premium Header Segment (Updated to Mogra Font) -->
+                <!-- Premium Header Segment -->
                 <div class="card-header">
                     <h2>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
                     <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
@@ -480,48 +479,98 @@
             }
         }
 
+        // Shared high-quality configuration for generation
         const canvasOptions = { 
-            scale: 5, 
+            scale: 4, 
             useCORS: true, 
-            backgroundColor: null 
+            backgroundColor: "#ffffff"
         };
 
+        // ==========================================
+        // 1. JPEG (IMAGE) FIX - EXACT 1011px x 638px (300 DPI)
+        // ==========================================
         function exportImage() {
             const card = document.getElementById('print-card');
+            
             html2canvas(card, canvasOptions).then(canvas => {
+                // Exact dimensions mapped to 85.6mm x 54mm @ 300 DPI
+                const targetWidth = 1011; 
+                const targetHeight = 638;
+
+                // Create off-screen canvas to enforce specific pixel sizing
+                const resizedCanvas = document.createElement('canvas');
+                resizedCanvas.width = targetWidth;
+                resizedCanvas.height = targetHeight;
+                const ctx = resizedCanvas.getContext('2d');
+                
+                // Draw the generated HTML layout perfectly mapped into standard pixels
+                ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+
+                // Download JPEG Image
                 let link = document.createElement('a');
                 link.download = 'Premium_ID_Card.jpg';
-                link.href = canvas.toDataURL('image/jpeg', 1.0);
+                link.href = resizedCanvas.toDataURL('image/jpeg', 1.0);
                 link.click();
             });
         }
 
+        // ==========================================
+        // 2. EXACT PDF FIX - EXACT BOUNDS 0, 0, 85.6, 54
+        // ==========================================
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const card = document.getElementById('print-card');
             
             html2canvas(card, canvasOptions).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
-                pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                
+                // Set explicit sizing to 85.6mm x 54mm
+                const pdf = new jsPDF({ 
+                    orientation: 'landscape', 
+                    unit: 'mm', 
+                    format: [85.6, 54] 
+                });
+                
+                // Map the image EXACTLY to coordinates: (x:0, y:0, w:85.6, h:54) (No Margins)
+                pdf.addImage(imgData, 'JPEG', 0, 0, 85.6, 54);
                 pdf.save('Premium_ID_Card.pdf');
             });
         }
 
+        // ==========================================
+        // 3. PRINT OUTPUT FIX - EXACT PAGE CSS MARGINS
+        // ==========================================
         function printCard() {
             const card = document.getElementById('print-card');
             html2canvas(card, canvasOptions).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
                 let printWin = window.open('', '_blank');
                 
+                // Setup print window with exact @page rules and 0 margins
                 printWin.document.write(`
                     <html>
                         <head>
                             <title>Print ID Card</title>
                             <style>
-                                @page { size: 85.6mm 54mm; margin: 0; }
-                                body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: white; }
-                                img { width: 85.6mm; height: 54mm; display: block; }
+                                @page { 
+                                    size: 85.6mm 54mm; 
+                                    margin: 0; 
+                                }
+                                body { 
+                                    margin: 0; 
+                                    padding: 0; 
+                                    display: flex; 
+                                    justify-content: center; 
+                                    align-items: center; 
+                                    height: 100vh; 
+                                    background: white; 
+                                }
+                                img { 
+                                    width: 85.6mm; 
+                                    height: 54mm; 
+                                    display: block; 
+                                    object-fit: contain; 
+                                }
                             </style>
                         </head>
                         <body>
