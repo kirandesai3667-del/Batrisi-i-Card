@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium ID Card Generator</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- html2canvas & jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0f3460;
+            --secondary: #1d4ed8;
+            --text-dark: #1e293b;
+            --text-light: #475569;
+            --bg-body: #f1f5f9;
+            --card-bg: #ffffff;
+            
+            /* High-Res Web Base Size (Maintains 85.6 x 54 ratio) */
+            --card-w: 428px; 
+            --card-h: 270px;
+        }
+
+        body {
+            font-family: 'Poppins', 'Noto Sans Gujarati', sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        .header-title {
+            text-align: center;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        /* --- Form Styling --- */
+        .form-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            flex: 1;
+            min-width: 320px;
+            max-width: 500px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: span 2; }
+        
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* --- Card Preview Section --- */
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .card-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            overflow: hidden;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .id-card {
+            width: var(--card-w);
+            height: var(--card-h);
+            background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            padding: 10px 14px;
+        }
+
+        /* --- Card Header --- */
+        .card-header {
+            text-align: center;
+            border-bottom: 1.5px solid var(--secondary);
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .card-header h2 {
+            margin: 0 0 3px 0;
+            font-size: 11.5px;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .card-header .address {
+            margin: 0;
+            font-size: 7.2px;
+            color: var(--text-dark);
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .card-header .contact {
+            margin: 2px 0 0 0;
+            font-size: 6.5px;
+            color: #b91c1c; 
+            font-weight: 600;
+        }
+
+        /* --- Card Body --- */
+        .card-body {
+            display: grid;
+            grid-template-columns: 50px 1fr 70px;
+            gap: 12px;
+            flex: 1;
+            align-items: start;
+        }
+
+        .logo-box img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            margin-top: 5px;
+        }
+
+        /* --- Details List --- */
+        .details-box {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding-top: 2px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            font-size: 10px;
+            line-height: 1.2;
+        }
+
+        .detail-icon {
+            color: var(--secondary);
+            width: 14px;
+            font-size: 9px;
+            text-align: center;
+            margin-right: 5px;
+        }
+
+        .detail-label {
+            color: var(--text-light);
+            font-weight: 600;
+            width: 60px;
+        }
+
+        .detail-value {
+            color: var(--text-dark);
+            font-weight: 700;
+            flex: 1;
+        }
+
+        /* --- Photo Box (Rectangle Passport Style) --- */
+        .photo-box {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 2px;
+        }
+
+        .photo-box img {
+            width: 65px;
+            height: 85px; /* Passport aspect ratio */
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1.5px solid var(--secondary);
+            padding: 2px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+
+        /* --- Card Footer --- */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 4px;
+        }
+
+        .sign-block {
+            text-align: center;
+            width: 100px;
+        }
+
+        .sign-block img {
+            height: 22px;
+            width: 80px;
+            object-fit: contain;
+            margin-bottom: 2px;
+        }
+
+        .sign-block p {
+            margin: 0;
+            font-size: 8.5px;
+            color: var(--text-dark);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .sign-block span {
+            font-size: 7.5px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* --- Buttons --- */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            color: white;
+            font-family: inherit;
+        }
+
+        .btn-img { background-color: #10b981; }
+        .btn-img:hover { background-color: #059669; }
+        .btn-pdf { background-color: #ef4444; }
+        .btn-pdf:hover { background-color: #dc2626; }
+        .btn-print { background-color: var(--secondary); }
+        .btn-print:hover { background-color: #1e3a8a; }
+
+        @media print {
+            body * { visibility: hidden; }
+            .card-wrapper { border: none; box-shadow: none; border-radius: 0; }
+            .id-card, .id-card * { visibility: visible; }
+            .id-card { position: absolute; left: 0; top: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="header-title">Premium ID Card Generator</h1>
+
+    <div class="container">
+        
+        <!-- Input Form -->
+        <div class="form-panel">
+            <div class="form-group full-width">
+                <label>સભ્ય નંબર</label>
+                <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updateField('memberNo', 'val-memberNo')">
+            </div>
+            
+            <div class="form-group full-width">
+                <label>પૂરું નામ</label>
+                <input type="text" id="name" placeholder="વ્યક્તિનું નામ" oninput="updateField('name', 'val-name')">
+            </div>
+            
+            <div class="form-group full-width">
+                <label>સરનામું</label>
+                <input type="text" id="address" placeholder="રહેઠાણનું સરનામું" oninput="updateField('address', 'val-address')">
+            </div>
+
+            <div class="form-group">
+                <label>મૂળ વતન</label>
+                <input type="text" id="hometown" placeholder="વતનનું નામ" oninput="updateField('hometown', 'val-hometown')">
+            </div>
+
+            <!-- જન્મ તારીખ ઇનપુટ (Simple Text Field - No Calendar) -->
+            <div class="form-group">
+                <label>જન્મ તારીખ</label>
+                <input type="text" id="dob" placeholder="DD/MM/YYYY અથવા ૦૧/૦૧/૨૦૦૦" oninput="updateField('dob', 'val-dob')">
+            </div>
+
+            <div class="form-group">
+                <label>મોબાઇલ નંબર</label>
+                <input type="text" id="mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="updateField('mobile', 'val-mobile')">
+            </div>
+
+            <div class="form-group">
+                <label>બ્લડ ગ્રુપ</label>
+                <select id="bloodgroup" onchange="updateField('bloodgroup', 'val-bloodgroup')">
+                    <option value="-">પસંદ કરો</option>
+                    <option value="A+">A+</option> <option value="A-">A-</option>
+                    <option value="B+">B+</option> <option value="B-">B-</option>
+                    <option value="O+">O+</option> <option value="O-">O-</option>
+                    <option value="AB+">AB+</option> <option value="AB-">AB-</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>લોગો અપલોડ</label>
+                <input type="file" accept="image/*" onchange="previewImg(event, 'img-logo')">
+            </div>
+            <div class="form-group">
+                <label>વ્યક્તિનો ફોટો (Passport)</label>
+                <input type="file" accept="image/*" onchange="previewImg(event, 'img-photo')">
+            </div>
+            <div class="form-group">
+                <label>સહી 1 (કન્વીનર)</label>
+                <input type="file" accept="image/*" onchange="previewImg(event, 'img-sign1')">
+            </div>
+            <div class="form-group">
+                <label>સહી 2 (મંત્રી)</label>
+                <input type="file" accept="image/*" onchange="previewImg(event, 'img-sign2')">
+            </div>
+        </div>
+
+        <!-- Live Preview -->
+        <div class="preview-panel">
+            <div class="card-wrapper">
+                <div class="id-card" id="print-card">
+                    
+                    <!-- Header Segment -->
+                    <div class="card-header">
+                        <h2>શ્રી બત્રીસી જૈન કો-ઓપ એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
+                        <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
+                        <p class="contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
+                    </div>
+
+                    <!-- Body Layout -->
+                    <div class="card-body">
+                        <!-- Left Logo -->
+                        <div class="logo-box">
+                            <img id="img-logo" src="https://via.placeholder.com/100?text=Logo" alt="Logo">
+                        </div>
+
+                        <!-- Middle Details -->
+                        <div class="details-box">
+                            <div class="detail-item">
+                                <i class="fa-solid fa-id-card detail-icon"></i>
+                                <span class="detail-label">સભ્ય નંબર</span> <span class="detail-value">: <span id="val-memberNo">XXXX</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fa-solid fa-user detail-icon"></i>
+                                <span class="detail-label">નામ</span> <span class="detail-value">: <span id="val-name">XXXX XXXX</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fa-solid fa-location-dot detail-icon"></i>
+                                <span class="detail-label">સરનામું</span> <span class="detail-value">: <span id="val-address">XXXX XXXX XXXX</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fa-solid fa-house detail-icon"></i>
+                                <span class="detail-label">મૂળ વતન</span> <span class="detail-value">: <span id="val-hometown">XXXX</span></span>
+                            </div>
+                            
+                            <!-- જન્મ તારીખ કાર્ડ લેબલ -->
+                            <div class="detail-item">
+                                <i class="fa-solid fa-calendar-days detail-icon"></i>
+                                <span class="detail-label">જન્મ તારીખ</span> <span class="detail-value">: <span id="val-dob">XX/XX/XXXX</span></span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <i class="fa-solid fa-phone detail-icon"></i>
+                                <span class="detail-label">મોબાઇલ</span> <span class="detail-value">: <span id="val-mobile">+91 XXXXX XXXXX</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fa-solid fa-droplet detail-icon"></i>
+                                <span class="detail-label">બ્લડ ગ્રુપ</span> <span class="detail-value">: <span id="val-bloodgroup">-</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Right Photo -->
+                        <div class="photo-box">
+                            <img id="img-photo" src="https://via.placeholder.com/150x200?text=Photo" alt="Photo">
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="card-footer">
+                        <div class="sign-block">
+                            <img id="img-sign1" src="https://via.placeholder.com/100x40?text=Sign+1" alt="Signature">
+                            <p>સંદીપ એમ. શાહ</p>
+                            <span>(કન્વીનર)</span>
+                        </div>
+                        <div class="sign-block">
+                            <img id="img-sign2" src="https://via.placeholder.com/100x40?text=Sign+2" alt="Signature">
+                            <p>મયંક આર. શાહ</p>
+                            <span>(મંત્રી)</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-img" onclick="exportImage()"><i class="fa-solid fa-image"></i> Image Download</button>
+                <button class="btn btn-pdf" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> PDF Download</button>
+                <button class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> Direct Print</button>
+            </div>
+            
+            <span style="font-size: 12px; color: #64748b; margin-top: 5px;">* Exact 85.6mm × 54mm (PVC Card / Driving License Size)</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Functions -->
+    <script>
+        // Update text live (Removed date auto-formatting logic)
+        function updateField(inputId, targetId) {
+            let val = document.getElementById(inputId).value;
+            document.getElementById(targetId).innerText = val ? val : (inputId==='bloodgroup' ? "-" : (inputId==='dob' ? "XX/XX/XXXX" : "XXXX"));
+        }
+
+        // Preview Images safely
+        function previewImg(event, targetId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(targetId).src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 1. Export Image (High Res JPG)
+        function exportImage() {
+            const card = document.getElementById('print-card');
+            html2canvas(card, { scale: 4, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'Premium_ID_Card.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 1.0);
+                link.click();
+            });
+        }
+
+        // 2. Export PDF (Exact PVC Size)
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const card = document.getElementById('print-card');
+            
+            html2canvas(card, { scale: 5, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                
+                // 85.6mm x 54mm Standard Format
+                const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
+                pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
+                pdf.save('Premium_ID_Card.pdf');
+            });
+        }
+
+        // 3. Print directly at PVC size
+        function printCard() {
+            const card = document.getElementById('print-card');
+            html2canvas(card, { scale: 4, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                let printWin = window.open('', '_blank');
+                printWin.document.write(`
+                    <html>
+                        <head>
+                            <title>Print ID Card</title>
+                            <style>
+                                @page { size: 85.6mm 54mm; margin: 0; }
+                                body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #fff; }
+                                img { width: 85.6mm; height: 54mm; object-fit: cover; }
+                            </style>
+                        </head>
+                        <body>
+                            <img src="${imgData}" />
+                            <script>
+                                setTimeout(() => { window.print(); window.close(); }, 500);
+                            <\/script>
+                        </body>
+                    </html>
+                `);
+                printWin.document.close();
+            });
+        }
+    </script>
+</body>
+</html>
