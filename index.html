@@ -31,7 +31,7 @@
         /* GLOBALLY SET TO DWARIKA BOLD */
         body {
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: 900; /* Extra Bold */
+            font-weight: 900; 
             background-color: var(--bg-body);
             margin: 0;
             padding: 20px;
@@ -80,13 +80,15 @@
             margin-bottom: 5px;
         }
 
+        /* Input Box Bold */
         .form-group input, .form-group select {
             padding: 10px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             font-size: 16px;
-            font-weight: 900; /* Bold Input Data */
+            font-weight: 900; 
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
+            -webkit-text-stroke: 0.4px #333; /* Make typing text highly bold */
             transition: all 0.3s ease;
             outline: none;
         }
@@ -144,7 +146,7 @@
             font-size: 8px; 
             color: var(--text-dark);
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: 900; /* Bold */
+            font-weight: 900;
             line-height: 1.4; 
             padding-top: 2px;
             overflow: visible;
@@ -155,7 +157,7 @@
             font-size: 7.5px;
             color: #b91c1c; 
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: 900; /* Bold */
+            font-weight: 900; 
         }
 
         /* --- Card Body --- */
@@ -203,16 +205,23 @@
 
         .detail-label {
             color: var(--text-light);
-            font-weight: 900; /* Extra Bold */
+            font-weight: 900; 
             width: 60px; 
             overflow: visible;
         }
 
         .detail-value {
             color: var(--text-dark);
-            font-weight: 900; /* Extra Bold */
+            font-weight: 900; 
             flex: 1;
             overflow: visible; 
+        }
+
+        /* 🔴 સ્પેશિયલ: તમે ભરેલો ડેટા ફરજીયાત બમણો જાડો (Extra Bold) કરવા માટે 🔴 */
+        .detail-value span {
+            font-weight: 900 !important;
+            -webkit-text-stroke: 0.5px var(--text-dark); /* આ કોડથી લોકલ ફોન્ટ પણ જાડા દેખાશે */
+            text-shadow: 0px 0px 1px rgba(0,0,0,0.3);
         }
 
         /* --- Photo Box --- */
@@ -271,7 +280,7 @@
             margin: 0;
             font-size: 10.5px;
             color: var(--text-dark);
-            font-weight: 900; /* Bold */
+            font-weight: 900; 
             line-height: 1.4;
             padding-top: 2px;
             white-space: nowrap; 
@@ -279,7 +288,7 @@
         }
 
         .sign-block span {
-            font-weight: 900; /* Bold */
+            font-weight: 900; 
             color: var(--text-light);
             font-size: 9px;
         }
@@ -296,7 +305,7 @@
         .btn {
             padding: 10px 20px;
             font-size: 15px;
-            font-weight: 900; /* Bold */
+            font-weight: 900; 
             border: none;
             border-radius: 8px;
             cursor: pointer;
