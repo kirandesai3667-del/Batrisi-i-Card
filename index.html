@@ -1,3 +1,13 @@
+ખૂબ સરસ! તમારી માંગણી મુજબ મેં આખા કોડમાં (ટાઇટલ સિવાય) બધા જ ફોન્ટને 100% Bold (જાડા) કરી દીધા છે.
+
+અહીં તમારો ફાઇનલ અને પરફેક્ટ કોડ છે:
+
+code
+Html
+play_circle
+download
+content_copy
+expand_less
 <!DOCTYPE html>
 <html lang="gu">
 <head>
@@ -5,8 +15,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>આઈડી કાર્ડ જનરેટર</title>
     
-    <!-- Google Fonts: 'Mogra' for Title, 'Noto Sans Gujarati' for clear reading -->
-    <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: 'Mogra' for Title, 'Noto Sans Gujarati' as fallback -->
+    <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@700;800;900&display=swap" rel="stylesheet">
     
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,9 +38,10 @@
             --card-h: 270px;
         }
 
+        /* GLOBALLY SET TO DWARIKA BOLD */
         body {
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: normal; /* Normal weight globally */
+            font-weight: 900; /* Extra Bold */
             background-color: var(--bg-body);
             margin: 0;
             padding: 20px;
@@ -40,7 +51,7 @@
         .header-title {
             text-align: center;
             color: var(--primary);
-            font-weight: bold;
+            font-weight: 900;
             margin-bottom: 30px;
             font-size: 32px;
             letter-spacing: 0.5px;
@@ -74,18 +85,17 @@
         
         .form-group label {
             font-size: 15px;
-            font-weight: bold;
+            font-weight: 900;
             color: var(--text-light);
             margin-bottom: 5px;
         }
 
-        /* Input Box (Normal/Light Data) */
         .form-group input, .form-group select {
             padding: 10px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             font-size: 16px;
-            font-weight: 500; /* Light/Normal data feed */
+            font-weight: 900; /* Bold Input Data */
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
             transition: all 0.3s ease;
             outline: none;
@@ -126,7 +136,7 @@
             background: rgba(255,255,255,0.8);
         }
 
-        /* Title is Mogra */
+        /* ONLY Title is Mogra */
         .card-header h2 {
             margin: 0 0 4px 0;
             font-family: 'Mogra', serif; 
@@ -144,7 +154,7 @@
             font-size: 8px; 
             color: var(--text-dark);
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: bold; 
+            font-weight: 900; /* Bold */
             line-height: 1.4; 
             padding-top: 2px;
             overflow: visible;
@@ -155,7 +165,7 @@
             font-size: 7.5px;
             color: #b91c1c; 
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: bold; 
+            font-weight: 900; /* Bold */
         }
 
         /* --- Card Body --- */
@@ -201,18 +211,16 @@
             margin-top: 5px; 
         }
 
-        /* લેબલ થોડું જાડું (Bold) */
         .detail-label {
             color: var(--text-light);
-            font-weight: bold; 
+            font-weight: 900; /* Extra Bold */
             width: 60px; 
             overflow: visible;
         }
 
-        /* યુઝરે ભરેલો ડેટા (Light / Normal) જેથી કપાય નહિ */
         .detail-value {
             color: var(--text-dark);
-            font-weight: 500; 
+            font-weight: 900; /* Extra Bold */
             flex: 1;
             overflow: visible; 
         }
@@ -273,7 +281,7 @@
             margin: 0;
             font-size: 10.5px;
             color: var(--text-dark);
-            font-weight: bold; 
+            font-weight: 900; /* Bold */
             line-height: 1.4;
             padding-top: 2px;
             white-space: nowrap; 
@@ -281,7 +289,7 @@
         }
 
         .sign-block span {
-            font-weight: bold; 
+            font-weight: 900; /* Bold */
             color: var(--text-light);
             font-size: 9px;
         }
@@ -298,7 +306,7 @@
         .btn {
             padding: 10px 20px;
             font-size: 15px;
-            font-weight: bold; 
+            font-weight: 900; /* Bold */
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -351,7 +359,7 @@
 
             <div class="form-group">
                 <label>જન્મ તારીખ</label>
-                <input type="text" id="dob" placeholder="૦૧/૦૧/૨૦૦૦" oninput="updateField('dob', 'val-dob')">
+                <input type="text" id="dob" placeholder="DD/MM/YYYY અથવા ૦૧/૦૧/૨૦૦૦" oninput="updateField('dob', 'val-dob')">
             </div>
 
             <div class="form-group">
@@ -379,11 +387,11 @@
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-photo')">
             </div>
             <div class="form-group">
-                <label>સહી ૧ (કન્વીનર)</label>
+                <label>સહી 1 (કન્વીનર)</label>
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-sign1')">
             </div>
             <div class="form-group">
-                <label>સહી ૨ (મંત્રી)</label>
+                <label>સહી 2 (મંત્રી)</label>
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-sign2')">
             </div>
         </div>
@@ -431,7 +439,7 @@
                         </div>
                         <div class="detail-item">
                             <i class="fa-solid fa-phone detail-icon"></i>
-                            <span class="detail-label">મોબાઇલ</span> <span class="detail-value">: <span id="val-mobile">+૯૧ XXXXX XXXXX</span></span>
+                            <span class="detail-label">મોબાઇલ</span> <span class="detail-value">: <span id="val-mobile">+91 XXXXX XXXXX</span></span>
                         </div>
                         <div class="detail-item">
                             <i class="fa-solid fa-droplet detail-icon"></i>
@@ -448,11 +456,11 @@
                 <!-- STRICTLY LOCKED FOOTER -->
                 <div class="card-footer">
                     <div class="sign-block left">
-                        <img id="img-sign1" src="https://via.placeholder.com/80x25?text=સહી+૧" alt="સહી ૧">
+                        <img id="img-sign1" src="https://via.placeholder.com/80x25?text=સહી+1" alt="સહી 1">
                         <p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p>
                     </div>
                     <div class="sign-block right">
-                        <img id="img-sign2" src="https://via.placeholder.com/80x25?text=સહી+૨" alt="સહી ૨">
+                        <img id="img-sign2" src="https://via.placeholder.com/80x25?text=સહી+2" alt="સહી 2">
                         <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
                     </div>
                 </div>
@@ -498,7 +506,7 @@
             const card = document.getElementById('print-card');
             html2canvas(card, canvasOptions).then(canvas => {
                 let link = document.createElement('a');
-                link.download = 'આઈડી_કાર્ડ.jpg';
+                link.download = 'ID_Card.jpg';
                 link.href = canvas.toDataURL('image/jpeg', 1.0);
                 link.click();
             });
@@ -512,7 +520,7 @@
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
                 pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
-                pdf.save('આઈડી_કાર્ડ.pdf');
+                pdf.save('ID_Card.pdf');
             });
         }
 
@@ -525,7 +533,7 @@
                 printWin.document.write(`
                     <html>
                         <head>
-                            <title>આઈડી કાર્ડ પ્રિન્ટ</title>
+                            <title>Print ID Card</title>
                             <style>
                                 @page { size: 85.6mm 54mm; margin: 0; }
                                 body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: white; }
