@@ -358,7 +358,7 @@
 
             <div class="form-group">
                 <label>જન્મ તારીખ</label>
-                <input type="text" id="dob" placeholder="DD/MM/YYYY અથવા ૦૧/૦૧/૨૦૦૦" oninput="updateField('dob', 'val-dob')">
+                <input type="text" id="dob" placeholder="૦૧/૦૧/૨૦૦૦" oninput="updateField('dob', 'val-dob')">
             </div>
 
             <div class="form-group">
@@ -386,11 +386,11 @@
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-photo')">
             </div>
             <div class="form-group">
-                <label>સહી 1 (કન્વીનર)</label>
+                <label>સહી ૧ (કન્વીનર)</label>
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-sign1')">
             </div>
             <div class="form-group">
-                <label>સહી 2 (મંત્રી)</label>
+                <label>સહી ૨ (મંત્રી)</label>
                 <input type="file" accept="image/*" onchange="previewImg(event, 'img-sign2')">
             </div>
         </div>
@@ -438,7 +438,7 @@
                         </div>
                         <div class="detail-item">
                             <i class="fa-solid fa-phone detail-icon"></i>
-                            <span class="detail-label">મોબાઇલ</span> <span class="detail-value">: <span id="val-mobile">+91 XXXXX XXXXX</span></span>
+                            <span class="detail-label">મોબાઇલ</span> <span class="detail-value">: <span id="val-mobile">+૯૧ XXXXX XXXXX</span></span>
                         </div>
                         <div class="detail-item">
                             <i class="fa-solid fa-droplet detail-icon"></i>
@@ -455,11 +455,11 @@
                 <!-- STRICTLY LOCKED FOOTER -->
                 <div class="card-footer">
                     <div class="sign-block left">
-                        <img id="img-sign1" src="https://via.placeholder.com/80x25?text=સહી+1" alt="સહી 1">
+                        <img id="img-sign1" src="https://via.placeholder.com/80x25?text=સહી+૧" alt="સહી ૧">
                         <p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p>
                     </div>
                     <div class="sign-block right">
-                        <img id="img-sign2" src="https://via.placeholder.com/80x25?text=સહી+2" alt="સહી 2">
+                        <img id="img-sign2" src="https://via.placeholder.com/80x25?text=સહી+૨" alt="સહી ૨">
                         <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
                     </div>
                 </div>
@@ -505,7 +505,7 @@
             const card = document.getElementById('print-card');
             html2canvas(card, canvasOptions).then(canvas => {
                 let link = document.createElement('a');
-                link.download = 'ID_Card.jpg';
+                link.download = 'આઈડી_કાર્ડ.jpg';
                 link.href = canvas.toDataURL('image/jpeg', 1.0);
                 link.click();
             });
@@ -519,7 +519,7 @@
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
                 pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
-                pdf.save('ID_Card.pdf');
+                pdf.save('આઈડી_કાર્ડ.pdf');
             });
         }
 
@@ -532,7 +532,7 @@
                 printWin.document.write(`
                     <html>
                         <head>
-                            <title>Print ID Card</title>
+                            <title>આઈડી કાર્ડ પ્રિન્ટ</title>
                             <style>
                                 @page { size: 85.6mm 54mm; margin: 0; }
                                 body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: white; }
