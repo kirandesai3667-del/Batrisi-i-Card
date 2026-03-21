@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>આઈડી કાર્ડ જનરેટર</title>
     
-    <!-- Google Fonts: 'Mogra' for Title, 'Noto Sans Gujarati' as fallback -->
-    <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@700;800;900&display=swap" rel="stylesheet">
+    <!-- Google Fonts: 'Mogra' for Title, 'Noto Sans Gujarati' for clear reading -->
+    <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@400;500;700&display=swap" rel="stylesheet">
     
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,10 +28,9 @@
             --card-h: 270px;
         }
 
-        /* GLOBALLY SET TO DWARIKA BOLD */
         body {
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: 900; 
+            font-weight: normal; /* Normal weight globally */
             background-color: var(--bg-body);
             margin: 0;
             padding: 20px;
@@ -41,7 +40,7 @@
         .header-title {
             text-align: center;
             color: var(--primary);
-            font-weight: 900;
+            font-weight: bold;
             margin-bottom: 30px;
             font-size: 32px;
             letter-spacing: 0.5px;
@@ -75,20 +74,19 @@
         
         .form-group label {
             font-size: 15px;
-            font-weight: 900;
+            font-weight: bold;
             color: var(--text-light);
             margin-bottom: 5px;
         }
 
-        /* Input Box Bold */
+        /* Input Box (Normal/Light Data) */
         .form-group input, .form-group select {
             padding: 10px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             font-size: 16px;
-            font-weight: 900; 
+            font-weight: 500; /* Light/Normal data feed */
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            -webkit-text-stroke: 0.4px #333; /* Make typing text highly bold */
             transition: all 0.3s ease;
             outline: none;
         }
@@ -128,7 +126,7 @@
             background: rgba(255,255,255,0.8);
         }
 
-        /* ONLY Title is Mogra */
+        /* Title is Mogra */
         .card-header h2 {
             margin: 0 0 4px 0;
             font-family: 'Mogra', serif; 
@@ -146,7 +144,7 @@
             font-size: 8px; 
             color: var(--text-dark);
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: 900;
+            font-weight: bold; 
             line-height: 1.4; 
             padding-top: 2px;
             overflow: visible;
@@ -157,7 +155,7 @@
             font-size: 7.5px;
             color: #b91c1c; 
             font-family: 'Dwarika', 'Noto Sans Gujarati', sans-serif;
-            font-weight: 900; 
+            font-weight: bold; 
         }
 
         /* --- Card Body --- */
@@ -203,25 +201,20 @@
             margin-top: 5px; 
         }
 
+        /* લેબલ થોડું જાડું (Bold) */
         .detail-label {
             color: var(--text-light);
-            font-weight: 900; 
+            font-weight: bold; 
             width: 60px; 
             overflow: visible;
         }
 
+        /* યુઝરે ભરેલો ડેટા (Light / Normal) જેથી કપાય નહિ */
         .detail-value {
             color: var(--text-dark);
-            font-weight: 900; 
+            font-weight: 500; 
             flex: 1;
             overflow: visible; 
-        }
-
-        /* 🔴 સ્પેશિયલ: તમે ભરેલો ડેટા ફરજીયાત બમણો જાડો (Extra Bold) કરવા માટે 🔴 */
-        .detail-value span {
-            font-weight: 900 !important;
-            -webkit-text-stroke: 0.5px var(--text-dark); /* આ કોડથી લોકલ ફોન્ટ પણ જાડા દેખાશે */
-            text-shadow: 0px 0px 1px rgba(0,0,0,0.3);
         }
 
         /* --- Photo Box --- */
@@ -280,7 +273,7 @@
             margin: 0;
             font-size: 10.5px;
             color: var(--text-dark);
-            font-weight: 900; 
+            font-weight: bold; 
             line-height: 1.4;
             padding-top: 2px;
             white-space: nowrap; 
@@ -288,7 +281,7 @@
         }
 
         .sign-block span {
-            font-weight: 900; 
+            font-weight: bold; 
             color: var(--text-light);
             font-size: 9px;
         }
@@ -305,7 +298,7 @@
         .btn {
             padding: 10px 20px;
             font-size: 15px;
-            font-weight: 900; 
+            font-weight: bold; 
             border: none;
             border-radius: 8px;
             cursor: pointer;
