@@ -11,17 +11,12 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- html2canvas & jsPDF -->
+    <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         /* --- EXACT COLOR OUTPUT FIX --- */
-        * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-        }
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
 
         :root {
             --primary: #0f3460;
@@ -33,131 +28,35 @@
             --card-h: 270px;
         }
 
-        body {
-            font-family: 'Poppins', 'Noto Sans Gujarati', sans-serif;
-            background-color: var(--bg-body);
-            margin: 0;
-            padding: 20px;
-            color: var(--text-dark);
-        }
-
-        .header-title {
-            text-align: center;
-            color: var(--primary);
-            font-weight: 800;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-            justify-content: center;
-        }
+        body { font-family: 'Poppins', 'Noto Sans Gujarati', sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px; color: var(--text-dark); }
+        .header-title { text-align: center; color: var(--primary); font-weight: 800; margin-bottom: 30px; font-size: 28px; }
+        .container { display: flex; flex-wrap: wrap; gap: 40px; max-width: 1200px; margin: 0 auto; justify-content: center; }
 
         /* --- Form Styling --- */
-        .form-panel {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-            flex: 1;
-            min-width: 320px;
-            max-width: 500px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            align-content: start;
-        }
-
+        .form-panel { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); flex: 1; min-width: 320px; max-width: 500px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start; }
         .form-group { display: flex; flex-direction: column; }
         .form-group.full-width { grid-column: span 2; }
-        
-        .form-group label {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .form-group input, .form-group select {
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-        }
-
-        .form-group input:focus { border-color: var(--secondary); }
-        .hint { font-size: 11px; color: #10b981; margin-top: 3px; }
+        .form-group label { font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 5px; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-family: inherit; outline: none; transition: 0.3s;}
+        .form-group input:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        .hint { font-size: 11px; color: #10b981; margin-top: 4px; font-weight: 600;}
 
         /* --- Card Preview Section --- */
-        .preview-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        /* --- EXACT ID CARD DESIGN --- */
-        .id-card {
-            width: var(--card-w);
-            height: var(--card-h);
-            background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%);
-            display: flex;
-            flex-direction: column; 
-            box-sizing: border-box;
-            border-radius: 10px;
-            border: 1.5px solid #cbd5e1;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); 
-            overflow: hidden; 
-            position: relative;
-        }
-
-        .card-header {
-            text-align: center;
-            border-bottom: 2px solid var(--secondary);
-            padding: 6px 16px 4px 16px;
-            background: rgba(255,255,255,0.9);
-            flex-shrink: 0; 
-        }
-
+        .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .id-card { width: var(--card-w); height: var(--card-h); background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%); display: flex; flex-direction: column; box-sizing: border-box; border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); overflow: hidden; position: relative; }
+        .card-header { text-align: center; border-bottom: 2px solid var(--secondary); padding: 6px 16px 4px 16px; background: rgba(255,255,255,0.9); flex-shrink: 0; }
         .card-header h2 { margin: 0 0 3px 0; font-family: 'Mogra', serif; font-size: 12.5px; color: var(--primary); font-weight: 400; }
         .card-header .address { margin: 0; font-size: 6.8px; color: var(--text-dark); font-weight: 600; }
         .card-header .contact { margin: 2px 0 0 0; font-size: 6.5px; color: #b91c1c; font-weight: 700; }
-
-        .card-body {
-            display: grid;
-            grid-template-columns: 50px 1fr 68px;
-            gap: 12px;
-            padding: 8px 16px;
-            flex-grow: 1; 
-        }
-
+        .card-body { display: grid; grid-template-columns: 50px 1fr 68px; gap: 12px; padding: 8px 16px; flex-grow: 1; }
         .logo-box img { width: 46px; height: 46px; object-fit: contain; }
-
         .details-box { display: flex; flex-direction: column; gap: 0px; }
         .detail-item { display: flex; align-items: flex-start; font-size: 9.5px; line-height: 1.35; margin-bottom: 2.5px; }
         .detail-icon { color: var(--secondary); width: 14px; font-size: 8.5px; margin-right: 5px; margin-top: 2px; }
         .detail-label { color: var(--text-light); font-weight: 600; width: 58px; }
         .detail-value { color: var(--text-dark); font-weight: 600; flex: 1; }
-
-        .photo-box img {
-            width: 66px; height: 88px; border-radius: 4px; object-fit: cover; 
-            border: 2px solid var(--secondary); display: block;
-        }
-
-        .card-footer {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            padding: 4px 16px 6px 16px; border-top: 1px solid #cbd5e1;
-            background: linear-gradient(to top, #f4f7fb 90%, rgba(244,247,251,0.5) 100%);
-            flex-shrink: 0; 
-        }
-
+        .photo-box img { width: 66px; height: 88px; border-radius: 4px; object-fit: cover; border: 2px solid var(--secondary); display: block; }
+        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; padding: 4px 16px 6px 16px; border-top: 1px solid #cbd5e1; background: linear-gradient(to top, #f4f7fb 90%, rgba(244,247,251,0.5) 100%); flex-shrink: 0; }
         .sign-block { display: flex; flex-direction: column; }
         .sign-block.left { align-items: flex-start; }
         .sign-block.right { align-items: flex-end; }
@@ -167,21 +66,13 @@
 
         /* --- Buttons --- */
         .btn-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center; width: 100%;}
-        .btn { padding: 10px 16px; font-size: 13px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; color: white; display: flex; gap: 6px; align-items: center; }
+        .btn { padding: 10px 16px; font-size: 13px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; color: white; display: flex; gap: 6px; align-items: center; transition: 0.3s;}
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-save { background-color: #16a34a; width: 100%; justify-content: center; margin-top: 10px;}
         .btn-print { background-color: var(--secondary); }
         
         /* --- Table Section --- */
-        .table-container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 40px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-            overflow-x: auto;
-        }
+        .table-container { width: 100%; max-width: 1200px; margin: 40px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
         th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
         th { background: #f1f5f9; color: var(--text-dark); font-weight: 600; }
@@ -206,20 +97,21 @@
                 <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updateField('memberNo', 'val-memberNo')">
             </div>
             
+            <!-- EASY GUJARATI TYPING BOXES -->
             <div class="form-group full-width">
                 <label>પૂરું નામ</label>
-                <input type="text" id="name" placeholder="અંગ્રેજીમાં લખો, આપોઆપ ગુજરાતી થશે" onblur="translateText(this, 'val-name')" oninput="updateField('name', 'val-name')">
-                <span class="hint">English to Gujarati Auto-Translate</span>
+                <input type="text" id="name" placeholder="English સ્પેલિંગ લખીને Space દબાવો..." onkeyup="easyGujaratiTyping(event, 'name', 'val-name')">
+                <span class="hint"><i class="fa-solid fa-keyboard"></i> Type English & Press Spacebar (easygujaratityping style)</span>
             </div>
             
             <div class="form-group full-width">
                 <label>સરનામું</label>
-                <input type="text" id="address" placeholder="અંગ્રેજીમાં લખો..." onblur="translateText(this, 'val-address')" oninput="updateField('address', 'val-address')">
+                <input type="text" id="address" placeholder="English માં લખીને Space દબાવો..." onkeyup="easyGujaratiTyping(event, 'address', 'val-address')">
             </div>
 
             <div class="form-group">
                 <label>મૂળ વતન</label>
-                <input type="text" id="hometown" placeholder="અંગ્રેજીમાં લખો..." onblur="translateText(this, 'val-hometown')" oninput="updateField('hometown', 'val-hometown')">
+                <input type="text" id="hometown" placeholder="English માં લખીને Space દબાવો..." onkeyup="easyGujaratiTyping(event, 'hometown', 'val-hometown')">
             </div>
 
             <div class="form-group">
@@ -257,7 +149,6 @@
         <!-- Live Preview -->
         <div class="preview-panel">
             <div class="id-card" id="print-card">
-                
                 <div class="card-header">
                     <h2>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
                     <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
@@ -266,7 +157,7 @@
 
                 <div class="card-body">
                     <div class="logo-box">
-                        <!-- AUTO LOGO: ફાઇલનું નામ logo.png રાખવું -->
+                        <!-- AUTO LOGO -->
                         <img id="img-logo" src="logo.png" onerror="this.src='https://via.placeholder.com/100?text=Logo'" alt="Logo">
                     </div>
 
@@ -287,12 +178,12 @@
 
                 <div class="card-footer">
                     <div class="sign-block left">
-                        <!-- AUTO SIGN 1: ફાઇલનું નામ sign1.png રાખવું -->
+                        <!-- AUTO SIGN 1 -->
                         <img id="img-sign1" src="sign1.png" onerror="this.src='https://via.placeholder.com/80x25?text=Sign+1'" alt="Signature">
                         <p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p>
                     </div>
                     <div class="sign-block right">
-                        <!-- AUTO SIGN 2: ફાઇલનું નામ sign2.png રાખવું -->
+                        <!-- AUTO SIGN 2 -->
                         <img id="img-sign2" src="sign2.png" onerror="this.src='https://via.placeholder.com/80x25?text=Sign+2'" alt="Signature">
                         <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
                     </div>
@@ -307,7 +198,7 @@
 
     <!-- Saved Records Table -->
     <div class="table-container">
-        <h2 style="margin-top:0; color:var(--primary);">Saved Database</h2>
+        <h2 style="margin-top:0; color:var(--primary);"><i class="fa-solid fa-database"></i> Saved Database</h2>
         <table>
             <thead>
                 <tr>
@@ -325,27 +216,56 @@
     </div>
 
     <script>
-        // --- 1. ENGLISH TO GUJARATI TRANSLITERATION (Google API) ---
-        async function translateText(inputEl, targetId) {
-            let text = inputEl.value.trim();
-            if(!text) return;
+        // --- 1. EASY GUJARATI TYPING ENGINE (Like easygujaratityping.com) ---
+        async function easyGujaratiTyping(event, inputId, targetId) {
+            let el = document.getElementById(inputId);
             
-            // જો પહેલાથી જ ગુજરાતી અક્ષરો હોય તો ટ્રાન્સલેટ નહિ કરે
-            const isGujarati = /[\u0A80-\u0AFF]/.test(text);
-            if (isGujarati) return;
+            // સાથે-સાથે કાર્ડમાં પણ ઇંગ્લિશ અક્ષરો દેખાડવા માટે
+            updateField(inputId, targetId);
 
-            try {
-                let res = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=gu-t-i0-und&num=1`);
-                let data = await res.json();
-                if (data[0] === "SUCCESS") {
-                    let translated = data[1][0][1][0];
-                    inputEl.value = translated; // Textbox માં બદલો
-                    updateField(inputEl.id, targetId); // Card માં બદલો
+            // જો યુઝર Space (જગ્યા) દબાવે તો જ ટ્રાન્સલેટ કરો
+            if (event.code === 'Space' || event.keyCode === 32) {
+                let cursor = el.selectionStart;
+                let text = el.value;
+                
+                // કર્સરની આગળનો શબ્દ પકડો
+                let textBeforeSpace = text.slice(0, cursor - 1);
+                let words = textBeforeSpace.split(' ');
+                let lastWord = words[words.length - 1];
+
+                // જો શબ્દમાં અંગ્રેજી અક્ષરો હોય તો જ પ્રોસેસ કરો
+                if (lastWord && /[a-zA-Z]/.test(lastWord)) {
+                    try {
+                        // એરર ન આવે તે માટે Proxy નો ઉપયોગ (100% Working)
+                        let apiURL = `https://inputtools.google.com/request?text=${encodeURIComponent(lastWord)}&itc=gu-t-i0-und&num=1`;
+                        let proxyURL = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiURL)}`;
+                        
+                        let res = await fetch(proxyURL);
+                        let data = await res.json();
+                        
+                        if (data[0] === "SUCCESS") {
+                            let gujaratiWord = data[1][0][1][0]; // ગુજરાતી શબ્દ 
+                            
+                            // ઇંગ્લિશ સ્પેલિંગ ની જગ્યાએ ગુજરાતી શબ્દ મૂકો
+                            words[words.length - 1] = gujaratiWord;
+                            let newTextBeforeSpace = words.join(' ');
+                            
+                            // ઇનપુટ બોક્સમાં નવો શબ્દ સેટ કરો
+                            el.value = newTextBeforeSpace + ' ' + text.slice(cursor);
+                            
+                            // કર્સર ને પાછું યોગ્ય જગ્યાએ ગોઠવો
+                            el.selectionStart = el.selectionEnd = newTextBeforeSpace.length + 1;
+                            
+                            // કાર્ડમાં પણ તરત ગુજરાતીમાં અપડેટ કરો
+                            updateField(inputId, targetId);
+                        }
+                    } catch (e) {
+                        console.log("Typing API Error:", e);
+                    }
                 }
-            } catch (err) {
-                console.log("Translation Error:", err);
             }
         }
+
 
         // --- 2. BASIC FORM FUNCTIONS ---
         let currentPhotoBase64 = "https://via.placeholder.com/150x200?text=Photo";
@@ -390,11 +310,9 @@
             };
 
             if(id) {
-                // Update Existing
                 let index = records.findIndex(r => r.id == id);
                 records[index] = recordData;
             } else {
-                // Add New
                 records.push(recordData);
             }
 
@@ -415,9 +333,9 @@
                     <td>${rec.mobile}</td>
                     <td>${rec.bloodgroup}</td>
                     <td class="action-btns">
-                        <button class="btn-sm btn-print-sm" onclick="printFromTable(${rec.id})"><i class="fa-solid fa-print"></i></button>
-                        <button class="btn-sm btn-edit" onclick="editRecord(${rec.id})"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn-sm btn-delete" onclick="deleteRecord(${rec.id})"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn-sm btn-print-sm" title="Print" onclick="printFromTable(${rec.id})"><i class="fa-solid fa-print"></i></button>
+                        <button class="btn-sm btn-edit" title="Edit" onclick="editRecord(${rec.id})"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-sm btn-delete" title="Delete" onclick="deleteRecord(${rec.id})"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -440,13 +358,12 @@
             currentPhotoBase64 = rec.photo;
             document.getElementById('img-photo').src = currentPhotoBase64;
 
-            // Update Card Preview
             updateField('memberNo', 'val-memberNo'); updateField('name', 'val-name');
             updateField('address', 'val-address'); updateField('hometown', 'val-hometown');
             updateField('dob', 'val-dob'); updateField('mobile', 'val-mobile');
             updateField('bloodgroup', 'val-bloodgroup');
             
-            window.scrollTo(0,0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function deleteRecord(id) {
@@ -470,7 +387,6 @@
             currentPhotoBase64 = "https://via.placeholder.com/150x200?text=Photo";
             document.getElementById('img-photo').src = currentPhotoBase64;
             
-            // Reset Preview
             ['val-memberNo', 'val-name', 'val-address', 'val-hometown', 'val-mobile'].forEach(id => document.getElementById(id).innerText = "XXXX");
             document.getElementById('val-dob').innerText = "XX/XX/XXXX";
             document.getElementById('val-bloodgroup').innerText = "-";
@@ -478,8 +394,8 @@
 
         // --- 4. PRINTING ---
         function printFromTable(id) {
-            editRecord(id); // Load data into card
-            setTimeout(printCard, 500); // Wait for images to load, then print
+            editRecord(id); 
+            setTimeout(printCard, 500); 
         }
 
         const canvasOptions = { scale: 4, useCORS: true, backgroundColor: "#ffffff", logging: false };
@@ -512,7 +428,6 @@
             });
         }
 
-        // Load table on startup
         window.onload = loadTable;
     </script>
 </body>
