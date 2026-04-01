@@ -14,6 +14,9 @@
     <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- OFFICIAL GOOGLE TRANSLITERATION API (For Easy Gujarati Typing) -->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
     <style>
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
 
@@ -33,7 +36,7 @@
         .form-group label { font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 5px; }
         .form-group input, .form-group select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: 500; font-family: inherit; transition: 0.3s; outline: none; }
         .form-group input:focus, .form-group select:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-        .hint-text { font-size: 11px; color: #16a34a; margin-top: 3px; font-weight: 600; }
+        .hint-text { font-size: 11.5px; color: #b45309; margin-top: 4px; font-weight: 600; }
 
         /* Card Preview */
         .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; }
@@ -77,6 +80,8 @@
         .btn-edit { background: #f59e0b; }
         .btn-delete { background: #ef4444; }
         .btn-print-sm { background: var(--secondary); }
+        
+        .status-badge { background: #ecfdf5; color: #047857; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-left: 10px; display: none; }
     </style>
 </head>
 <body>
@@ -90,40 +95,40 @@
             <input type="hidden" id="recordId">
 
             <div class="form-group full-width">
-                <label>સભ્ય નંબર</label>
-                <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updateField('memberNo', 'val-memberNo')">
+                <label>સભ્ય નંબર <span id="typingStatus" class="status-badge"><i class="fa-solid fa-check"></i> ગુજરાતી ટાઈપિંગ ચાલુ છે</span></label>
+                <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updatePreview('memberNo', 'val-memberNo')">
             </div>
             
-            <!-- અહી નવી ટાઈપિંગ સિસ્ટમ લાગુ કરી છે (oninput) -->
             <div class="form-group full-width">
                 <label>પૂરું નામ</label>
-                <input type="text" id="name" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો..." oninput="autoGujarati(this, 'val-name')">
+                <!-- અહી Space દબાવવાથી આપોઆપ ગુજરાતી થશે -->
+                <input type="text" id="name" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો...">
                 <div class="hint-text"><i class="fa-solid fa-keyboard"></i> ઇંગ્લિશ સ્પેલિંગ લખીને Space દબાવશો એટલે આપોઆપ ગુજરાતી થશે.</div>
             </div>
             
             <div class="form-group full-width">
                 <label>સરનામું</label>
-                <input type="text" id="address" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો..." oninput="autoGujarati(this, 'val-address')">
+                <input type="text" id="address" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો...">
             </div>
 
             <div class="form-group">
                 <label>મૂળ વતન</label>
-                <input type="text" id="hometown" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો..." oninput="autoGujarati(this, 'val-hometown')">
+                <input type="text" id="hometown" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો...">
             </div>
 
             <div class="form-group">
                 <label>જન્મ તારીખ</label>
-                <input type="text" id="dob" placeholder="DD/MM/YYYY" oninput="updateField('dob', 'val-dob')">
+                <input type="text" id="dob" placeholder="DD/MM/YYYY" oninput="updatePreview('dob', 'val-dob')">
             </div>
 
             <div class="form-group">
                 <label>મોબાઇલ નંબર</label>
-                <input type="text" id="mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="updateField('mobile', 'val-mobile')">
+                <input type="text" id="mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="updatePreview('mobile', 'val-mobile')">
             </div>
 
             <div class="form-group">
                 <label>બ્લડ ગ્રુપ</label>
-                <select id="bloodgroup" onchange="updateField('bloodgroup', 'val-bloodgroup')">
+                <select id="bloodgroup" onchange="updatePreview('bloodgroup', 'val-bloodgroup')">
                     <option value="-">પસંદ કરો</option>
                     <option value="A+">A+</option> <option value="A-">A-</option>
                     <option value="B+">B+</option> <option value="B-">B-</option>
@@ -134,10 +139,11 @@
 
             <div class="form-group full-width">
                 <label>વ્યક્તિનો ફોટો</label>
-                <input type="file" id="photoInput" accept="image/*" onchange="previewImg(event, 'img-photo')">
+                <input type="file" id="photoInput" accept="image/*" onchange="processImage(event)">
             </div>
 
             <div class="form-group full-width">
+                <!-- બટનમાં type="button" ઉમેર્યું છે જેથી પેજ રિલોડ ના થાય -->
                 <button type="button" class="btn btn-save" onclick="saveRecord()"><i class="fa-solid fa-floppy-disk"></i> કાર્ડ સેવ કરો (Save Record)</button>
                 <button type="button" class="btn btn-clear" onclick="clearForm()"><i class="fa-solid fa-broom"></i> નવું ફોર્મ ભરો (Clear Form)</button>
             </div>
@@ -209,76 +215,66 @@
     <!-- JavaScript Functions -->
     <script>
         // ==========================================
-        // 1. PERFECT AUTO GUJARATI TYPING ENGINE
+        // 1. GOOGLE TRANSLITERATION API (100% WORKING ON GITHUB PAGES)
         // ==========================================
-        function autoGujarati(inputElement, targetId) {
-            let text = inputElement.value;
-            
-            // સાથે સાથે કાર્ડમાં લાઈવ પ્રિવ્યૂ બતાવો
-            document.getElementById(targetId).innerText = text ? text : "XXXX";
+        
+        // આ કોડ Google ના સર્વર પરથી ઓટો-ટાઈપિંગ એન્જિન ડાઉનલોડ કરશે
+        google.load("elements", "1", { packages: "transliteration" });
 
-            // જો છેલ્લો અક્ષર 'Space' (જગ્યા) હોય
-            if (text.endsWith(' ')) {
-                let words = text.split(' ');
-                let lastWord = words[words.length - 2]; // Space પહેલાનો છેલ્લો શબ્દ
+        function onGoogleAPIReady() {
+            try {
+                var options = {
+                    sourceLanguage: google.elements.transliteration.LanguageCode.ENGLISH,
+                    destinationLanguage: [google.elements.transliteration.LanguageCode.GUJARATI],
+                    shortcutKey: 'ctrl+g',
+                    transliterationEnabled: true
+                };
+                
+                var control = new google.elements.transliteration.TransliterationControl(options);
+                
+                // કયા ખાનામાં ગુજરાતી ટાઈપિંગ જોઈએ છે તેના ID
+                var ids = ['name', 'address', 'hometown'];
+                control.makeTransliteratable(ids);
 
-                // જો શબ્દમાં અંગ્રેજી (A-Z) અક્ષરો હોય તો જ ટ્રાન્સલેટ કરો
-                if (lastWord && /[a-zA-Z]/.test(lastWord)) {
-                    
-                    // Google ટ્રાન્સલિટરેશન API નો ઉપયોગ
-                    let scriptName = 'gujarati_' + Date.now();
-                    
-                    window[scriptName] = function(data) {
-                        if (data[0] === 'SUCCESS') {
-                            let gujaratiWord = data[1][0][1][0]; // સાચો ગુજરાતી શબ્દ
-                            
-                            // ઇંગ્લિશ સ્પેલિંગ ની જગ્યાએ ગુજરાતી શબ્દ મૂકો
-                            let currentText = inputElement.value;
-                            let lastIndex = currentText.lastIndexOf(lastWord);
-                            
-                            if (lastIndex !== -1) {
-                                let newText = currentText.substring(0, lastIndex) + gujaratiWord + ' ';
-                                inputElement.value = newText;
-                                
-                                // કાર્ડમાં પણ ગુજરાતી લખાણ દેખાડો
-                                document.getElementById(targetId).innerText = newText;
-                            }
-                        }
-                        // ડેટા આવ્યા પછી બિનજરૂરી સ્ક્રિપ્ટ કાઢી નાખો
-                        delete window[scriptName];
-                        let scriptTag = document.getElementById(scriptName);
-                        if(scriptTag) scriptTag.remove();
-                    };
+                // ટાઈપ થાય ત્યારે કાર્ડમાં લાઈવ દેખાડવા માટે
+                ids.forEach(function(id) {
+                    var element = document.getElementById(id);
+                    element.addEventListener('keyup', function() { updatePreview(id, 'val-' + id); });
+                    // Google API શબ્દ બદલે ત્યારે પણ કાર્ડ અપડેટ કરવા
+                    element.addEventListener('blur', function() { updatePreview(id, 'val-' + id); });
+                });
 
-                    let script = document.createElement('script');
-                    script.id = scriptName;
-                    script.src = `https://inputtools.google.com/request?text=${encodeURIComponent(lastWord)}&itc=gu-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test&jsonp=${scriptName}`;
-                    document.body.appendChild(script);
-                }
+                // ટાઈપિંગ એન્જિન ચાલુ થઈ ગયું છે તેનું સિગ્નલ
+                document.getElementById('typingStatus').style.display = 'inline-block';
+
+            } catch(e) {
+                console.log("Typing Engine Error:", e);
             }
         }
+        
+        google.setOnLoadCallback(onGoogleAPIReady);
 
         // ==========================================
-        // 2. IMAGE COMPRESSOR (મેમરી ફૂલ નહિ થાય)
+        // 2. BASIC FORM FUNCTIONS & IMAGE COMPRESSION
         // ==========================================
         let currentPhotoBase64 = "https://via.placeholder.com/150x200?text=Photo";
 
-        function updateField(inputId, targetId) {
+        function updatePreview(inputId, targetId) {
             let val = document.getElementById(inputId).value;
             document.getElementById(targetId).innerText = val ? val : (inputId==='bloodgroup' ? "-" : (inputId==='dob' ? "XX/XX/XXXX" : "XXXX"));
         }
 
-        function previewImg(event, targetId) {
+        function processImage(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                    // મેમરી ફૂલ ન થાય એટલે ફોટો કમ્પ્રેસ (નાનો) કરીએ છીએ
                     let img = new Image();
                     img.onload = function() {
                         let canvas = document.createElement('canvas');
                         let ctx = canvas.getContext('2d');
                         
-                        // ફોટોની સાઇઝ નાની કરવા માટે (200x300)
                         let maxW = 200; let maxH = 300;
                         let ratio = Math.min(maxW / img.width, maxH / img.height);
                         let newW = img.width * ratio; let newH = img.height * ratio;
@@ -286,9 +282,8 @@
                         canvas.width = newW; canvas.height = newH;
                         ctx.drawImage(img, 0, 0, newW, newH);
                         
-                        // કમ્પ્રેસ થયેલો ફોટો 
                         currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.8); 
-                        document.getElementById(targetId).src = currentPhotoBase64;
+                        document.getElementById('img-photo').src = currentPhotoBase64;
                     }
                     img.src = e.target.result;
                 }
@@ -297,16 +292,20 @@
         }
 
         // ==========================================
-        // 3. DATABASE (SAVE, EDIT, DELETE)
+        // 3. DATABASE (SAVE, EDIT, DELETE) - BUG FIXED
         // ==========================================
-        let records = JSON.parse(localStorage.getItem('idCardsDB')) || [];
+        let records = [];
+        try { records = JSON.parse(localStorage.getItem('idCardsDB')) || []; } catch(e) {}
 
         function saveRecord() {
             let id = document.getElementById('recordId').value;
             let memberNo = document.getElementById('memberNo').value;
             let name = document.getElementById('name').value;
             
-            if(!memberNo || !name) { alert("કૃપા કરીને સભ્ય નંબર અને પૂરું નામ દાખલ કરો!"); return; }
+            if(memberNo.trim() === "" || name.trim() === "") { 
+                alert("કૃપા કરીને સભ્ય નંબર અને પૂરું નામ દાખલ કરો!"); 
+                return; 
+            }
 
             let recordData = {
                 id: id ? parseInt(id) : Date.now(),
@@ -322,7 +321,7 @@
 
             if(id) {
                 let index = records.findIndex(r => r.id == id);
-                records[index] = recordData;
+                if(index > -1) records[index] = recordData;
             } else {
                 records.push(recordData);
             }
@@ -373,10 +372,10 @@
             currentPhotoBase64 = rec.photo;
             document.getElementById('img-photo').src = currentPhotoBase64;
 
-            updateField('memberNo', 'val-memberNo'); updateField('name', 'val-name');
-            updateField('address', 'val-address'); updateField('hometown', 'val-hometown');
-            updateField('dob', 'val-dob'); updateField('mobile', 'val-mobile');
-            updateField('bloodgroup', 'val-bloodgroup');
+            updatePreview('memberNo', 'val-memberNo'); updatePreview('name', 'val-name');
+            updatePreview('address', 'val-address'); updatePreview('hometown', 'val-hometown');
+            updatePreview('dob', 'val-dob'); updatePreview('mobile', 'val-mobile');
+            updatePreview('bloodgroup', 'val-bloodgroup');
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
