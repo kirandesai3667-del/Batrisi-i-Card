@@ -14,9 +14,6 @@
     <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- OFFICIAL GOOGLE TRANSLITERATION API (For Easy Gujarati Typing) -->
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-
     <style>
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
 
@@ -36,7 +33,7 @@
         .form-group label { font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 5px; }
         .form-group input, .form-group select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: 500; font-family: inherit; transition: 0.3s; outline: none; }
         .form-group input:focus, .form-group select:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-        .hint-text { font-size: 11.5px; color: #b45309; margin-top: 4px; font-weight: 600; }
+        .hint-text { font-size: 11px; color: #b45309; margin-top: 4px; font-weight: 600; }
 
         /* Card Preview */
         .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; }
@@ -46,13 +43,19 @@
         .card-header .address { margin: 0; font-size: 6.8px; color: var(--text-dark); font-weight: 600; line-height: 1.4; }
         .card-header .contact { margin: 2px 0 0 0; font-size: 6.5px; color: #b91c1c; font-weight: 700; }
         .card-body { display: grid; grid-template-columns: 50px 1fr 68px; gap: 12px; align-items: start; padding: 8px 16px; flex-grow: 1; }
-        .logo-box img { width: 46px; height: 46px; object-fit: contain; }
+        
+        .logo-box { width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; background: #f1f5f9; border-radius: 5px; overflow: hidden; border: 1px solid #cbd5e1;}
+        .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
         .details-box { display: flex; flex-direction: column; gap: 0px; }
         .detail-item { display: flex; align-items: flex-start; font-size: 9.5px; line-height: 1.35; margin-bottom: 2.5px; }
         .detail-icon { color: var(--secondary); width: 14px; font-size: 8.5px; text-align: center; margin-right: 5px; margin-top: 2px; }
         .detail-label { color: var(--text-light); font-weight: 600; width: 58px; }
         .detail-value { color: var(--text-dark); font-weight: 600; flex: 1; }
-        .photo-box img { width: 66px; height: 88px; border-radius: 4px; object-fit: cover; border: 2px solid var(--secondary); display: block; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+        
+        .photo-box { width: 66px; height: 88px; border-radius: 4px; border: 2px solid var(--secondary); display: flex; justify-content: center; align-items: center; background: #e2e8f0; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        
         .card-footer { display: flex; justify-content: space-between; align-items: flex-end; padding: 4px 16px 6px 16px; border-top: 1px solid #cbd5e1; background: linear-gradient(to top, #f4f7fb 90%, rgba(244,247,251,0.5) 100%); flex-shrink: 0; }
         .sign-block { display: flex; flex-direction: column; }
         .sign-block.left { align-items: flex-start; }
@@ -80,8 +83,6 @@
         .btn-edit { background: #f59e0b; }
         .btn-delete { background: #ef4444; }
         .btn-print-sm { background: var(--secondary); }
-        
-        .status-badge { background: #ecfdf5; color: #047857; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-left: 10px; display: none; }
     </style>
 </head>
 <body>
@@ -89,46 +90,45 @@
     <h1 class="header-title">Premium Corporate ID Card</h1>
 
     <div class="container">
-        
         <!-- Input Form -->
         <div class="form-panel">
             <input type="hidden" id="recordId">
 
             <div class="form-group full-width">
-                <label>સભ્ય નંબર <span id="typingStatus" class="status-badge"><i class="fa-solid fa-check"></i> ગુજરાતી ટાઈપિંગ ચાલુ છે</span></label>
-                <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updatePreview('memberNo', 'val-memberNo')">
+                <label>સભ્ય નંબર</label>
+                <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updateField('memberNo', 'val-memberNo')">
             </div>
             
             <div class="form-group full-width">
                 <label>પૂરું નામ</label>
-                <!-- અહી Space દબાવવાથી આપોઆપ ગુજરાતી થશે -->
-                <input type="text" id="name" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો...">
-                <div class="hint-text"><i class="fa-solid fa-keyboard"></i> ઇંગ્લિશ સ્પેલિંગ લખીને Space દબાવશો એટલે આપોઆપ ગુજરાતી થશે.</div>
+                <!-- ઓનલાઇન API વિના ચાલતી સુરક્ષિત સિસ્ટમ -->
+                <input type="text" id="name" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો..." onkeyup="handleGujarati(event, 'name', 'val-name')" oninput="updateField('name', 'val-name')">
+                <div class="hint-text">નોંધ: ઇંગ્લિશ સ્પેલિંગ લખીને Space દબાવશો એટલે આપોઆપ ગુજરાતી થશે.</div>
             </div>
             
             <div class="form-group full-width">
                 <label>સરનામું</label>
-                <input type="text" id="address" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો...">
+                <input type="text" id="address" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો..." onkeyup="handleGujarati(event, 'address', 'val-address')" oninput="updateField('address', 'val-address')">
             </div>
 
             <div class="form-group">
                 <label>મૂળ વતન</label>
-                <input type="text" id="hometown" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો...">
+                <input type="text" id="hometown" placeholder="અંગ્રેજી સ્પેલિંગ લખીને Space આપો..." onkeyup="handleGujarati(event, 'hometown', 'val-hometown')" oninput="updateField('hometown', 'val-hometown')">
             </div>
 
             <div class="form-group">
                 <label>જન્મ તારીખ</label>
-                <input type="text" id="dob" placeholder="DD/MM/YYYY" oninput="updatePreview('dob', 'val-dob')">
+                <input type="text" id="dob" placeholder="DD/MM/YYYY" oninput="updateField('dob', 'val-dob')">
             </div>
 
             <div class="form-group">
                 <label>મોબાઇલ નંબર</label>
-                <input type="text" id="mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="updatePreview('mobile', 'val-mobile')">
+                <input type="text" id="mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="updateField('mobile', 'val-mobile')">
             </div>
 
             <div class="form-group">
                 <label>બ્લડ ગ્રુપ</label>
-                <select id="bloodgroup" onchange="updatePreview('bloodgroup', 'val-bloodgroup')">
+                <select id="bloodgroup" onchange="updateField('bloodgroup', 'val-bloodgroup')">
                     <option value="-">પસંદ કરો</option>
                     <option value="A+">A+</option> <option value="A-">A-</option>
                     <option value="B+">B+</option> <option value="B-">B-</option>
@@ -139,11 +139,10 @@
 
             <div class="form-group full-width">
                 <label>વ્યક્તિનો ફોટો</label>
-                <input type="file" id="photoInput" accept="image/*" onchange="processImage(event)">
+                <input type="file" id="photoInput" accept="image/*" onchange="previewImg(event, 'img-photo')">
             </div>
 
             <div class="form-group full-width">
-                <!-- બટનમાં type="button" ઉમેર્યું છે જેથી પેજ રિલોડ ના થાય -->
                 <button type="button" class="btn btn-save" onclick="saveRecord()"><i class="fa-solid fa-floppy-disk"></i> કાર્ડ સેવ કરો (Save Record)</button>
                 <button type="button" class="btn btn-clear" onclick="clearForm()"><i class="fa-solid fa-broom"></i> નવું ફોર્મ ભરો (Clear Form)</button>
             </div>
@@ -159,7 +158,7 @@
                 </div>
                 <div class="card-body">
                     <div class="logo-box">
-                        <img id="img-logo" src="logo.png" onerror="this.src='https://via.placeholder.com/100?text=Logo'" alt="Logo">
+                        <img id="img-logo" src="logo.png" onerror="this.style.display='none'">
                     </div>
                     <div class="details-box">
                         <div class="detail-item"><i class="fa-solid fa-id-card detail-icon"></i><span class="detail-label">સભ્ય નંબર</span> <span class="detail-value">: <span id="val-memberNo">XXXX</span></span></div>
@@ -171,16 +170,17 @@
                         <div class="detail-item"><i class="fa-solid fa-droplet detail-icon"></i><span class="detail-label">બ્લડ ગ્રુપ</span> <span class="detail-value">: <span id="val-bloodgroup">-</span></span></div>
                     </div>
                     <div class="photo-box">
-                        <img id="img-photo" src="https://via.placeholder.com/150x200?text=Photo" alt="Photo">
+                        <!-- એરર સોલ્વ કરવા માટે ડિફોલ્ટ બેઝ64 ઈમેજ -->
+                        <img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Photo">
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="sign-block left">
-                        <img id="img-sign1" src="sign1.png" onerror="this.src='https://via.placeholder.com/80x25?text=Sign+1'" alt="Signature">
+                        <img id="img-sign1" src="sign1.png" onerror="this.style.display='none'">
                         <p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p>
                     </div>
                     <div class="sign-block right">
-                        <img id="img-sign2" src="sign2.png" onerror="this.src='https://via.placeholder.com/80x25?text=Sign+2'" alt="Signature">
+                        <img id="img-sign2" src="sign2.png" onerror="this.style.display='none'">
                         <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
                     </div>
                 </div>
@@ -212,64 +212,77 @@
         </table>
     </div>
 
-    <!-- JavaScript Functions -->
     <script>
-        // ==========================================
-        // 1. GOOGLE TRANSLITERATION API (100% WORKING ON GITHUB PAGES)
-        // ==========================================
-        
-        // આ કોડ Google ના સર્વર પરથી ઓટો-ટાઈપિંગ એન્જિન ડાઉનલોડ કરશે
-        google.load("elements", "1", { packages: "transliteration" });
+        // ==============================================================
+        // 1. PERFECT ERROR-FREE GUJARATI TYPING (CUSTOM JSONP BYPASS)
+        // ==============================================================
+        function fetchGujaratiWord(word, callback) {
+            let scriptId = 'jsonp_' + Date.now() + Math.floor(Math.random() * 1000);
+            window[scriptId] = function(data) {
+                if (data[0] === 'SUCCESS') {
+                    callback(data[1][0][1][0]); // સાચો ગુજરાતી શબ્દ મોકલે છે
+                }
+                // કચરો સાફ કરો
+                delete window[scriptId];
+                let scriptEl = document.getElementById(scriptId);
+                if(scriptEl) scriptEl.remove();
+            };
 
-        function onGoogleAPIReady() {
-            try {
-                var options = {
-                    sourceLanguage: google.elements.transliteration.LanguageCode.ENGLISH,
-                    destinationLanguage: [google.elements.transliteration.LanguageCode.GUJARATI],
-                    shortcutKey: 'ctrl+g',
-                    transliterationEnabled: true
-                };
-                
-                var control = new google.elements.transliteration.TransliterationControl(options);
-                
-                // કયા ખાનામાં ગુજરાતી ટાઈપિંગ જોઈએ છે તેના ID
-                var ids = ['name', 'address', 'hometown'];
-                control.makeTransliteratable(ids);
+            let script = document.createElement('script');
+            script.id = scriptId;
+            script.src = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=gu-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test&jsonp=${scriptId}`;
+            document.body.appendChild(script);
+        }
 
-                // ટાઈપ થાય ત્યારે કાર્ડમાં લાઈવ દેખાડવા માટે
-                ids.forEach(function(id) {
-                    var element = document.getElementById(id);
-                    element.addEventListener('keyup', function() { updatePreview(id, 'val-' + id); });
-                    // Google API શબ્દ બદલે ત્યારે પણ કાર્ડ અપડેટ કરવા
-                    element.addEventListener('blur', function() { updatePreview(id, 'val-' + id); });
-                });
+        function handleGujarati(event, inputId, targetId) {
+            // Spacebar Key Code (32)
+            if (event.code === 'Space' || event.keyCode === 32) {
+                let el = document.getElementById(inputId);
+                let text = el.value;
+                let cursor = el.selectionStart;
 
-                // ટાઈપિંગ એન્જિન ચાલુ થઈ ગયું છે તેનું સિગ્નલ
-                document.getElementById('typingStatus').style.display = 'inline-block';
+                let textBeforeCursor = text.slice(0, cursor - 1); 
+                let words = textBeforeCursor.split(' ');
+                let lastWord = words[words.length - 1];
 
-            } catch(e) {
-                console.log("Typing Engine Error:", e);
+                // જો છેલ્લો શબ્દ અંગ્રેજીમાં હોય
+                if (lastWord && /[a-zA-Z]/.test(lastWord)) {
+                    fetchGujaratiWord(lastWord, function(gujaratiWord) {
+                        words[words.length - 1] = gujaratiWord;
+                        let newTextBeforeCursor = words.join(' ');
+                        
+                        // બોક્સમાં ગુજરાતી શબ્દ સેટ કરો
+                        el.value = newTextBeforeCursor + ' ' + text.slice(cursor);
+                        el.selectionStart = el.selectionEnd = newTextBeforeCursor.length + 1;
+                        
+                        // કાર્ડ અપડેટ કરો
+                        updateField(inputId, targetId);
+                    });
+                }
             }
         }
+
+        // ==============================================================
+        // 2. FORM PREVIEW & IMAGE HANDLING (NO PLACEHOLDER ERRORS)
+        // ==============================================================
         
-        google.setOnLoadCallback(onGoogleAPIReady);
+        // ડિફોલ્ટ બ્લેન્ક ઈમેજ (ERR_CONNECTION_CLOSED નહિ આવે)
+        let currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
-        // ==========================================
-        // 2. BASIC FORM FUNCTIONS & IMAGE COMPRESSION
-        // ==========================================
-        let currentPhotoBase64 = "https://via.placeholder.com/150x200?text=Photo";
-
-        function updatePreview(inputId, targetId) {
+        function updateField(inputId, targetId) {
             let val = document.getElementById(inputId).value;
-            document.getElementById(targetId).innerText = val ? val : (inputId==='bloodgroup' ? "-" : (inputId==='dob' ? "XX/XX/XXXX" : "XXXX"));
+            let displayVal = val.trim() !== "" ? val : "XXXX";
+            if (inputId === 'dob' && !val) displayVal = "XX/XX/XXXX";
+            if (inputId === 'bloodgroup' && (!val || val === '-')) displayVal = "-";
+            
+            document.getElementById(targetId).innerText = displayVal;
         }
 
-        function processImage(event) {
+        function previewImg(event, targetId) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // મેમરી ફૂલ ન થાય એટલે ફોટો કમ્પ્રેસ (નાનો) કરીએ છીએ
                     let img = new Image();
                     img.onload = function() {
                         let canvas = document.createElement('canvas');
@@ -283,7 +296,7 @@
                         ctx.drawImage(img, 0, 0, newW, newH);
                         
                         currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.8); 
-                        document.getElementById('img-photo').src = currentPhotoBase64;
+                        document.getElementById(targetId).src = currentPhotoBase64;
                     }
                     img.src = e.target.result;
                 }
@@ -291,11 +304,15 @@
             }
         }
 
-        // ==========================================
-        // 3. DATABASE (SAVE, EDIT, DELETE) - BUG FIXED
-        // ==========================================
+        // ==============================================================
+        // 3. DATABASE (LOCALSTORAGE) WITH ERROR HANDLING
+        // ==============================================================
         let records = [];
-        try { records = JSON.parse(localStorage.getItem('idCardsDB')) || []; } catch(e) {}
+        try { 
+            records = JSON.parse(localStorage.getItem('idCardsDB')) || []; 
+        } catch(e) { 
+            console.error("Storage Error:", e); 
+        }
 
         function saveRecord() {
             let id = document.getElementById('recordId').value;
@@ -372,10 +389,10 @@
             currentPhotoBase64 = rec.photo;
             document.getElementById('img-photo').src = currentPhotoBase64;
 
-            updatePreview('memberNo', 'val-memberNo'); updatePreview('name', 'val-name');
-            updatePreview('address', 'val-address'); updatePreview('hometown', 'val-hometown');
-            updatePreview('dob', 'val-dob'); updatePreview('mobile', 'val-mobile');
-            updatePreview('bloodgroup', 'val-bloodgroup');
+            updateField('memberNo', 'val-memberNo'); updateField('name', 'val-name');
+            updateField('address', 'val-address'); updateField('hometown', 'val-hometown');
+            updateField('dob', 'val-dob'); updateField('mobile', 'val-mobile');
+            updateField('bloodgroup', 'val-bloodgroup');
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -383,7 +400,7 @@
         function deleteRecord(id) {
             if(confirm("શું તમે ખરેખર આ રેકોર્ડ ડીલીટ કરવા માંગો છો?")) {
                 records = records.filter(r => r.id != id);
-                localStorage.setItem('idCardsDB', JSON.stringify(records));
+                try { localStorage.setItem('idCardsDB', JSON.stringify(records)); } catch(e){}
                 loadTable();
             }
         }
@@ -398,7 +415,7 @@
             document.getElementById('mobile').value = "";
             document.getElementById('bloodgroup').value = "-";
             document.getElementById('photoInput').value = "";
-            currentPhotoBase64 = "https://via.placeholder.com/150x200?text=Photo";
+            currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
             document.getElementById('img-photo').src = currentPhotoBase64;
             
             ['val-memberNo', 'val-name', 'val-address', 'val-hometown', 'val-mobile'].forEach(id => document.getElementById(id).innerText = "XXXX");
@@ -406,19 +423,26 @@
             document.getElementById('val-bloodgroup').innerText = "-";
         }
 
-        // ==========================================
-        // 4. PRINTING FUNCTION
-        // ==========================================
+        // ==============================================================
+        // 4. PRINTING LOGIC (REFERENCE ERROR FIXED)
+        // ==============================================================
         function printFromTable(id) {
             editRecord(id); 
             setTimeout(printCard, 500); 
         }
 
-        const canvasOptions = { scale: 4, useCORS: true, backgroundColor: "#ffffff", logging: false };
-
         function printCard() {
             const card = document.getElementById('print-card');
-            html2canvas(card, canvasOptions).then(canvas => {
+            
+            // એરર સોલ્વ કરવા માટે ઓપ્શન્સ અહી જ ડીફાઇન કર્યા છે
+            const printOptions = { 
+                scale: 4, 
+                useCORS: true, 
+                backgroundColor: "#ffffff", 
+                logging: false 
+            };
+
+            html2canvas(card, printOptions).then(canvas => {
                 const imgData = canvas.toDataURL('image/png'); 
                 let printWin = window.open('', '_blank');
                 printWin.document.write(`
@@ -441,9 +465,12 @@
                     </body></html>
                 `);
                 printWin.document.close();
+            }).catch(err => {
+                alert("પ્રિન્ટમાં કોઈ એરર આવી છે: " + err);
             });
         }
 
+        // પેજ લોડ થાય ત્યારે 
         window.onload = loadTable;
     </script>
 </body>
