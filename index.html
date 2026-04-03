@@ -14,6 +14,10 @@
     <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- Firebase SDK (Compat Version for simple HTML integration) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
     <style>
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
 
@@ -23,8 +27,22 @@
         }
 
         body { font-family: 'Poppins', 'Noto Sans Gujarati', sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px; color: var(--text-dark); }
-        .header-title { text-align: center; color: var(--primary); font-weight: 800; margin-bottom: 30px; font-size: 28px; }
+        .header-title { text-align: center; color: var(--primary); font-weight: 800; margin: 0; font-size: 28px; }
+        
+        .top-bar { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 30px auto; flex-wrap: wrap; gap: 15px;}
         .container { display: flex; flex-wrap: wrap; gap: 40px; max-width: 1200px; margin: 0 auto; justify-content: center; }
+
+        /* Login Screen Styles */
+        .login-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); width: 100%; max-width: 380px; text-align: center; }
+        .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 5px; font-family: 'Mogra', cursive; font-size: 24px;}
+        .login-box p { color: var(--text-light); font-size: 14px; margin-bottom: 25px; font-weight: 600; }
+        .login-box .form-group { text-align: left; margin-bottom: 15px; }
+        .login-error { color: white; background: #ef4444; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none; }
+        
+        /* Logout Button */
+        .btn-logout { background: #ef4444; padding: 8px 16px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 14px; transition: 0.3s;}
+        .btn-logout:hover { background: #dc2626; transform: translateY(-2px); }
 
         /* Form Styling */
         .form-panel { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); flex: 1; min-width: 320px; max-width: 500px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start; }
@@ -100,146 +118,223 @@
 </head>
 <body>
 
-    <h1 class="header-title">Premium Corporate ID Card</h1>
-
-    <div class="container">
-        <!-- Input Form -->
-        <div class="form-panel">
-            <input type="hidden" id="recordId">
-
-            <div class="transl-toggle-bar">
-                <input type="checkbox" id="enableTransliteration" checked>
-                <label for="enableTransliteration">
-                    <i class="fa-solid fa-language"></i> ગુજરાતી ટાઈપિંગ (English માં લખી Space દબાવો)
-                </label>
-            </div>
-
-            <div class="form-group full-width">
-                <label>સભ્ય નંબર</label>
-                <input type="text" id="memberNo" placeholder="દા.ત. ૧૦૦૧" oninput="updateField('memberNo', 'val-memberNo')">
-            </div>
+    <!-- 1. SECURE LOGIN SCREEN -->
+    <div id="login-wrapper" class="login-wrapper">
+        <div class="login-box">
+            <h2><i class="fa-solid fa-shield-halved"></i> Security Login</h2>
+            <p>શ્રી બત્રીસી જૈન આઈડી કાર્ડ સિસ્ટમ</p>
+            
+            <div id="login-error" class="login-error">ખોટું ID અથવા Password!</div>
             
             <div class="form-group full-width">
-                <label>પૂરું નામ</label>
-                <input type="text" id="name" placeholder="વ્યક્તિનું નામ" oninput="updateField('name', 'val-name')">
-                <div class="hint-text"><i class="fa-solid fa-circle-info"></i> નોંધ: કોઈપણ ખાનામાં English માં લખી Space દબાવશો એટલે આપમેળે ગુજરાતીમાં (આંકડા સહિત) ફેરવાઈ જશે.</div>
+                <label>User ID</label>
+                <input type="text" id="loginId" placeholder="Enter User ID">
+            </div>
+            <div class="form-group full-width">
+                <label>Password</label>
+                <input type="password" id="loginPwd" placeholder="Enter Password" onkeypress="handleEnter(event)">
             </div>
             
-            <div class="form-group full-width">
-                <label>સરનામું</label>
-                <input type="text" id="address" placeholder="રહેઠાણનું સરનામું (પીનકોડ સાથે)" oninput="updateField('address', 'val-address')">
-            </div>
-
-            <div class="form-group">
-                <label>મૂળ વતન</label>
-                <input type="text" id="hometown" placeholder="વતનનું નામ" oninput="updateField('hometown', 'val-hometown')">
-            </div>
-
-            <div class="form-group">
-                <label>જન્મ તારીખ</label>
-                <input type="text" id="dob" placeholder="DD/MM/YYYY" oninput="updateField('dob', 'val-dob')">
-            </div>
-
-            <div class="form-group">
-                <label>મોબાઇલ નંબર</label>
-                <input type="text" id="mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="updateField('mobile', 'val-mobile')">
-            </div>
-
-            <div class="form-group">
-                <label>બ્લડ ગ્રુપ</label>
-                <select id="bloodgroup" onchange="updateField('bloodgroup', 'val-bloodgroup')">
-                    <option value="-">પસંદ કરો</option>
-                    <option value="A+">A+</option> <option value="A-">A-</option>
-                    <option value="B+">B+</option> <option value="B-">B-</option>
-                    <option value="O+">O+</option> <option value="O-">O-</option>
-                    <option value="AB+">AB+</option> <option value="AB-">AB-</option>
-                </select>
-            </div>
-
-            <div class="form-group full-width">
-                <label>વ્યક્તિનો ફોટો</label>
-                <input type="file" id="photoInput" accept="image/*" onchange="previewImg(event, 'img-photo')">
-            </div>
-
-            <div class="form-group full-width">
-                <button type="button" class="btn btn-save" onclick="saveRecord()"><i class="fa-solid fa-floppy-disk"></i> કાર્ડ સેવ કરો (Save Record)</button>
-                <button type="button" class="btn btn-clear" onclick="clearForm()"><i class="fa-solid fa-broom"></i> નવું ફોર્મ ભરો (Clear Form)</button>
-            </div>
-        </div>
-
-        <!-- Live Preview -->
-        <div class="preview-panel">
-            <div class="id-card" id="print-card">
-                <div class="card-header">
-                    <h2>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
-                    <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
-                    <p class="contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
-                </div>
-                <div class="card-body">
-                    <div class="logo-box">
-                        <img id="img-logo" src="logo.png" onerror="this.style.display='none'">
-                    </div>
-                    <div class="details-box">
-                        <div class="detail-item"><i class="fa-solid fa-id-card detail-icon"></i><span class="detail-label">સભ્ય નંબર</span> <span class="detail-value">: <span id="val-memberNo">XXXX</span></span></div>
-                        <div class="detail-item"><i class="fa-solid fa-user detail-icon"></i><span class="detail-label">નામ</span> <span class="detail-value">: <span id="val-name">XXXX XXXX</span></span></div>
-                        <div class="detail-item"><i class="fa-solid fa-location-dot detail-icon"></i><span class="detail-label">સરનામું</span> <span class="detail-value">: <span id="val-address">XXXX XXXX XXXX</span></span></div>
-                        <div class="detail-item"><i class="fa-solid fa-house detail-icon"></i><span class="detail-label">મૂળ વતન</span> <span class="detail-value">: <span id="val-hometown">XXXX</span></span></div>
-                        <div class="detail-item"><i class="fa-solid fa-calendar-days detail-icon"></i><span class="detail-label">જન્મ તારીખ</span> <span class="detail-value">: <span id="val-dob">XX/XX/XXXX</span></span></div>
-                        <div class="detail-item"><i class="fa-solid fa-phone detail-icon"></i><span class="detail-label">મોબાઇલ</span> <span class="detail-value">: <span id="val-mobile">+91 XXXXX XXXXX</span></span></div>
-                        <div class="detail-item"><i class="fa-solid fa-droplet detail-icon"></i><span class="detail-label">બ્લડ ગ્રુપ</span> <span class="detail-value">: <span id="val-bloodgroup">-</span></span></div>
-                    </div>
-                    <div class="photo-box">
-                        <img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Photo">
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="sign-block left">
-                        <img id="img-sign1" src="sign1.png" onerror="this.style.display='none'">
-                        <p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p>
-                    </div>
-                    <div class="sign-block right">
-                        <img id="img-sign2" src="sign2.png" onerror="this.style.display='none'">
-                        <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="btn-group">
-                <button type="button" class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> Direct Print</button>
-            </div>
-            <span style="font-size: 13px; font-weight: 500; color: #475569; margin-top: 5px;">* Exact Print Size: 85.6mm × 54mm</span>
+            <button class="btn btn-save" onclick="performLogin()" style="margin-top: 20px; width: 100%;">
+                <i class="fa-solid fa-right-to-bracket"></i> Login System
+            </button>
         </div>
     </div>
 
-    <!-- Saved Records Database Table -->
-    <div class="table-container">
-        <div class="table-header-row">
-            <h2 class="table-title"><i class="fa-solid fa-database"></i> સેવ કરેલા સભ્યોની યાદી</h2>
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" placeholder="નામ અથવા મોબાઈલ નંબરથી સર્ચ કરો..." onkeyup="searchRecords()">
+    <!-- 2. MAIN APPLICATION (Hidden by default) -->
+    <div id="app-wrapper" style="display: none;">
+        
+        <div class="top-bar">
+            <h1 class="header-title">Premium Corporate ID Card</h1>
+            <button class="btn-logout" onclick="logoutApp()"><i class="fa-solid fa-power-off"></i> Logout</button>
+        </div>
+
+        <div class="container">
+            <!-- Input Form -->
+            <div class="form-panel">
+                <input type="hidden" id="recordId"> <!-- અહી હવે Firebase ની ID આવશે -->
+
+                <div class="transl-toggle-bar">
+                    <input type="checkbox" id="enableTransliteration" checked>
+                    <label for="enableTransliteration">
+                        <i class="fa-solid fa-language"></i> ગુજરાતી ટાઈપિંગ (English માં લખી Space દબાવો)
+                    </label>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>સભ્ય નંબર</label>
+                    <input type="text" id="memberNo" placeholder="દા.ત. ૧૦૦૧" oninput="updateField('memberNo', 'val-memberNo')">
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>પૂરું નામ</label>
+                    <input type="text" id="name" placeholder="વ્યક્તિનું નામ" oninput="updateField('name', 'val-name')">
+                    <div class="hint-text"><i class="fa-solid fa-circle-info"></i> નોંધ: કોઈપણ ખાનામાં English માં લખી Space દબાવશો એટલે આપમેળે ગુજરાતીમાં (આંકડા સહિત) ફેરવાઈ જશે.</div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>સરનામું</label>
+                    <input type="text" id="address" placeholder="રહેઠાણનું સરનામું (પીનકોડ સાથે)" oninput="updateField('address', 'val-address')">
+                </div>
+
+                <div class="form-group">
+                    <label>મૂળ વતન</label>
+                    <input type="text" id="hometown" placeholder="વતનનું નામ" oninput="updateField('hometown', 'val-hometown')">
+                </div>
+
+                <div class="form-group">
+                    <label>જન્મ તારીખ</label>
+                    <input type="text" id="dob" placeholder="DD/MM/YYYY" oninput="updateField('dob', 'val-dob')">
+                </div>
+
+                <div class="form-group">
+                    <label>મોબાઇલ નંબર</label>
+                    <input type="text" id="mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="updateField('mobile', 'val-mobile')">
+                </div>
+
+                <div class="form-group">
+                    <label>બ્લડ ગ્રુપ</label>
+                    <select id="bloodgroup" onchange="updateField('bloodgroup', 'val-bloodgroup')">
+                        <option value="-">પસંદ કરો</option>
+                        <option value="A+">A+</option> <option value="A-">A-</option>
+                        <option value="B+">B+</option> <option value="B-">B-</option>
+                        <option value="O+">O+</option> <option value="O-">O-</option>
+                        <option value="AB+">AB+</option> <option value="AB-">AB-</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>વ્યક્તિનો ફોટો</label>
+                    <input type="file" id="photoInput" accept="image/*" onchange="previewImg(event, 'img-photo')">
+                </div>
+
+                <div class="form-group full-width">
+                    <button id="saveBtn" type="button" class="btn btn-save" onclick="saveRecord()"><i class="fa-solid fa-floppy-disk"></i> કાર્ડ સેવ કરો (Save Record)</button>
+                    <button type="button" class="btn btn-clear" onclick="clearForm()"><i class="fa-solid fa-broom"></i> નવું ફોર્મ ભરો (Clear Form)</button>
+                </div>
+            </div>
+
+            <!-- Live Preview -->
+            <div class="preview-panel">
+                <div class="id-card" id="print-card">
+                    <div class="card-header">
+                        <h2>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
+                        <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
+                        <p class="contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="logo-box">
+                            <img id="img-logo" src="logo.png" onerror="this.style.display='none'">
+                        </div>
+                        <div class="details-box">
+                            <div class="detail-item"><i class="fa-solid fa-id-card detail-icon"></i><span class="detail-label">સભ્ય નંબર</span> <span class="detail-value">: <span id="val-memberNo">XXXX</span></span></div>
+                            <div class="detail-item"><i class="fa-solid fa-user detail-icon"></i><span class="detail-label">નામ</span> <span class="detail-value">: <span id="val-name">XXXX XXXX</span></span></div>
+                            <div class="detail-item"><i class="fa-solid fa-location-dot detail-icon"></i><span class="detail-label">સરનામું</span> <span class="detail-value">: <span id="val-address">XXXX XXXX XXXX</span></span></div>
+                            <div class="detail-item"><i class="fa-solid fa-house detail-icon"></i><span class="detail-label">મૂળ વતન</span> <span class="detail-value">: <span id="val-hometown">XXXX</span></span></div>
+                            <div class="detail-item"><i class="fa-solid fa-calendar-days detail-icon"></i><span class="detail-label">જન્મ તારીખ</span> <span class="detail-value">: <span id="val-dob">XX/XX/XXXX</span></span></div>
+                            <div class="detail-item"><i class="fa-solid fa-phone detail-icon"></i><span class="detail-label">મોબાઇલ</span> <span class="detail-value">: <span id="val-mobile">+91 XXXXX XXXXX</span></span></div>
+                            <div class="detail-item"><i class="fa-solid fa-droplet detail-icon"></i><span class="detail-label">બ્લડ ગ્રુપ</span> <span class="detail-value">: <span id="val-bloodgroup">-</span></span></div>
+                        </div>
+                        <div class="photo-box">
+                            <img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Photo">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="sign-block left">
+                            <img id="img-sign1" src="sign1.png" onerror="this.style.display='none'">
+                            <p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p>
+                        </div>
+                        <div class="sign-block right">
+                            <img id="img-sign2" src="sign2.png" onerror="this.style.display='none'">
+                            <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> Direct Print</button>
+                </div>
+                <span style="font-size: 13px; font-weight: 500; color: #475569; margin-top: 5px;">* Exact Print Size: 85.6mm × 54mm</span>
             </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>સભ્ય નં.</th>
-                    <th>પૂરું નામ</th>
-                    <th>મોબાઇલ નંબર</th>
-                    <th>બ્લડ ગ્રુપ</th>
-                    <th>એક્શન (Actions)</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <!-- Records will load here -->
-            </tbody>
-        </table>
+        <!-- Saved Records Database Table -->
+        <div class="table-container">
+            <div class="table-header-row">
+                <h2 class="table-title"><i class="fa-solid fa-database"></i> સેવ કરેલા સભ્યોની યાદી</h2>
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="નામ અથવા મોબાઈલ નંબરથી સર્ચ કરો..." onkeyup="searchRecords()">
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>સભ્ય નં.</th>
+                        <th>પૂરું નામ</th>
+                        <th>મોબાઇલ નંબર</th>
+                        <th>બ્લડ ગ્રુપ</th>
+                        <th>એક્શન (Actions)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Records will load here from Firebase -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
         // ==============================================================
-        // 1. FORM PREVIEW & IMAGE HANDLING
+        // 0. FIREBASE SETUP & CONFIGURATION
+        // ==============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbZ4T8264CDQ5LSoH_4L0luB5VKQbiqkU",
+            authDomain: "batrisi-latest-app.firebaseapp.com",
+            projectId: "batrisi-latest-app",
+            storageBucket: "batrisi-latest-app.firebasestorage.app",
+            messagingSenderId: "175592360155",
+            appId: "1:175592360155:web:ba95f9aba4558fda9d64fe",
+            measurementId: "G-5N91PLG8LB"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ==============================================================
+        // 1. LOGIN & SECURITY SYSTEM
+        // ==============================================================
+        function performLogin() {
+            const userId = document.getElementById('loginId').value.trim();
+            const userPwd = document.getElementById('loginPwd').value;
+            const errorMsg = document.getElementById('login-error');
+
+            if (userId === "Batrisi" && userPwd === "Bat@3232") {
+                sessionStorage.setItem('isSecuredLoggedIn', 'true');
+                document.getElementById('login-wrapper').style.display = 'none';
+                document.getElementById('app-wrapper').style.display = 'block';
+                errorMsg.style.display = 'none';
+                
+                // Load System Data from Firebase
+                initializeSystem();
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') performLogin();
+        }
+
+        function logoutApp() {
+            sessionStorage.removeItem('isSecuredLoggedIn');
+            window.location.reload(); 
+        }
+
+        // ==============================================================
+        // 2. FORM PREVIEW & IMAGE HANDLING
         // ==============================================================
         let currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
@@ -279,10 +374,8 @@
         }
 
         // ==============================================================
-        // 2. GOOGLE TRANSLITERATION & GUJARATI DIGITS
+        // 3. GOOGLE TRANSLITERATION & GUJARATI DIGITS
         // ==============================================================
-        
-        // અંગ્રેજી આંકડા ને ગુજરાતીમાં બદલવા માટેનું મેપિંગ
         const engToGujDigits = {
             '0': '૦', '1': '૧', '2': '૨', '3': '૩', '4': '૪',
             '5': '૫', '6': '૬', '7': '૭', '8': '૮', '9': '૯'
@@ -290,22 +383,15 @@
 
         async function transliterateWord(word) {
             if (!/[a-zA-Z]/.test(word)) return word; 
-            
             try {
                 const url = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=gu-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=id_card_app`;
                 let response = await fetch(url);
                 let data = await response.json();
-                
-                if (data[0] === 'SUCCESS') {
-                    return data[1][0][1][0];
-                }
-            } catch (error) {
-                console.error("Transliteration Error:", error);
-            }
+                if (data[0] === 'SUCCESS') return data[1][0][1][0];
+            } catch (error) { console.error("Transliteration Error:", error); }
             return word;
         }
 
-        // અક્ષરો માટે (સ્પેસ દબાવ્યા પછી)
         async function handleTransliteration(elementId, event) {
             const isEnabled = document.getElementById('enableTransliteration').checked;
             if (!isEnabled) return; 
@@ -316,34 +402,27 @@
                 const text = el.value;
                 
                 let startPos = cursorPosition - 2; 
-                while (startPos >= 0 && text[startPos] !== ' ' && text[startPos] !== '\n') {
-                    startPos--;
-                }
+                while (startPos >= 0 && text[startPos] !== ' ' && text[startPos] !== '\n') startPos--;
                 startPos++; 
                 
                 const wordToConvert = text.substring(startPos, cursorPosition - 1);
                 
                 if (/[a-zA-Z]/.test(wordToConvert)) {
                     const gujaratiWord = await transliterateWord(wordToConvert);
-                    
                     if (gujaratiWord !== wordToConvert) {
                         const currentText = el.value;
                         const currentCursor = el.selectionStart;
-                        
                         const newText = currentText.substring(0, startPos) + gujaratiWord + currentText.substring(startPos + wordToConvert.length);
                         el.value = newText;
                         
                         const diffLength = gujaratiWord.length - wordToConvert.length;
-                        if (currentCursor > startPos) {
-                            el.selectionStart = el.selectionEnd = currentCursor + diffLength;
-                        }
+                        if (currentCursor > startPos) el.selectionStart = el.selectionEnd = currentCursor + diffLength;
                         updateField(elementId, 'val-' + elementId);
                     }
                 }
             }
         }
 
-        // આંકડાઓ માટે (ટાઈપ કરતાની સાથે જ 1515 -> ૧૫૧૫)
         function handleNumberConversion(elementId) {
             const isEnabled = document.getElementById('enableTransliteration').checked;
             if (!isEnabled) return;
@@ -352,12 +431,9 @@
             const originalText = el.value;
             const cursorPosition = el.selectionStart;
 
-            // જો લખાણમાં કોઈ પણ અંગ્રેજી આંકડો હોય તો તેને બદલો
             if (/[0-9]/.test(originalText)) {
                 const newText = originalText.replace(/[0-9]/g, match => engToGujDigits[match]);
                 el.value = newText;
-                
-                // ટાઈપીંગ કરતી વખતે કર્સર ત્યાંનું ત્યાં જ રહે તે માટે
                 el.selectionStart = el.selectionEnd = cursorPosition;
                 updateField(elementId, 'val-' + elementId);
             }
@@ -366,26 +442,19 @@
         function setupTransliteration(elementId) {
             const el = document.getElementById(elementId);
             if (el) {
-                // નામ/વતન ના અક્ષરો માટે (Space દબાવતા)
                 el.addEventListener('keyup', (e) => handleTransliteration(elementId, e));
-                
-                // આંકડાઓ/પીનકોડ માટે (સીધું ટાઈપ કરતા)
                 el.addEventListener('input', () => handleNumberConversion(elementId));
             }
         }
 
         // ==============================================================
-        // 3. DATABASE (LOCALSTORAGE) WITH SEARCH FUNCTION
+        // 4. FIREBASE CLOUD DATABASE OPERATIONS
         // ==============================================================
         let records = [];
-        try { 
-            records = JSON.parse(localStorage.getItem('idCardsDB')) || []; 
-        } catch(e) { 
-            console.error("Storage Error:", e); 
-        }
 
+        // Save or Update Record to Firestore
         function saveRecord() {
-            let id = document.getElementById('recordId').value;
+            let docId = document.getElementById('recordId').value;
             let memberNo = document.getElementById('memberNo').value;
             let name = document.getElementById('name').value;
             
@@ -394,8 +463,12 @@
                 return; 
             }
 
+            // Show saving status on button
+            let saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> સેવ થઇ રહ્યું છે...';
+            saveBtn.disabled = true;
+
             let recordData = {
-                id: id ? parseInt(id) : Date.now(),
                 memberNo: memberNo,
                 name: name,
                 address: document.getElementById('address').value,
@@ -403,42 +476,75 @@
                 dob: document.getElementById('dob').value,
                 mobile: document.getElementById('mobile').value,
                 bloodgroup: document.getElementById('bloodgroup').value,
-                photo: currentPhotoBase64
+                photo: currentPhotoBase64,
+                timestamp: Date.now() // For Sorting
             };
 
-            if(id) {
-                let index = records.findIndex(r => r.id == id);
-                if(index > -1) records[index] = recordData;
+            if(docId) {
+                // UPDATE Existing Record
+                db.collection("idCards").doc(docId).update(recordData)
+                .then(() => {
+                    alert("ડેટા સફળતાપૂર્વક અપડેટ થઈ ગયો છે!");
+                    clearForm();
+                    resetBtn(saveBtn);
+                })
+                .catch(err => {
+                    alert("Error: " + err.message);
+                    resetBtn(saveBtn);
+                });
             } else {
-                records.push(recordData);
-            }
-
-            try {
-                localStorage.setItem('idCardsDB', JSON.stringify(records));
-                loadTable();
-                clearForm();
-                document.getElementById('searchInput').value = "";
-                alert("ડેટા સફળતાપૂર્વક સેવ થઈ ગયો છે!");
-            } catch (e) {
-                alert("સ્ટોરેજ મેમરી ફૂલ થઈ ગઈ છે! કૃપા કરીને જૂના ડેટા ડીલીટ કરો.");
+                // CREATE New Record
+                db.collection("idCards").add(recordData)
+                .then(() => {
+                    alert("ડેટા સફળતાપૂર્વક સેવ થઈ ગયો છે!");
+                    clearForm();
+                    resetBtn(saveBtn);
+                })
+                .catch(err => {
+                    alert("Error: " + err.message);
+                    resetBtn(saveBtn);
+                });
             }
         }
 
+        function resetBtn(btn) {
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> કાર્ડ સેવ કરો (Save Record)';
+            btn.disabled = false;
+        }
+
+        // Fetch Live Data from Firestore
+        function fetchFirebaseData() {
+            // Real-time listener: Whenever data changes in Firebase, update table automatically
+            db.collection("idCards").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
+                records = [];
+                querySnapshot.forEach((doc) => {
+                    let data = doc.data();
+                    data.docId = doc.id; // Store unique Firestore ID
+                    records.push(data);
+                });
+                searchRecords(); // Load table after getting data
+            }, (error) => {
+                console.error("Firebase Error: ", error);
+                alert("ડેટાબેઝ માંથી ડેટા લાવવામાં ભૂલ આવી છે!");
+            });
+        }
+
+        // Search & Table Generation
         function searchRecords() {
             let query = document.getElementById('searchInput').value.toLowerCase().trim();
             let filteredRecords = records.filter(rec => {
                 let nameMatch = rec.name.toLowerCase().includes(query);
-                let mobileMatch = rec.mobile.includes(query);
+                let mobileMatch = (rec.mobile || "").includes(query);
                 return nameMatch || mobileMatch;
             });
             loadTable(filteredRecords);
         }
 
-        function loadTable(dataArray = records) {
+        function loadTable(dataArray) {
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
             
-            if (dataArray.length === 0) {
+            if (!dataArray || dataArray.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 25px; color: #64748b; font-weight: 500;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`;
                 return;
             }
@@ -451,27 +557,27 @@
                     <td>${rec.mobile}</td>
                     <td>${rec.bloodgroup}</td>
                     <td class="action-btns">
-                        <button type="button" class="btn-sm btn-print-sm" title="Print" onclick="printFromTable(${rec.id})"><i class="fa-solid fa-print"></i></button>
-                        <button type="button" class="btn-sm btn-edit" title="Edit" onclick="editRecord(${rec.id})"><i class="fa-solid fa-pen"></i></button>
-                        <button type="button" class="btn-sm btn-delete" title="Delete" onclick="deleteRecord(${rec.id})"><i class="fa-solid fa-trash"></i></button>
+                        <button type="button" class="btn-sm btn-print-sm" title="Print" onclick="printFromTable('${rec.docId}')"><i class="fa-solid fa-print"></i></button>
+                        <button type="button" class="btn-sm btn-edit" title="Edit" onclick="editRecord('${rec.docId}')"><i class="fa-solid fa-pen"></i></button>
+                        <button type="button" class="btn-sm btn-delete" title="Delete" onclick="deleteRecord('${rec.docId}')"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function editRecord(id) {
-            let rec = records.find(r => r.id == id);
+        function editRecord(docId) {
+            let rec = records.find(r => r.docId === docId);
             if(!rec) return;
 
-            document.getElementById('recordId').value = rec.id;
-            document.getElementById('memberNo').value = rec.memberNo;
-            document.getElementById('name').value = rec.name;
-            document.getElementById('address').value = rec.address;
-            document.getElementById('hometown').value = rec.hometown;
-            document.getElementById('dob').value = rec.dob;
-            document.getElementById('mobile').value = rec.mobile;
-            document.getElementById('bloodgroup').value = rec.bloodgroup;
+            document.getElementById('recordId').value = rec.docId; // Firebase ID
+            document.getElementById('memberNo').value = rec.memberNo || "";
+            document.getElementById('name').value = rec.name || "";
+            document.getElementById('address').value = rec.address || "";
+            document.getElementById('hometown').value = rec.hometown || "";
+            document.getElementById('dob').value = rec.dob || "";
+            document.getElementById('mobile').value = rec.mobile || "";
+            document.getElementById('bloodgroup').value = rec.bloodgroup || "-";
             
             currentPhotoBase64 = rec.photo;
             document.getElementById('img-photo').src = currentPhotoBase64;
@@ -484,16 +590,21 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function deleteRecord(id) {
-            if(confirm("શું તમે ખરેખર આ રેકોર્ડ ડીલીટ કરવા માંગો છો?")) {
-                records = records.filter(r => r.id != id);
-                try { localStorage.setItem('idCardsDB', JSON.stringify(records)); } catch(e){}
-                searchRecords(); 
+        function deleteRecord(docId) {
+            if(confirm("શું તમે ખરેખર આ રેકોર્ડ ડીલીટ કરવા માંગો છો? આ કાયમી ધોરણે ડીલીટ થઇ જશે!")) {
+                db.collection("idCards").doc(docId).delete()
+                .then(() => {
+                    // Alert not needed, table will refresh automatically via onSnapshot
+                    console.log("Deleted successfully");
+                })
+                .catch((error) => {
+                    console.error("Error removing document: ", error);
+                });
             }
         }
 
         function clearForm() {
-            document.getElementById('recordId').value = "";
+            document.getElementById('recordId').value = ""; // Clear Firebase ID
             document.getElementById('memberNo').value = "";
             document.getElementById('name').value = "";
             document.getElementById('address').value = "";
@@ -502,6 +613,8 @@
             document.getElementById('mobile').value = "";
             document.getElementById('bloodgroup').value = "-";
             document.getElementById('photoInput').value = "";
+            document.getElementById('searchInput').value = "";
+            
             currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
             document.getElementById('img-photo').src = currentPhotoBase64;
             
@@ -511,11 +624,11 @@
         }
 
         // ==============================================================
-        // 4. PRINTING LOGIC
+        // 5. PRINTING LOGIC
         // ==============================================================
-        function printFromTable(id) {
-            editRecord(id); 
-            setTimeout(printCard, 500); 
+        function printFromTable(docId) {
+            editRecord(docId); 
+            setTimeout(printCard, 800); 
         }
 
         function printCard() {
@@ -556,17 +669,34 @@
             });
         }
 
-        // Initial Load Config
-        window.onload = function() {
-            loadTable(); 
+        // ==============================================================
+        // 6. INITIALIZATION
+        // ==============================================================
+        function initializeSystem() {
+            // Start listening to Firebase Data
+            fetchFirebaseData(); 
             
-            // બધા જ બોક્સમાં ગુજરાતી ટાઈપિંગ અને આંકડા એક્ટિવ કરવા
+            // Setup Gujarati Typing
             setupTransliteration('memberNo');
             setupTransliteration('name');
             setupTransliteration('address');
             setupTransliteration('hometown');
             setupTransliteration('dob');
             setupTransliteration('mobile');
+        }
+
+        // On Page Load: Check Login Session
+        window.onload = function() {
+            const isLoggedIn = sessionStorage.getItem('isSecuredLoggedIn');
+            
+            if (isLoggedIn === 'true') {
+                document.getElementById('login-wrapper').style.display = 'none';
+                document.getElementById('app-wrapper').style.display = 'block';
+                initializeSystem();
+            } else {
+                document.getElementById('login-wrapper').style.display = 'flex';
+                document.getElementById('app-wrapper').style.display = 'none';
+            }
         };
     </script>
 </body>
