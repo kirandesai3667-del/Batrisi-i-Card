@@ -14,6 +14,10 @@
     <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- Cropper.js (For Image Cropping) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
@@ -123,6 +127,16 @@
         .btn-edit { background: #f59e0b; }
         .btn-delete { background: #ef4444; }
         .btn-print-sm { background: var(--secondary); }
+
+        /* Image Cropper Modal */
+        .crop-modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
+        .crop-container { background: #fff; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; text-align: center; }
+        .crop-container h3 { margin-top: 0; color: var(--primary); }
+        .img-crop-area { width: 100%; height: 350px; background: #e2e8f0; margin-bottom: 15px; border-radius: 8px; overflow: hidden; }
+        .img-crop-area img { max-width: 100%; display: block; }
+        .crop-btns { display: flex; gap: 10px; justify-content: center; }
+        .btn-crop-cancel { background-color: #64748b; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; width: 40%;}
+        .btn-crop-save { background-color: var(--secondary); color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; width: 60%;}
     </style>
 </head>
 <body>
@@ -144,12 +158,10 @@
                 <label>Password</label>
                 <div class="pwd-wrapper">
                     <input type="password" id="loginPwd" placeholder="Enter Password" onkeypress="handleEnter(event)">
-                    <!-- આંખનું આઇકોન (Show/Hide Password) -->
                     <i class="fa-solid fa-eye" id="toggleEye" onclick="togglePassword()"></i>
                 </div>
             </div>
 
-            <!-- Remember Me ઓપ્શન -->
             <div class="remember-group full-width">
                 <label>
                     <input type="checkbox" id="rememberMe"> Remember Password (પાસવર્ડ યાદ રાખો)
@@ -162,7 +174,7 @@
         </div>
     </div>
 
-    <!-- 2. MAIN APPLICATION (Hidden by default) -->
+    <!-- 2. MAIN APPLICATION -->
     <div id="app-wrapper" style="display: none;">
         
         <div class="top-bar">
@@ -225,8 +237,9 @@
                 </div>
 
                 <div class="form-group full-width">
-                    <label>વ્યક્તિનો ફોટો</label>
-                    <input type="file" id="photoInput" accept="image/*" onchange="previewImg(event, 'img-photo')">
+                    <label>વ્યક્તિનો ફોટો (Ultra HD Enhancer સાથે)</label>
+                    <!-- અહી input માં onchange માં openCropper ફંક્શન મુક્યું છે -->
+                    <input type="file" id="photoInput" accept="image/*" onchange="openCropper(event)">
                 </div>
 
                 <div class="form-group full-width">
@@ -300,9 +313,23 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <!-- Records will load here from Firebase -->
+                    <!-- Records will load here -->
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- 3. CROP & ENHANCE MODAL -->
+    <div id="cropModal" class="crop-modal">
+        <div class="crop-container">
+            <h3><i class="fa-solid fa-crop-simple"></i> ફોટો સેટ કરો</h3>
+            <div class="img-crop-area">
+                <img id="imageToCrop" src="">
+            </div>
+            <div class="crop-btns">
+                <button class="btn-crop-cancel" onclick="closeCropper()">Cancel</button>
+                <button class="btn-crop-save" onclick="applyCropAndEnhance()"><i class="fa-solid fa-wand-magic-sparkles"></i> Crop & Enhance HD</button>
+            </div>
         </div>
     </div>
 
@@ -326,20 +353,13 @@
         // ==============================================================
         // 1. LOGIN, SECURITY & REMEMBER ME SYSTEM
         // ==============================================================
-        
-        // Show/Hide Password Logic (Like Instagram)
         function togglePassword() {
             const pwdInput = document.getElementById('loginPwd');
             const toggleIcon = document.getElementById('toggleEye');
-            
             if (pwdInput.type === 'password') {
-                pwdInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
+                pwdInput.type = 'text'; toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
-                pwdInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
+                pwdInput.type = 'password'; toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
 
@@ -350,33 +370,25 @@
             const errorMsg = document.getElementById('login-error');
 
             if (userId === "Batrisi" && userPwd === "Bat@3232") {
-                // Session Storage set
                 sessionStorage.setItem('isSecuredLoggedIn', 'true');
-                
-                // Remember Password logic
                 if (rememberMe) {
                     localStorage.setItem('savedUserId', userId);
                     localStorage.setItem('savedUserPwd', userPwd);
                     localStorage.setItem('rememberPwdChecked', 'true');
                 } else {
-                    localStorage.removeItem('savedUserId');
-                    localStorage.removeItem('savedUserPwd');
-                    localStorage.removeItem('rememberPwdChecked');
+                    localStorage.removeItem('savedUserId'); localStorage.removeItem('savedUserPwd'); localStorage.removeItem('rememberPwdChecked');
                 }
 
                 document.getElementById('login-wrapper').style.display = 'none';
                 document.getElementById('app-wrapper').style.display = 'block';
                 errorMsg.style.display = 'none';
-                
                 initializeSystem();
             } else {
                 errorMsg.style.display = 'block';
             }
         }
 
-        function handleEnter(e) {
-            if (e.key === 'Enter') performLogin();
-        }
+        function handleEnter(e) { if (e.key === 'Enter') performLogin(); }
 
         function logoutApp() {
             sessionStorage.removeItem('isSecuredLoggedIn');
@@ -384,7 +396,7 @@
         }
 
         // ==============================================================
-        // 2. FORM PREVIEW & IMAGE HANDLING
+        // 2. FORM PREVIEW 
         // ==============================================================
         let currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
@@ -393,38 +405,76 @@
             let displayVal = val.trim() !== "" ? val : "XXXX";
             if (inputId === 'dob' && !val) displayVal = "XX/XX/XXXX";
             if (inputId === 'bloodgroup' && (!val || val === '-')) displayVal = "-";
-            
             document.getElementById(targetId).innerText = displayVal;
         }
 
-        function previewImg(event, targetId) {
+        // ==============================================================
+        // 3. IMAGE CROPPER & ULTRA HD ENHANCER LOGIC
+        // ==============================================================
+        let cropper;
+
+        function openCropper(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    let img = new Image();
-                    img.onload = function() {
-                        let canvas = document.createElement('canvas');
-                        let ctx = canvas.getContext('2d');
-                        
-                        let maxW = 200; let maxH = 300;
-                        let ratio = Math.min(maxW / img.width, maxH / img.height);
-                        let newW = img.width * ratio; let newH = img.height * ratio;
-                        
-                        canvas.width = newW; canvas.height = newH;
-                        ctx.drawImage(img, 0, 0, newW, newH);
-                        
-                        currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.8); 
-                        document.getElementById(targetId).src = currentPhotoBase64;
-                    }
-                    img.src = e.target.result;
+                    let image = document.getElementById('imageToCrop');
+                    image.src = e.target.result;
+                    
+                    document.getElementById('cropModal').style.display = 'flex';
+
+                    // Initialize Cropper (Aspect Ratio 3:4 for Passport ID Photo)
+                    if(cropper) { cropper.destroy(); }
+                    cropper = new Cropper(image, {
+                        aspectRatio: 3 / 4,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        background: false
+                    });
                 }
                 reader.readAsDataURL(file);
             }
         }
 
+        function closeCropper() {
+            document.getElementById('cropModal').style.display = 'none';
+            if(cropper) { cropper.destroy(); cropper = null; }
+            document.getElementById('photoInput').value = ""; // Reset file input
+        }
+
+        function applyCropAndEnhance() {
+            if (!cropper) return;
+
+            // 1. Get High-Resolution Cropped Canvas (600x800 is HD for ID cards)
+            let croppedCanvas = cropper.getCroppedCanvas({
+                width: 600,
+                height: 800,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+            });
+
+            // 2. Enhance Image (Ultra HD/Clear Look using Canvas Context Filters)
+            let enhancedCanvas = document.createElement('canvas');
+            enhancedCanvas.width = croppedCanvas.width;
+            enhancedCanvas.height = croppedCanvas.height;
+            let ctx = enhancedCanvas.getContext('2d');
+
+            // Apply slight sharpness, contrast, and color saturation boost to make it look "Ultra HD"
+            ctx.filter = 'contrast(115%) saturate(110%) brightness(105%)';
+            ctx.drawImage(croppedCanvas, 0, 0);
+
+            // 3. Convert to high-quality Base64 Image
+            currentPhotoBase64 = enhancedCanvas.toDataURL('image/jpeg', 0.95);
+            
+            // Set to preview
+            document.getElementById('img-photo').src = currentPhotoBase64;
+
+            // Close modal
+            closeCropper();
+        }
+
         // ==============================================================
-        // 3. GOOGLE TRANSLITERATION & GUJARATI DIGITS
+        // 4. GOOGLE TRANSLITERATION & GUJARATI DIGITS
         // ==============================================================
         const engToGujDigits = {
             '0': '૦', '1': '૧', '2': '૨', '3': '૩', '4': '૪',
@@ -498,7 +548,7 @@
         }
 
         // ==============================================================
-        // 4. FIREBASE CLOUD DATABASE OPERATIONS
+        // 5. FIREBASE CLOUD DATABASE OPERATIONS
         // ==============================================================
         let records = [];
 
@@ -532,22 +582,14 @@
                 db.collection("idCards").doc(docId).update(recordData)
                 .then(() => {
                     alert("ડેટા સફળતાપૂર્વક અપડેટ થઈ ગયો છે!");
-                    clearForm();
-                    resetBtn(saveBtn);
-                }).catch(err => {
-                    alert("Error: " + err.message);
-                    resetBtn(saveBtn);
-                });
+                    clearForm(); resetBtn(saveBtn);
+                }).catch(err => { alert("Error: " + err.message); resetBtn(saveBtn); });
             } else {
                 db.collection("idCards").add(recordData)
                 .then(() => {
                     alert("ડેટા સફળતાપૂર્વક સેવ થઈ ગયો છે!");
-                    clearForm();
-                    resetBtn(saveBtn);
-                }).catch(err => {
-                    alert("Error: " + err.message);
-                    resetBtn(saveBtn);
-                });
+                    clearForm(); resetBtn(saveBtn);
+                }).catch(err => { alert("Error: " + err.message); resetBtn(saveBtn); });
             }
         }
 
@@ -560,14 +602,11 @@
             db.collection("idCards").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
                 records = [];
                 querySnapshot.forEach((doc) => {
-                    let data = doc.data();
-                    data.docId = doc.id; 
-                    records.push(data);
+                    let data = doc.data(); data.docId = doc.id; records.push(data);
                 });
                 searchRecords(); 
             }, (error) => {
-                console.error("Firebase Error: ", error);
-                alert("ડેટાબેઝ માંથી ડેટા લાવવામાં ભૂલ આવી છે!");
+                console.error("Firebase Error: ", error); alert("ડેટાબેઝ માંથી ડેટા લાવવામાં ભૂલ આવી છે!");
             });
         }
 
@@ -633,43 +672,34 @@
 
         function deleteRecord(docId) {
             if(confirm("શું તમે ખરેખર આ રેકોર્ડ ડીલીટ કરવા માંગો છો? આ કાયમી ધોરણે ડીલીટ થઇ જશે!")) {
-                db.collection("idCards").doc(docId).delete()
-                .then(() => console.log("Deleted successfully"))
-                .catch((error) => console.error("Error removing document: ", error));
+                db.collection("idCards").doc(docId).delete().catch((error) => console.error("Error removing document: ", error));
             }
         }
 
         function clearForm() {
             document.getElementById('recordId').value = ""; 
-            document.getElementById('memberNo').value = "";
-            document.getElementById('name').value = "";
-            document.getElementById('address').value = "";
-            document.getElementById('hometown').value = "";
-            document.getElementById('dob').value = "";
-            document.getElementById('mobile').value = "";
-            document.getElementById('bloodgroup').value = "-";
-            document.getElementById('photoInput').value = "";
+            document.getElementById('memberNo').value = ""; document.getElementById('name').value = "";
+            document.getElementById('address').value = ""; document.getElementById('hometown').value = "";
+            document.getElementById('dob').value = ""; document.getElementById('mobile').value = "";
+            document.getElementById('bloodgroup').value = "-"; document.getElementById('photoInput').value = "";
             document.getElementById('searchInput').value = "";
             
             currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
             document.getElementById('img-photo').src = currentPhotoBase64;
             
             ['val-memberNo', 'val-name', 'val-address', 'val-hometown', 'val-mobile'].forEach(id => document.getElementById(id).innerText = "XXXX");
-            document.getElementById('val-dob').innerText = "XX/XX/XXXX";
-            document.getElementById('val-bloodgroup').innerText = "-";
+            document.getElementById('val-dob').innerText = "XX/XX/XXXX"; document.getElementById('val-bloodgroup').innerText = "-";
         }
 
         // ==============================================================
-        // 5. PRINTING LOGIC
+        // 6. PRINTING LOGIC
         // ==============================================================
         function printFromTable(docId) {
-            editRecord(docId); 
-            setTimeout(printCard, 800); 
+            editRecord(docId); setTimeout(printCard, 800); 
         }
 
         function printCard() {
             const card = document.getElementById('print-card');
-            
             const printOptions = { scale: 4, useCORS: true, backgroundColor: "#ffffff", logging: false };
 
             html2canvas(card, printOptions).then(canvas => {
@@ -679,41 +709,28 @@
                     <!DOCTYPE html>
                     <html><head><title>Print ID Card</title>
                     <style>
-                        @media print {
-                            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                            @page { size: 85.6mm 54mm landscape; margin: 0; }
-                            body { margin: 0; padding: 0; background: white; }
-                        }
+                        @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                        @page { size: 85.6mm 54mm landscape; margin: 0; }
+                        body { margin: 0; padding: 0; background: white; } }
                         body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
                         img { width: 85.6mm; height: 54mm; object-fit: contain; }
-                    </style>
-                    </head><body>
-                        <img src="${imgData}" />
-                        <script>
-                            window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 500); };
-                        <\/script>
-                    </body></html>
+                    </style></head><body><img src="${imgData}" /><script>window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script></body></html>
                 `);
                 printWin.document.close();
             }).catch(err => alert("પ્રિન્ટમાં કોઈ એરર આવી છે: " + err));
         }
 
         // ==============================================================
-        // 6. INITIALIZATION
+        // 7. INITIALIZATION
         // ==============================================================
         function initializeSystem() {
             fetchFirebaseData(); 
-            setupTransliteration('memberNo');
-            setupTransliteration('name');
-            setupTransliteration('address');
-            setupTransliteration('hometown');
-            setupTransliteration('dob');
-            setupTransliteration('mobile');
+            setupTransliteration('memberNo'); setupTransliteration('name');
+            setupTransliteration('address'); setupTransliteration('hometown');
+            setupTransliteration('dob'); setupTransliteration('mobile');
         }
 
-        // On Page Load: Check Login Session & Pre-fill saved password
         window.onload = function() {
-            // Check if user saved password previously
             if (localStorage.getItem('rememberPwdChecked') === 'true') {
                 document.getElementById('loginId').value = localStorage.getItem('savedUserId') || '';
                 document.getElementById('loginPwd').value = localStorage.getItem('savedUserPwd') || '';
@@ -721,7 +738,6 @@
             }
 
             const isLoggedIn = sessionStorage.getItem('isSecuredLoggedIn');
-            
             if (isLoggedIn === 'true') {
                 document.getElementById('login-wrapper').style.display = 'none';
                 document.getElementById('app-wrapper').style.display = 'block';
