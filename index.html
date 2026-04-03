@@ -11,7 +11,7 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- html2canvas -->
+    <!-- html2canvas (હવે ફક્ત ટેબલના PDF ડાઉનલોડ માટે વાપરીશું) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <!-- Cropper.js (For Image Cropping) -->
@@ -76,7 +76,7 @@
         /* Card Preview */
         .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 10px;}
         
-        /* ઓપરેટર માટે મોટી સાઈઝનું કાર્ડ (ZOOMED) */
+        /* ઓપરેટર માટે મોટી સાઈઝનું કાર્ડ (ZOOMED 25%) */
         .card-scaler { 
             transform: scale(1.25); 
             transform-origin: top center; 
@@ -310,6 +310,7 @@
                 </div> <!-- End Scaler -->
 
                 <div class="btn-group">
+                    <!-- BUG FIX: Now using Native HTML Print to stop font spacing issues -->
                     <button type="button" class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> કાર્ડ પ્રિન્ટ કરો</button>
                 </div>
                 <span style="font-size: 13.5px; font-weight: 600; color: #475569; margin-top: 5px;">* Exact Print Size: 85.6mm × 54mm (CR80)</span>
@@ -322,7 +323,7 @@
                 <h2 class="table-title"><i class="fa-solid fa-database"></i> સેવ કરેલા સભ્યોની યાદી</h2>
                 
                 <div class="action-group-right">
-                    <!-- Export Buttons Added Here -->
+                    <!-- Export Buttons -->
                     <div class="export-btns">
                         <button class="btn-excel" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Download Excel</button>
                         <button class="btn-pdf" onclick="exportToPDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
@@ -587,8 +588,7 @@
             let hours = d.getHours();
             let minutes = d.getMinutes().toString().padStart(2, '0');
             let ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; 
+            hours = hours % 12; hours = hours ? hours : 12; 
             return `${day}/${month}/${year}, ${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
         }
 
@@ -741,20 +741,13 @@
         // ==============================================================
         // 6. EXCEL & PDF EXPORT LOGIC
         // ==============================================================
-        
         function exportToExcel() {
             if(records.length === 0) { alert("કોઈ ડેટા ઉપલબ્ધ નથી!"); return; }
             
-            // Clean Data mapping for Excel Sheet
             let exportData = records.map(r => ({
-                "સભ્ય નં.": r.memberNo || "-",
-                "પૂરું નામ": r.name || "-",
-                "સરનામું": r.address || "-",
-                "મૂળ વતન": r.hometown || "-",
-                "જન્મ તારીખ": r.dob || "-",
-                "મોબાઇલ નંબર": r.mobile || "-",
-                "બ્લડ ગ્રુપ": r.bloodgroup || "-",
-                "બનાવ્યા તારીખ અને સમય": getCleanDateStr(r.timestamp)
+                "સભ્ય નં.": r.memberNo || "-", "પૂરું નામ": r.name || "-", "સરનામું": r.address || "-",
+                "મૂળ વતન": r.hometown || "-", "જન્મ તારીખ": r.dob || "-", "મોબાઇલ નંબર": r.mobile || "-",
+                "બ્લડ ગ્રુપ": r.bloodgroup || "-", "બનાવ્યા તારીખ અને સમય": getCleanDateStr(r.timestamp)
             }));
 
             let ws = XLSX.utils.json_to_sheet(exportData);
@@ -766,84 +759,86 @@
         function exportToPDF() {
             if(records.length === 0) { alert("કોઈ ડેટા ઉપલબ્ધ નથી!"); return; }
             
-            // PDF માં ગુજરાતી ફોન્ટ્સ ખરાબ ન થાય તે માટે આપણે હંગામી (Temporary) HTML ટેબલ બનાવી તેનું ચિત્ર (Image) PDF માં મૂકીશું.
             let tempDiv = document.createElement('div');
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.left = '-9999px';
-            tempDiv.style.top = '0';
-            tempDiv.style.background = 'white';
-            tempDiv.style.padding = '30px';
-            tempDiv.style.width = '1000px';
+            tempDiv.style.position = 'absolute'; tempDiv.style.left = '-9999px'; tempDiv.style.top = '0';
+            tempDiv.style.background = 'white'; tempDiv.style.padding = '30px'; tempDiv.style.width = '1000px';
             
             let html = `<h2 style="text-align:center; color:#0f3460; font-family: sans-serif;">શ્રી બત્રીસી જૈન - સેવ કરેલા સભ્યોની યાદી</h2>`;
             html += `<table style="width:100%; border-collapse:collapse; font-family: sans-serif; text-align:left;" border="1">`;
-            html += `<tr style="background:#f1f5f9; color:#0f172a;">
-                        <th style="padding:10px;">સભ્ય નં.</th>
-                        <th style="padding:10px;">પૂરું નામ</th>
-                        <th style="padding:10px;">મોબાઇલ નંબર</th>
-                        <th style="padding:10px;">મૂળ વતન</th>
-                        <th style="padding:10px;">બ્લડ ગ્રુપ</th>
-                        <th style="padding:10px;">બનાવ્યા તારીખ</th>
-                     </tr>`;
+            html += `<tr style="background:#f1f5f9; color:#0f172a;"><th style="padding:10px;">સભ્ય નં.</th><th style="padding:10px;">પૂરું નામ</th><th style="padding:10px;">મોબાઇલ નંબર</th><th style="padding:10px;">મૂળ વતન</th><th style="padding:10px;">બ્લડ ગ્રુપ</th><th style="padding:10px;">બનાવ્યા તારીખ</th></tr>`;
                      
             records.forEach(r => {
                 html += `<tr>
-                            <td style="padding:10px; color:#334155;">${r.memberNo || "-"}</td>
-                            <td style="padding:10px; color:#334155;">${r.name || "-"}</td>
-                            <td style="padding:10px; color:#334155;">${r.mobile || "-"}</td>
-                            <td style="padding:10px; color:#334155;">${r.hometown || "-"}</td>
-                            <td style="padding:10px; color:#334155;">${r.bloodgroup || "-"}</td>
-                            <td style="padding:10px; color:#334155;">${getCleanDateStr(r.timestamp)}</td>
+                            <td style="padding:10px; color:#334155;">${r.memberNo || "-"}</td><td style="padding:10px; color:#334155;">${r.name || "-"}</td>
+                            <td style="padding:10px; color:#334155;">${r.mobile || "-"}</td><td style="padding:10px; color:#334155;">${r.hometown || "-"}</td>
+                            <td style="padding:10px; color:#334155;">${r.bloodgroup || "-"}</td><td style="padding:10px; color:#334155;">${getCleanDateStr(r.timestamp)}</td>
                          </tr>`;
             });
             html += `</table>`;
-            tempDiv.innerHTML = html;
-            document.body.appendChild(tempDiv);
+            tempDiv.innerHTML = html; document.body.appendChild(tempDiv);
 
-            // html2canvas થી PDF માં કન્વર્ટ કરો
             html2canvas(tempDiv, { scale: 2, useCORS: true }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                
+                const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                
                 pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
-                pdf.save("Batrisi_Jain_Members.pdf");
-                
-                document.body.removeChild(tempDiv);
+                pdf.save("Batrisi_Jain_Members.pdf"); document.body.removeChild(tempDiv);
             });
         }
 
         // ==============================================================
-        // 7. PRINTING LOGIC
+        // 7. PRINTING LOGIC (100% BUG FIX FOR SPACING ISSUE)
         // ==============================================================
         function printFromTable(docId) {
             editRecord(docId); setTimeout(printCard, 800); 
         }
 
         function printCard() {
-            const card = document.getElementById('print-card');
-            // અહી scale 4 લીધું છે જેથી પ્રિન્ટ ફાટે નહિ 
-            const printOptions = { scale: 4, useCORS: true, backgroundColor: "#ffffff", logging: false };
+            // HTML2Canvas ની જગ્યાએ આપણે શુદ્ધ HTML પ્રિન્ટ કરીશું જેથી ગુજરાતી ફોન્ટમાં સ્પેસ નો પ્રોબ્લેમ જ ના આવે.
+            const cardElement = document.getElementById('print-card');
+            const cardHTML = cardElement.outerHTML;
+            
+            let printWin = window.open('', '_blank');
+            
+            // બધી સ્ટાઈલ ઓટોમેટિક કોપી કરવા માટે 
+            let styles = '';
+            for (let styleSheet of document.styleSheets) {
+                try { for (let rule of styleSheet.cssRules) { styles += rule.cssText + '\n'; } } catch(e) {}
+            }
 
-            html2canvas(card, printOptions).then(canvas => {
-                const imgData = canvas.toDataURL('image/png'); 
-                let printWin = window.open('', '_blank');
-                printWin.document.write(`
-                    <!DOCTYPE html>
-                    <html><head><title>Print ID Card</title>
-                    <style>
-                        @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            printWin.document.write(`
+                <!DOCTYPE html>
+                <html lang="gu">
+                <head><title>Print ID Card</title>
+                <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                <style>
+                    ${styles}
+                    @media print {
                         @page { size: 85.6mm 54mm landscape; margin: 0; }
-                        body { margin: 0; padding: 0; background: white; } }
-                        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-                        img { width: 85.6mm; height: 54mm; object-fit: contain; }
-                    </style></head><body><img src="${imgData}" /><script>window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script></body></html>
-                `);
-                printWin.document.close();
-            }).catch(err => alert("પ્રિન્ટમાં કોઈ એરર આવી છે: " + err));
+                        body { margin: 0; display: flex; justify-content: center; align-items: center; background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;}
+                        
+                        /* સ્કેલ કરીને બરાબર 85.6mm માં ફિટ બેસાડવા */
+                        #print-card {
+                            transform: scale(0.755) !important; 
+                            transform-origin: center center !important;
+                            border: none !important;
+                            box-shadow: none !important;
+                            margin: 0 !important;
+                        }
+                    }
+                    body { background: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                    #print-card { transform: scale(1); } /* પ્રિન્ટ સિવાય નોર્મલ દેખાવા માટે */
+                </style>
+                </head><body>
+                    ${cardHTML}
+                    <script>
+                        window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 800); };
+                    <\/script>
+                </body></html>
+            `);
+            printWin.document.close();
         }
 
         // ==============================================================
