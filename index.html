@@ -107,7 +107,6 @@
         <div class="form-panel">
             <input type="hidden" id="recordId">
 
-            <!-- New Transliteration Toggle -->
             <div class="transl-toggle-bar">
                 <input type="checkbox" id="enableTransliteration" checked>
                 <label for="enableTransliteration">
@@ -117,18 +116,19 @@
 
             <div class="form-group full-width">
                 <label>સભ્ય નંબર</label>
+                <!-- સભ્ય નંબરમાં આંકડા અંગ્રેજી જ રાખવા માટે અહી Transliteration નથી આપેલ -->
                 <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updateField('memberNo', 'val-memberNo')">
             </div>
             
             <div class="form-group full-width">
                 <label>પૂરું નામ</label>
                 <input type="text" id="name" placeholder="વ્યક્તિનું નામ" oninput="updateField('name', 'val-name')">
-                <div class="hint-text"><i class="fa-solid fa-circle-info"></i> નોંધ: નામ, સરનામું અને વતન English માં ટાઈપ કરી Space દબાવશો એટલે આપમેળે ગુજરાતીમાં ફેરવાઈ જશે.</div>
+                <div class="hint-text"><i class="fa-solid fa-circle-info"></i> નોંધ: નામ, સરનામું, પીન કોડ અને વતન English માં ટાઈપ કરશો એટલે આપમેળે ગુજરાતીમાં ફેરવાઈ જશે.</div>
             </div>
             
             <div class="form-group full-width">
                 <label>સરનામું</label>
-                <input type="text" id="address" placeholder="રહેઠાણનું સરનામું" oninput="updateField('address', 'val-address')">
+                <input type="text" id="address" placeholder="રહેઠાણનું સરનામું (પીનકોડ સાથે)" oninput="updateField('address', 'val-address')">
             </div>
 
             <div class="form-group">
@@ -143,6 +143,7 @@
 
             <div class="form-group">
                 <label>મોબાઇલ નંબર</label>
+                <!-- મોબાઈલ નંબરમાં આંકડા અંગ્રેજી જ રાખવા માટે અહી Transliteration નથી આપેલ -->
                 <input type="text" id="mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="updateField('mobile', 'val-mobile')">
             </div>
 
@@ -214,11 +215,8 @@
 
     <!-- Saved Records Database Table -->
     <div class="table-container">
-        
-        <!-- HEADER WITH SEARCH BOX -->
         <div class="table-header-row">
             <h2 class="table-title"><i class="fa-solid fa-database"></i> સેવ કરેલા સભ્યોની યાદી</h2>
-            
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="searchInput" placeholder="નામ અથવા મોબાઈલ નંબરથી સર્ચ કરો..." onkeyup="searchRecords()">
@@ -283,41 +281,42 @@
         }
 
         // ==============================================================
-        // 2. GOOGLE TRANSLITERATION (ENGLISH TO GUJARATI)
+        // 2. GOOGLE TRANSLITERATION & GUJARATI DIGITS
         // ==============================================================
         
-        // Fetch Translation from Google Input Tools API
+        // અંગ્રેજી આંકડા ને ગુજરાતીમાં બદલવા માટેનું મેપિંગ
+        const engToGujDigits = {
+            '0': '૦', '1': '૧', '2': '૨', '3': '૩', '4': '૪',
+            '5': '૫', '6': '૬', '7': '૭', '8': '૮', '9': '૯'
+        };
+
         async function transliterateWord(word) {
-            // Only process if it contains English characters
             if (!/[a-zA-Z]/.test(word)) return word; 
             
             try {
-                // Using Google Input Tools API for English -> Gujarati (gu-t-i0-und)
                 const url = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=gu-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=id_card_app`;
                 let response = await fetch(url);
                 let data = await response.json();
                 
                 if (data[0] === 'SUCCESS') {
-                    return data[1][0][1][0]; // Extracting the first best transliterated word
+                    return data[1][0][1][0];
                 }
             } catch (error) {
                 console.error("Transliteration Error:", error);
             }
-            return word; // Fallback to english word if it fails
+            return word;
         }
 
-        // Logic to replace last typed English word with Gujarati upon pressing "Space"
+        // અક્ષરો માટે (સ્પેસ દબાવ્યા પછી)
         async function handleTransliteration(elementId, event) {
             const isEnabled = document.getElementById('enableTransliteration').checked;
-            if (!isEnabled) return; // Exit if user disabled typing
+            if (!isEnabled) return; 
 
-            // Trigger ONLY when spacebar is pressed
             if (event.code === 'Space' || event.key === ' ' || event.keyCode === 32) {
                 const el = document.getElementById(elementId);
                 const cursorPosition = el.selectionStart;
                 const text = el.value;
                 
-                // Find start position of the word immediately before the space
                 let startPos = cursorPosition - 2; 
                 while (startPos >= 0 && text[startPos] !== ' ' && text[startPos] !== '\n') {
                     startPos--;
@@ -326,7 +325,6 @@
                 
                 const wordToConvert = text.substring(startPos, cursorPosition - 1);
                 
-                // Process transliteration
                 if (/[a-zA-Z]/.test(wordToConvert)) {
                     const gujaratiWord = await transliterateWord(wordToConvert);
                     
@@ -334,31 +332,49 @@
                         const currentText = el.value;
                         const currentCursor = el.selectionStart;
                         
-                        // Carefully reconstruct string so typing fast won't erase new chars
                         const newText = currentText.substring(0, startPos) + gujaratiWord + currentText.substring(startPos + wordToConvert.length);
                         el.value = newText;
                         
-                        // Adjust the cursor position intelligently
                         const diffLength = gujaratiWord.length - wordToConvert.length;
                         if (currentCursor > startPos) {
                             el.selectionStart = el.selectionEnd = currentCursor + diffLength;
                         }
-                        
-                        // Force Preview Update immediately after conversion
                         updateField(elementId, 'val-' + elementId);
                     }
                 }
             }
         }
 
-        // Attach event listener dynamically
-        function setupTransliteration(elementId) {
+        // આંકડાઓ માટે (ટાઈપ કરતાની સાથે જ 380013 -> ૩૮૦૦૧૩)
+        function handleNumberConversion(elementId) {
+            const isEnabled = document.getElementById('enableTransliteration').checked;
+            if (!isEnabled) return;
+
             const el = document.getElementById(elementId);
-            if (el) {
-                el.addEventListener('keyup', (e) => handleTransliteration(elementId, e));
+            const originalText = el.value;
+            const cursorPosition = el.selectionStart;
+
+            // જો લખાણમાં કોઈ પણ અંગ્રેજી આંકડો હોય તો તેને બદલો
+            if (/[0-9]/.test(originalText)) {
+                const newText = originalText.replace(/[0-9]/g, match => engToGujDigits[match]);
+                el.value = newText;
+                
+                // ટાઈપીંગ કરતી વખતે કર્સર ત્યાંનું ત્યાં જ રહે તે માટે
+                el.selectionStart = el.selectionEnd = cursorPosition;
+                updateField(elementId, 'val-' + elementId);
             }
         }
 
+        function setupTransliteration(elementId) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                // નામ/વતન ના અક્ષરો માટે (Space દબાવતા)
+                el.addEventListener('keyup', (e) => handleTransliteration(elementId, e));
+                
+                // આંકડાઓ/પીનકોડ માટે (સીધું ટાઈપ કરતા)
+                el.addEventListener('input', () => handleNumberConversion(elementId));
+            }
+        }
 
         // ==============================================================
         // 3. DATABASE (LOCALSTORAGE) WITH SEARCH FUNCTION
@@ -544,9 +560,9 @@
 
         // Initial Load Config
         window.onload = function() {
-            loadTable(); // Load database
+            loadTable(); 
             
-            // Attach Realtime transliteration on specific fields
+            // નામ, સરનામું અને વતન ના બોક્સમાં ગુજરાતી ટાઈપિંગ એક્ટિવ કરવા
             setupTransliteration('name');
             setupTransliteration('address');
             setupTransliteration('hometown');
