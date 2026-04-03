@@ -127,6 +127,8 @@
         .btn-edit { background: #f59e0b; }
         .btn-delete { background: #ef4444; }
         .btn-print-sm { background: var(--secondary); }
+        
+        .date-badge { font-size: 12px; color: #475569; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;}
 
         /* Image Cropper Modal */
         .crop-modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
@@ -238,7 +240,6 @@
 
                 <div class="form-group full-width">
                     <label>વ્યક્તિનો ફોટો (Ultra HD Enhancer સાથે)</label>
-                    <!-- અહી input માં onchange માં openCropper ફંક્શન મુક્યું છે -->
                     <input type="file" id="photoInput" accept="image/*" onchange="openCropper(event)">
                 </div>
 
@@ -308,7 +309,8 @@
                         <th>સભ્ય નં.</th>
                         <th>પૂરું નામ</th>
                         <th>મોબાઇલ નંબર</th>
-                        <th>બ્લડ ગ્રુપ</th>
+                        <th>મૂળ વતન</th> <!-- Changed to Hometown -->
+                        <th>બનાવ્યા તારીખ અને સમય</th> <!-- Date & Time Column added -->
                         <th>એક્શન (Actions)</th>
                     </tr>
                 </thead>
@@ -423,7 +425,6 @@
                     
                     document.getElementById('cropModal').style.display = 'flex';
 
-                    // Initialize Cropper (Aspect Ratio 3:4 for Passport ID Photo)
                     if(cropper) { cropper.destroy(); }
                     cropper = new Cropper(image, {
                         aspectRatio: 3 / 4,
@@ -439,13 +440,12 @@
         function closeCropper() {
             document.getElementById('cropModal').style.display = 'none';
             if(cropper) { cropper.destroy(); cropper = null; }
-            document.getElementById('photoInput').value = ""; // Reset file input
+            document.getElementById('photoInput').value = ""; 
         }
 
         function applyCropAndEnhance() {
             if (!cropper) return;
 
-            // 1. Get High-Resolution Cropped Canvas (600x800 is HD for ID cards)
             let croppedCanvas = cropper.getCroppedCanvas({
                 width: 600,
                 height: 800,
@@ -453,23 +453,17 @@
                 imageSmoothingQuality: 'high'
             });
 
-            // 2. Enhance Image (Ultra HD/Clear Look using Canvas Context Filters)
             let enhancedCanvas = document.createElement('canvas');
             enhancedCanvas.width = croppedCanvas.width;
             enhancedCanvas.height = croppedCanvas.height;
             let ctx = enhancedCanvas.getContext('2d');
 
-            // Apply slight sharpness, contrast, and color saturation boost to make it look "Ultra HD"
             ctx.filter = 'contrast(115%) saturate(110%) brightness(105%)';
             ctx.drawImage(croppedCanvas, 0, 0);
 
-            // 3. Convert to high-quality Base64 Image
             currentPhotoBase64 = enhancedCanvas.toDataURL('image/jpeg', 0.95);
-            
-            // Set to preview
             document.getElementById('img-photo').src = currentPhotoBase64;
 
-            // Close modal
             closeCropper();
         }
 
@@ -552,6 +546,23 @@
         // ==============================================================
         let records = [];
 
+        // Helper function for formatting Date & Time
+        function formatDateTime(timestamp) {
+            if(!timestamp) return "-";
+            let d = new Date(timestamp);
+            let day = d.getDate().toString().padStart(2, '0');
+            let month = (d.getMonth() + 1).toString().padStart(2, '0');
+            let year = d.getFullYear();
+            let hours = d.getHours();
+            let minutes = d.getMinutes().toString().padStart(2, '0');
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            let strTime = hours.toString().padStart(2, '0') + ':' + minutes + ' ' + ampm;
+            
+            return `<i class="fa-regular fa-clock"></i> ${day}/${month}/${year}, ${strTime}`;
+        }
+
         function saveRecord() {
             let docId = document.getElementById('recordId').value;
             let memberNo = document.getElementById('memberNo').value;
@@ -574,17 +585,20 @@
                 dob: document.getElementById('dob').value,
                 mobile: document.getElementById('mobile').value,
                 bloodgroup: document.getElementById('bloodgroup').value,
-                photo: currentPhotoBase64,
-                timestamp: Date.now() 
+                photo: currentPhotoBase64
             };
 
             if(docId) {
+                // Update record without overwriting original timestamp
+                recordData.updatedAt = Date.now();
                 db.collection("idCards").doc(docId).update(recordData)
                 .then(() => {
                     alert("ડેટા સફળતાપૂર્વક અપડેટ થઈ ગયો છે!");
                     clearForm(); resetBtn(saveBtn);
                 }).catch(err => { alert("Error: " + err.message); resetBtn(saveBtn); });
             } else {
+                // Create new record with fresh timestamp
+                recordData.timestamp = Date.now();
                 db.collection("idCards").add(recordData)
                 .then(() => {
                     alert("ડેટા સફળતાપૂર્વક સેવ થઈ ગયો છે!");
@@ -625,17 +639,18 @@
             tbody.innerHTML = "";
             
             if (!dataArray || dataArray.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 25px; color: #64748b; font-weight: 500;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 25px; color: #64748b; font-weight: 500;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`;
                 return;
             }
 
             dataArray.forEach(rec => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${rec.memberNo}</td>
-                    <td>${rec.name}</td>
-                    <td>${rec.mobile}</td>
-                    <td>${rec.bloodgroup}</td>
+                    <td>${rec.memberNo || "-"}</td>
+                    <td>${rec.name || "-"}</td>
+                    <td>${rec.mobile || "-"}</td>
+                    <td>${rec.hometown || "-"}</td>
+                    <td><span class="date-badge">${formatDateTime(rec.timestamp)}</span></td>
                     <td class="action-btns">
                         <button type="button" class="btn-sm btn-print-sm" title="Print" onclick="printFromTable('${rec.docId}')"><i class="fa-solid fa-print"></i></button>
                         <button type="button" class="btn-sm btn-edit" title="Edit" onclick="editRecord('${rec.docId}')"><i class="fa-solid fa-pen"></i></button>
