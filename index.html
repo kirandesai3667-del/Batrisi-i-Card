@@ -33,7 +33,12 @@
         .form-group label { font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 5px; }
         .form-group input, .form-group select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: 500; font-family: inherit; transition: 0.3s; outline: none; }
         .form-group input:focus, .form-group select:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-        .hint-text { font-size: 11px; color: #b45309; margin-top: 4px; font-weight: 600; }
+        .hint-text { font-size: 11.5px; color: #b45309; margin-top: 4px; font-weight: 600; }
+
+        /* Transliteration Toggle Bar */
+        .transl-toggle-bar { grid-column: span 2; background: #eff6ff; padding: 12px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; align-items: center; gap: 10px; }
+        .transl-toggle-bar label { margin: 0; color: #1e3a8a; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .transl-toggle-bar input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--secondary); margin: 0;}
 
         /* Card Preview */
         .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; }
@@ -102,6 +107,14 @@
         <div class="form-panel">
             <input type="hidden" id="recordId">
 
+            <!-- New Transliteration Toggle -->
+            <div class="transl-toggle-bar">
+                <input type="checkbox" id="enableTransliteration" checked>
+                <label for="enableTransliteration">
+                    <i class="fa-solid fa-language"></i> ગુજરાતી ટાઈપિંગ (English માં લખી Space દબાવો)
+                </label>
+            </div>
+
             <div class="form-group full-width">
                 <label>સભ્ય નંબર</label>
                 <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updateField('memberNo', 'val-memberNo')">
@@ -109,9 +122,8 @@
             
             <div class="form-group full-width">
                 <label>પૂરું નામ</label>
-                <!-- ગુજરાતી ટાઈપિંગ માટે કોપી-પેસ્ટ વાપરી શકાશે -->
                 <input type="text" id="name" placeholder="વ્યક્તિનું નામ" oninput="updateField('name', 'val-name')">
-                <div class="hint-text">નોંધ: તમે ગુજરાતી કીબોર્ડ અથવા ગુગલ ટ્રાન્સલેટથી અહી કોપી-પેસ્ટ કરી શકો છો.</div>
+                <div class="hint-text"><i class="fa-solid fa-circle-info"></i> નોંધ: નામ, સરનામું અને વતન English માં ટાઈપ કરી Space દબાવશો એટલે આપમેળે ગુજરાતીમાં ફેરવાઈ જશે.</div>
             </div>
             
             <div class="form-group full-width">
@@ -209,7 +221,6 @@
             
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <!-- સર્ચ ઇનપુટ - નામ કે મોબાઇલ નંબરથી શોધવા માટે -->
                 <input type="text" id="searchInput" placeholder="નામ અથવા મોબાઈલ નંબરથી સર્ચ કરો..." onkeyup="searchRecords()">
             </div>
         </div>
@@ -272,7 +283,85 @@
         }
 
         // ==============================================================
-        // 2. DATABASE (LOCALSTORAGE) WITH SEARCH FUNCTION
+        // 2. GOOGLE TRANSLITERATION (ENGLISH TO GUJARATI)
+        // ==============================================================
+        
+        // Fetch Translation from Google Input Tools API
+        async function transliterateWord(word) {
+            // Only process if it contains English characters
+            if (!/[a-zA-Z]/.test(word)) return word; 
+            
+            try {
+                // Using Google Input Tools API for English -> Gujarati (gu-t-i0-und)
+                const url = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=gu-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=id_card_app`;
+                let response = await fetch(url);
+                let data = await response.json();
+                
+                if (data[0] === 'SUCCESS') {
+                    return data[1][0][1][0]; // Extracting the first best transliterated word
+                }
+            } catch (error) {
+                console.error("Transliteration Error:", error);
+            }
+            return word; // Fallback to english word if it fails
+        }
+
+        // Logic to replace last typed English word with Gujarati upon pressing "Space"
+        async function handleTransliteration(elementId, event) {
+            const isEnabled = document.getElementById('enableTransliteration').checked;
+            if (!isEnabled) return; // Exit if user disabled typing
+
+            // Trigger ONLY when spacebar is pressed
+            if (event.code === 'Space' || event.key === ' ' || event.keyCode === 32) {
+                const el = document.getElementById(elementId);
+                const cursorPosition = el.selectionStart;
+                const text = el.value;
+                
+                // Find start position of the word immediately before the space
+                let startPos = cursorPosition - 2; 
+                while (startPos >= 0 && text[startPos] !== ' ' && text[startPos] !== '\n') {
+                    startPos--;
+                }
+                startPos++; 
+                
+                const wordToConvert = text.substring(startPos, cursorPosition - 1);
+                
+                // Process transliteration
+                if (/[a-zA-Z]/.test(wordToConvert)) {
+                    const gujaratiWord = await transliterateWord(wordToConvert);
+                    
+                    if (gujaratiWord !== wordToConvert) {
+                        const currentText = el.value;
+                        const currentCursor = el.selectionStart;
+                        
+                        // Carefully reconstruct string so typing fast won't erase new chars
+                        const newText = currentText.substring(0, startPos) + gujaratiWord + currentText.substring(startPos + wordToConvert.length);
+                        el.value = newText;
+                        
+                        // Adjust the cursor position intelligently
+                        const diffLength = gujaratiWord.length - wordToConvert.length;
+                        if (currentCursor > startPos) {
+                            el.selectionStart = el.selectionEnd = currentCursor + diffLength;
+                        }
+                        
+                        // Force Preview Update immediately after conversion
+                        updateField(elementId, 'val-' + elementId);
+                    }
+                }
+            }
+        }
+
+        // Attach event listener dynamically
+        function setupTransliteration(elementId) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.addEventListener('keyup', (e) => handleTransliteration(elementId, e));
+            }
+        }
+
+
+        // ==============================================================
+        // 3. DATABASE (LOCALSTORAGE) WITH SEARCH FUNCTION
         // ==============================================================
         let records = [];
         try { 
@@ -314,33 +403,27 @@
                 localStorage.setItem('idCardsDB', JSON.stringify(records));
                 loadTable();
                 clearForm();
-                document.getElementById('searchInput').value = ""; // સેવ કર્યા પછી સર્ચ ખાલી કરો
+                document.getElementById('searchInput').value = "";
                 alert("ડેટા સફળતાપૂર્વક સેવ થઈ ગયો છે!");
             } catch (e) {
                 alert("સ્ટોરેજ મેમરી ફૂલ થઈ ગઈ છે! કૃપા કરીને જૂના ડેટા ડીલીટ કરો.");
             }
         }
 
-        // --- NEW SEARCH FUNCTION ---
         function searchRecords() {
             let query = document.getElementById('searchInput').value.toLowerCase().trim();
-            
-            // જો સર્ચ બોક્સ ખાલી હોય તો બધો ડેટા બતાવો, નહિતર ફિલ્ટર કરો
             let filteredRecords = records.filter(rec => {
                 let nameMatch = rec.name.toLowerCase().includes(query);
                 let mobileMatch = rec.mobile.includes(query);
                 return nameMatch || mobileMatch;
             });
-
             loadTable(filteredRecords);
         }
 
-        // loadTable હવે આર્ગ્યુમેન્ટ (dataArray) લેશે જેથી સર્ચ કરેલો ડેટા જ દેખાય
         function loadTable(dataArray = records) {
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
             
-            // જો કોઈ રેકોર્ડ ના મળે તો મેસેજ બતાવો
             if (dataArray.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 25px; color: #64748b; font-weight: 500;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`;
                 return;
@@ -391,8 +474,6 @@
             if(confirm("શું તમે ખરેખર આ રેકોર્ડ ડીલીટ કરવા માંગો છો?")) {
                 records = records.filter(r => r.id != id);
                 try { localStorage.setItem('idCardsDB', JSON.stringify(records)); } catch(e){}
-                
-                // ડીલીટ કર્યા પછી જો કંઈક સર્ચ કરેલું હોય તો તે મુજબ જ ટેબલ રીલોડ કરો
                 searchRecords(); 
             }
         }
@@ -416,7 +497,7 @@
         }
 
         // ==============================================================
-        // 3. PRINTING LOGIC
+        // 4. PRINTING LOGIC
         // ==============================================================
         function printFromTable(id) {
             editRecord(id); 
@@ -461,8 +542,15 @@
             });
         }
 
-        // પેજ લોડ થાય ત્યારે ટેબલ લોડ કરો
-        window.onload = loadTable;
+        // Initial Load Config
+        window.onload = function() {
+            loadTable(); // Load database
+            
+            // Attach Realtime transliteration on specific fields
+            setupTransliteration('name');
+            setupTransliteration('address');
+            setupTransliteration('hometown');
+        };
     </script>
 </body>
 </html>
