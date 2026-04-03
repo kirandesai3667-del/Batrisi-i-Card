@@ -116,14 +116,13 @@
 
             <div class="form-group full-width">
                 <label>સભ્ય નંબર</label>
-                <!-- સભ્ય નંબરમાં આંકડા અંગ્રેજી જ રાખવા માટે અહી Transliteration નથી આપેલ -->
-                <input type="text" id="memberNo" placeholder="દા.ત. 1001" oninput="updateField('memberNo', 'val-memberNo')">
+                <input type="text" id="memberNo" placeholder="દા.ત. ૧૦૦૧" oninput="updateField('memberNo', 'val-memberNo')">
             </div>
             
             <div class="form-group full-width">
                 <label>પૂરું નામ</label>
                 <input type="text" id="name" placeholder="વ્યક્તિનું નામ" oninput="updateField('name', 'val-name')">
-                <div class="hint-text"><i class="fa-solid fa-circle-info"></i> નોંધ: નામ, સરનામું, પીન કોડ અને વતન English માં ટાઈપ કરશો એટલે આપમેળે ગુજરાતીમાં ફેરવાઈ જશે.</div>
+                <div class="hint-text"><i class="fa-solid fa-circle-info"></i> નોંધ: કોઈપણ ખાનામાં English માં લખી Space દબાવશો એટલે આપમેળે ગુજરાતીમાં (આંકડા સહિત) ફેરવાઈ જશે.</div>
             </div>
             
             <div class="form-group full-width">
@@ -143,7 +142,6 @@
 
             <div class="form-group">
                 <label>મોબાઇલ નંબર</label>
-                <!-- મોબાઈલ નંબરમાં આંકડા અંગ્રેજી જ રાખવા માટે અહી Transliteration નથી આપેલ -->
                 <input type="text" id="mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="updateField('mobile', 'val-mobile')">
             </div>
 
@@ -345,7 +343,7 @@
             }
         }
 
-        // આંકડાઓ માટે (ટાઈપ કરતાની સાથે જ 380013 -> ૩૮૦૦૧૩)
+        // આંકડાઓ માટે (ટાઈપ કરતાની સાથે જ 1515 -> ૧૫૧૫)
         function handleNumberConversion(elementId) {
             const isEnabled = document.getElementById('enableTransliteration').checked;
             if (!isEnabled) return;
@@ -562,10 +560,13 @@
         window.onload = function() {
             loadTable(); 
             
-            // નામ, સરનામું અને વતન ના બોક્સમાં ગુજરાતી ટાઈપિંગ એક્ટિવ કરવા
+            // બધા જ બોક્સમાં ગુજરાતી ટાઈપિંગ અને આંકડા એક્ટિવ કરવા
+            setupTransliteration('memberNo');
             setupTransliteration('name');
             setupTransliteration('address');
             setupTransliteration('hometown');
+            setupTransliteration('dob');
+            setupTransliteration('mobile');
         };
     </script>
 </body>
