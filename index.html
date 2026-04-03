@@ -14,7 +14,7 @@
     <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Firebase SDK (Compat Version for simple HTML integration) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
@@ -40,6 +40,15 @@
         .login-box .form-group { text-align: left; margin-bottom: 15px; }
         .login-error { color: white; background: #ef4444; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none; }
         
+        /* Show/Hide Password & Remember Me */
+        .pwd-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
+        .pwd-wrapper input { width: 100%; padding-right: 40px !important; box-sizing: border-box; }
+        .pwd-wrapper i { position: absolute; right: 12px; cursor: pointer; color: var(--text-light); font-size: 16px; transition: 0.2s;}
+        .pwd-wrapper i:hover { color: var(--secondary); }
+        .remember-group { display: flex; align-items: center; gap: 8px; margin-top: -5px; margin-bottom: 15px; cursor: pointer;}
+        .remember-group label { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--text-light); cursor: pointer; display: flex; align-items: center; gap: 6px;}
+        .remember-group input[type="checkbox"] { margin: 0; width: 15px; height: 15px; cursor: pointer; accent-color: var(--secondary);}
+
         /* Logout Button */
         .btn-logout { background: #ef4444; padding: 8px 16px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 14px; transition: 0.3s;}
         .btn-logout:hover { background: #dc2626; transform: translateY(-2px); }
@@ -130,12 +139,24 @@
                 <label>User ID</label>
                 <input type="text" id="loginId" placeholder="Enter User ID">
             </div>
+            
             <div class="form-group full-width">
                 <label>Password</label>
-                <input type="password" id="loginPwd" placeholder="Enter Password" onkeypress="handleEnter(event)">
+                <div class="pwd-wrapper">
+                    <input type="password" id="loginPwd" placeholder="Enter Password" onkeypress="handleEnter(event)">
+                    <!-- આંખનું આઇકોન (Show/Hide Password) -->
+                    <i class="fa-solid fa-eye" id="toggleEye" onclick="togglePassword()"></i>
+                </div>
+            </div>
+
+            <!-- Remember Me ઓપ્શન -->
+            <div class="remember-group full-width">
+                <label>
+                    <input type="checkbox" id="rememberMe"> Remember Password (પાસવર્ડ યાદ રાખો)
+                </label>
             </div>
             
-            <button class="btn btn-save" onclick="performLogin()" style="margin-top: 20px; width: 100%;">
+            <button class="btn btn-save" onclick="performLogin()" style="margin-top: 10px; width: 100%;">
                 <i class="fa-solid fa-right-to-bracket"></i> Login System
             </button>
         </div>
@@ -152,7 +173,7 @@
         <div class="container">
             <!-- Input Form -->
             <div class="form-panel">
-                <input type="hidden" id="recordId"> <!-- અહી હવે Firebase ની ID આવશે -->
+                <input type="hidden" id="recordId"> 
 
                 <div class="transl-toggle-bar">
                     <input type="checkbox" id="enableTransliteration" checked>
@@ -299,25 +320,54 @@
             measurementId: "G-5N91PLG8LB"
         };
         
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         // ==============================================================
-        // 1. LOGIN & SECURITY SYSTEM
+        // 1. LOGIN, SECURITY & REMEMBER ME SYSTEM
         // ==============================================================
+        
+        // Show/Hide Password Logic (Like Instagram)
+        function togglePassword() {
+            const pwdInput = document.getElementById('loginPwd');
+            const toggleIcon = document.getElementById('toggleEye');
+            
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
         function performLogin() {
             const userId = document.getElementById('loginId').value.trim();
             const userPwd = document.getElementById('loginPwd').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
             const errorMsg = document.getElementById('login-error');
 
             if (userId === "Batrisi" && userPwd === "Bat@3232") {
+                // Session Storage set
                 sessionStorage.setItem('isSecuredLoggedIn', 'true');
+                
+                // Remember Password logic
+                if (rememberMe) {
+                    localStorage.setItem('savedUserId', userId);
+                    localStorage.setItem('savedUserPwd', userPwd);
+                    localStorage.setItem('rememberPwdChecked', 'true');
+                } else {
+                    localStorage.removeItem('savedUserId');
+                    localStorage.removeItem('savedUserPwd');
+                    localStorage.removeItem('rememberPwdChecked');
+                }
+
                 document.getElementById('login-wrapper').style.display = 'none';
                 document.getElementById('app-wrapper').style.display = 'block';
                 errorMsg.style.display = 'none';
                 
-                // Load System Data from Firebase
                 initializeSystem();
             } else {
                 errorMsg.style.display = 'block';
@@ -452,7 +502,6 @@
         // ==============================================================
         let records = [];
 
-        // Save or Update Record to Firestore
         function saveRecord() {
             let docId = document.getElementById('recordId').value;
             let memberNo = document.getElementById('memberNo').value;
@@ -463,7 +512,6 @@
                 return; 
             }
 
-            // Show saving status on button
             let saveBtn = document.getElementById('saveBtn');
             saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> સેવ થઇ રહ્યું છે...';
             saveBtn.disabled = true;
@@ -477,30 +525,26 @@
                 mobile: document.getElementById('mobile').value,
                 bloodgroup: document.getElementById('bloodgroup').value,
                 photo: currentPhotoBase64,
-                timestamp: Date.now() // For Sorting
+                timestamp: Date.now() 
             };
 
             if(docId) {
-                // UPDATE Existing Record
                 db.collection("idCards").doc(docId).update(recordData)
                 .then(() => {
                     alert("ડેટા સફળતાપૂર્વક અપડેટ થઈ ગયો છે!");
                     clearForm();
                     resetBtn(saveBtn);
-                })
-                .catch(err => {
+                }).catch(err => {
                     alert("Error: " + err.message);
                     resetBtn(saveBtn);
                 });
             } else {
-                // CREATE New Record
                 db.collection("idCards").add(recordData)
                 .then(() => {
                     alert("ડેટા સફળતાપૂર્વક સેવ થઈ ગયો છે!");
                     clearForm();
                     resetBtn(saveBtn);
-                })
-                .catch(err => {
+                }).catch(err => {
                     alert("Error: " + err.message);
                     resetBtn(saveBtn);
                 });
@@ -512,24 +556,21 @@
             btn.disabled = false;
         }
 
-        // Fetch Live Data from Firestore
         function fetchFirebaseData() {
-            // Real-time listener: Whenever data changes in Firebase, update table automatically
             db.collection("idCards").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
                 records = [];
                 querySnapshot.forEach((doc) => {
                     let data = doc.data();
-                    data.docId = doc.id; // Store unique Firestore ID
+                    data.docId = doc.id; 
                     records.push(data);
                 });
-                searchRecords(); // Load table after getting data
+                searchRecords(); 
             }, (error) => {
                 console.error("Firebase Error: ", error);
                 alert("ડેટાબેઝ માંથી ડેટા લાવવામાં ભૂલ આવી છે!");
             });
         }
 
-        // Search & Table Generation
         function searchRecords() {
             let query = document.getElementById('searchInput').value.toLowerCase().trim();
             let filteredRecords = records.filter(rec => {
@@ -570,7 +611,7 @@
             let rec = records.find(r => r.docId === docId);
             if(!rec) return;
 
-            document.getElementById('recordId').value = rec.docId; // Firebase ID
+            document.getElementById('recordId').value = rec.docId; 
             document.getElementById('memberNo').value = rec.memberNo || "";
             document.getElementById('name').value = rec.name || "";
             document.getElementById('address').value = rec.address || "";
@@ -593,18 +634,13 @@
         function deleteRecord(docId) {
             if(confirm("શું તમે ખરેખર આ રેકોર્ડ ડીલીટ કરવા માંગો છો? આ કાયમી ધોરણે ડીલીટ થઇ જશે!")) {
                 db.collection("idCards").doc(docId).delete()
-                .then(() => {
-                    // Alert not needed, table will refresh automatically via onSnapshot
-                    console.log("Deleted successfully");
-                })
-                .catch((error) => {
-                    console.error("Error removing document: ", error);
-                });
+                .then(() => console.log("Deleted successfully"))
+                .catch((error) => console.error("Error removing document: ", error));
             }
         }
 
         function clearForm() {
-            document.getElementById('recordId').value = ""; // Clear Firebase ID
+            document.getElementById('recordId').value = ""; 
             document.getElementById('memberNo').value = "";
             document.getElementById('name').value = "";
             document.getElementById('address').value = "";
@@ -634,12 +670,7 @@
         function printCard() {
             const card = document.getElementById('print-card');
             
-            const printOptions = { 
-                scale: 4, 
-                useCORS: true, 
-                backgroundColor: "#ffffff", 
-                logging: false 
-            };
+            const printOptions = { scale: 4, useCORS: true, backgroundColor: "#ffffff", logging: false };
 
             html2canvas(card, printOptions).then(canvas => {
                 const imgData = canvas.toDataURL('image/png'); 
@@ -664,19 +695,14 @@
                     </body></html>
                 `);
                 printWin.document.close();
-            }).catch(err => {
-                alert("પ્રિન્ટમાં કોઈ એરર આવી છે: " + err);
-            });
+            }).catch(err => alert("પ્રિન્ટમાં કોઈ એરર આવી છે: " + err));
         }
 
         // ==============================================================
         // 6. INITIALIZATION
         // ==============================================================
         function initializeSystem() {
-            // Start listening to Firebase Data
             fetchFirebaseData(); 
-            
-            // Setup Gujarati Typing
             setupTransliteration('memberNo');
             setupTransliteration('name');
             setupTransliteration('address');
@@ -685,8 +711,15 @@
             setupTransliteration('mobile');
         }
 
-        // On Page Load: Check Login Session
+        // On Page Load: Check Login Session & Pre-fill saved password
         window.onload = function() {
+            // Check if user saved password previously
+            if (localStorage.getItem('rememberPwdChecked') === 'true') {
+                document.getElementById('loginId').value = localStorage.getItem('savedUserId') || '';
+                document.getElementById('loginPwd').value = localStorage.getItem('savedUserPwd') || '';
+                document.getElementById('rememberMe').checked = true;
+            }
+
             const isLoggedIn = sessionStorage.getItem('isSecuredLoggedIn');
             
             if (isLoggedIn === 'true') {
