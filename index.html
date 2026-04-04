@@ -84,7 +84,7 @@
         .transl-toggle-bar input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--secondary); margin: 0;}
 
         /* =========================================================
-           CARD PREVIEW (NEW UNIQUE DESIGN)
+           CARD PREVIEW (NEW UNIQUE DESIGN - NO WATERMARK)
            ========================================================= */
         .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 10px;}
         
@@ -99,7 +99,7 @@
         .id-card { 
             width: var(--card-w); 
             height: var(--card-h); 
-            background: #ffffff; /* Pure White Background for Watermark */
+            background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%); 
             display: flex; 
             flex-direction: column; 
             box-sizing: border-box; 
@@ -109,23 +109,12 @@
             overflow: hidden; 
         }
 
-        /* --- CURRENCY STYLE WATERMARK --- */
-        .card-watermark {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 0;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='200'%3E%3Cg transform='rotate(-25 175 100)'%3E%3Ctext x='-20' y='100' font-family='sans-serif' font-size='15' font-weight='bold' fill='%230f3460' opacity='0.05'%3E%E0%AA%B6%E0%AB%8D%E0%AA%B0%E0%AB%80%20%E0%AA%AC%E0%AA%A4%E0%AB%8D%E0%AA%B0%E0%AB%80%E0%AA%B8%E0%AB%80%20%E0%AA%9C%E0%AB%88%E0%AA%A8%20%E0%AA%95%E0%AB%8B-%E0%AA%93.%E0%AA%8F%E0%AA%9C%E0%AB%8D%E0%AA%AF%E0%AB%81%E0%AA%95%E0%AB%87%E0%AA%B6%E0%AA%A8%20%E0%AA%B8%E0%AB%8B%E0%AA%B8%E0%AA%BE%E0%AA%AF%E0%AA%9F%E0%AB%80%20%E0%AA%B2%E0%AA%BF%E0%AA%AE%E0%AA%BF%E0%AA%9F%E0%AB%87%E0%AA%A1%3C/text%3E%3C/g%3E%3C/svg%3E");
-            background-repeat: repeat;
-            pointer-events: none;
-        }
-
+        /* Adjust paddings so signatures never cut off */
         .card-header { 
-            position: relative;
-            z-index: 1; /* Above watermark */
             text-align: center; 
             border-bottom: 2px solid var(--secondary); 
-            padding: 6px 16px 4px 16px; 
-            background: #ffffff; 
+            padding: 4px 16px 2px 16px; 
+            background: rgba(255,255,255,0.9); 
             flex-shrink: 0; 
         }
         .card-header h2 { margin: 0 0 3px 0; font-family: 'Mogra', serif; font-size: 12.5px; color: var(--primary); font-weight: 400; line-height: 1.4; }
@@ -133,42 +122,39 @@
         .card-header .contact { margin: 2px 0 0 0; font-size: 6.5px; color: #b91c1c; font-weight: 700; }
         
         .card-body { 
-            position: relative;
-            z-index: 1; /* Above watermark */
-            background: transparent !important; /* So watermark is visible */
             display: grid; 
             grid-template-columns: 50px 1fr 68px; 
             gap: 12px; 
             align-items: start; 
-            padding: 8px 16px; 
+            padding: 6px 16px; /* Reduced vertical padding */
             flex-grow: 1; 
         }
         
         .logo-box { width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; background: #ffffff; border-radius: 5px; overflow: hidden; border: 1px solid #cbd5e1;}
         .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
-        /* --- NEW BOXED LABELS DESIGN --- */
+        /* BOXED LABELS DESIGN */
         .details-box { 
             display: flex; 
             flex-direction: column; 
-            gap: 5px; 
+            gap: 3.5px; /* Reduced gap to save vertical space */
         }
         
         .detail-item { 
             display: flex; 
             align-items: flex-start; 
             gap: 6px; 
-            margin-bottom: 1px;
+            margin-bottom: 0px;
         }
         
         .detail-label-box {
-            background-color: #f1f5f9; /* Soft Grey Box */
+            background-color: #f1f5f9; 
             border: 1px solid #cbd5e1;
-            border-left: 3px solid #0f3460; /* Dark Blue Accent Line */
+            border-left: 3px solid #0f3460; 
             color: #0f3460;
-            padding: 2.5px 5px;
+            padding: 1.5px 5px; /* Reduced padding */
             border-radius: 4px;
-            width: 72px; /* Fixed width for perfect alignment */
+            width: 72px; 
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -179,14 +165,14 @@
         .detail-colon {
             color: #0f3460;
             font-weight: bold;
-            padding-top: 3px;
+            padding-top: 1.5px;
         }
         
         .detail-value { 
             color: var(--text-dark); 
             font-weight: 600; 
             flex: 1; 
-            padding-top: 3px;
+            padding-top: 1.5px;
             line-height: 1.3;
         }
         
@@ -194,20 +180,19 @@
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
         
         .card-footer { 
-            position: relative;
-            z-index: 1;
             display: flex; 
             justify-content: space-between; 
             align-items: flex-end; 
-            padding: 4px 16px 6px 16px; 
-            border-top: 1px solid rgba(203, 213, 225, 0.5); 
-            background: transparent !important; 
+            padding: 4px 16px 4px 16px; /* Optimized padding */
+            border-top: 1px solid #cbd5e1; 
+            background: linear-gradient(to top, #f4f7fb 90%, rgba(244,247,251,0.5) 100%); 
             flex-shrink: 0; 
         }
         .sign-block { display: flex; flex-direction: column; }
         .sign-block.left { align-items: flex-start; }
         .sign-block.right { align-items: flex-end; }
-        .sign-block img { height: 22px; width: auto; max-width: 80px; object-fit: contain; margin-bottom: 2px; }
+        /* Made signatures slightly smaller to prevent cut-off */
+        .sign-block img { height: 19px; width: auto; max-width: 80px; object-fit: contain; margin-bottom: 2px; }
         .sign-block p { margin: 0; font-size: 9px; color: var(--text-dark); font-weight: 600; line-height: 1.2; }
         .sign-block span { font-weight: 500; color: var(--text-light); font-size: 8px; }
 
@@ -375,17 +360,11 @@
                 <div class="card-scaler" id="card-scaler-box">
                     <div class="id-card" id="print-card">
                         
-                        <!-- FULL CARD WATERMARK -->
-                        <div class="card-watermark"></div>
-
-                        <!-- CARD HEADER (Kept original as requested) -->
                         <div class="card-header">
                             <h2>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
                             <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
                             <p class="contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
                         </div>
-
-                        <!-- CARD BODY -->
                         <div class="card-body">
                             <div class="logo-box">
                                 <img id="img-logo" src="logo.png" onerror="this.style.display='none'">
@@ -434,8 +413,6 @@
                                 <img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Photo">
                             </div>
                         </div>
-
-                        <!-- CARD FOOTER (Kept original as requested) -->
                         <div class="card-footer">
                             <div class="sign-block left">
                                 <img id="img-sign1" src="sign1.png" onerror="this.style.display='none'">
@@ -446,7 +423,6 @@
                                 <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
                             </div>
                         </div>
-
                     </div>
                 </div> <!-- End Scaler -->
 
