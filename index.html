@@ -11,192 +11,223 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- html2canvas -->
+    <!-- html2canvas, Cropper.js, Firebase, SheetJS, jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-    <!-- Cropper.js (For Image Cropping) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
-    <!-- SheetJS for Excel Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- jsPDF for PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; box-sizing: border-box; }
 
-        :root {
-            --primary: #0f3460; --secondary: #2563eb; --text-dark: #0f172a; --text-light: #334155; --bg-body: #f8fafc;
+        /* ==============================================================
+           THEME VARIABLES (Switcher System)
+           ============================================================== */
+        
+        /* 1. Theme: Glassmorphism (Default) */
+        :root, body.theme-glass {
+            --bg-body: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            --surface: rgba(255, 255, 255, 0.7);
+            --surface-hover: rgba(255, 255, 255, 0.9);
+            --border: rgba(255, 255, 255, 0.6);
+            --border-dark: #cbd5e1;
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --input-bg: rgba(255, 255, 255, 0.8);
+            --shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+            --card-radius: 16px;
+            --glass-blur: blur(12px);
             --card-w: 428px; --card-h: 270px;
         }
 
-        body { font-family: 'Poppins', 'Noto Sans Gujarati', sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px; color: var(--text-dark); overflow-x: hidden;}
-        .header-title { text-align: center; color: var(--primary); font-weight: 800; margin: 0; font-size: 28px; }
-        
-        .top-bar { display: flex; justify-content: space-between; align-items: center; max-width: 1250px; margin: 0 auto 30px auto; flex-wrap: wrap; gap: 15px;}
-        .container { display: flex; flex-wrap: wrap; gap: 40px; max-width: 1250px; margin: 0 auto; justify-content: center; align-items: flex-start;}
-
-        /* Login Screen Styles */
-        .login-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); width: 100%; max-width: 380px; text-align: center; }
-        .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 5px; font-family: 'Mogra', cursive; font-size: 24px;}
-        .login-box p { color: var(--text-light); font-size: 14px; margin-bottom: 25px; font-weight: 600; }
-        .login-box .form-group { text-align: left; margin-bottom: 15px; }
-        .login-error { color: white; background: #ef4444; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none; }
-        
-        .pwd-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
-        .pwd-wrapper input { width: 100%; padding-right: 40px !important; box-sizing: border-box; }
-        .pwd-wrapper i { position: absolute; right: 12px; cursor: pointer; color: var(--text-light); font-size: 16px; transition: 0.2s;}
-        .pwd-wrapper i:hover { color: var(--secondary); }
-        .remember-group { display: flex; align-items: center; gap: 8px; margin-top: -5px; margin-bottom: 15px; cursor: pointer;}
-        .remember-group label { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--text-light); cursor: pointer; display: flex; align-items: center; gap: 6px;}
-        .remember-group input[type="checkbox"] { margin: 0; width: 15px; height: 15px; cursor: pointer; accent-color: var(--secondary);}
-
-        .btn-logout { background: #ef4444; padding: 8px 16px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 14px; transition: 0.3s;}
-        .btn-logout:hover { background: #dc2626; transform: translateY(-2px); }
-
-        /* Form Styling */
-        .form-panel { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); flex: 1; min-width: 320px; max-width: 500px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group.full-width { grid-column: span 2; }
-        .form-group label { font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 5px; }
-        .form-group input, .form-group select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: 500; font-family: inherit; transition: 0.3s; outline: none; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-        .hint-text { font-size: 11.5px; color: #b45309; margin-top: 4px; font-weight: 600; }
-
-        .transl-toggle-bar { grid-column: span 2; background: #eff6ff; padding: 12px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; align-items: center; gap: 10px; }
-        .transl-toggle-bar label { margin: 0; color: #1e3a8a; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
-        .transl-toggle-bar input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--secondary); margin: 0;}
-
-        /* Card Preview */
-        .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 10px;}
-        
-        /* ઓપરેટર માટે મોટી સાઈઝનું કાર્ડ (ZOOMED 25%) */
-        .card-scaler { 
-            transform: scale(1.25); 
-            transform-origin: top center; 
-            margin-bottom: 70px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
-            border-radius: 10px;
+        /* 2. Theme: Enterprise (Clean White) */
+        body.theme-enterprise {
+            --bg-body: #F8FAFC;
+            --surface: #FFFFFF;
+            --surface-hover: #F1F5F9;
+            --border: #E2E8F0;
+            --border-dark: #CBD5E1;
+            --primary: #312E81;
+            --secondary: #4F46E5;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --input-bg: #F8FAFC;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --card-radius: 8px;
+            --glass-blur: none;
         }
 
-        .id-card { width: var(--card-w); height: var(--card-h); background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%); display: flex; flex-direction: column; box-sizing: border-box; border-radius: 10px; border: 1.5px solid #cbd5e1; overflow: hidden; }
-        .card-header { text-align: center; border-bottom: 2px solid var(--secondary); padding: 6px 16px 4px 16px; background: rgba(255,255,255,0.9); flex-shrink: 0; }
-        .card-header h2 { margin: 0 0 3px 0; font-family: 'Mogra', serif; font-size: 12.5px; color: var(--primary); font-weight: 400; line-height: 1.4; }
-        .card-header .address { margin: 0; font-size: 6.8px; color: var(--text-dark); font-weight: 600; line-height: 1.4; }
-        .card-header .contact { margin: 2px 0 0 0; font-size: 6.5px; color: #b91c1c; font-weight: 700; }
-        .card-body { display: grid; grid-template-columns: 50px 1fr 68px; gap: 12px; align-items: start; padding: 8px 16px; flex-grow: 1; }
+        /* 3. Theme: Dark Mode */
+        body.theme-dark {
+            --bg-body: #0F172A;
+            --surface: #1E293B;
+            --surface-hover: #334155;
+            --border: #334155;
+            --border-dark: #475569;
+            --primary: #38BDF8;
+            --secondary: #818CF8;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --input-bg: #0F172A;
+            --shadow: 0 10px 25px rgba(0,0,0,0.5);
+            --card-radius: 12px;
+            --glass-blur: none;
+        }
+
+        /* ==============================================================
+           GLOBAL STYLES
+           ============================================================== */
+        body { 
+            font-family: 'Poppins', 'Noto Sans Gujarati', sans-serif; 
+            background: var(--bg-body); 
+            background-attachment: fixed;
+            margin: 0; padding: 20px; 
+            color: var(--text-main); 
+            overflow-x: hidden;
+            transition: all 0.4s ease;
+        }
+
+        /* Theme Switcher UI */
+        .theme-switcher {
+            position: fixed; top: 15px; right: 15px; background: var(--surface);
+            padding: 8px; border-radius: 30px; display: flex; gap: 8px; z-index: 10000;
+            box-shadow: var(--shadow); border: 1px solid var(--border); backdrop-filter: var(--glass-blur);
+        }
+        .theme-btn {
+            background: transparent; border: none; padding: 8px 12px; border-radius: 20px;
+            cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-main); transition: 0.3s;
+        }
+        .theme-btn:hover, .theme-btn.active { background: var(--secondary); color: white; }
+
+        .header-title { text-align: center; color: var(--primary); font-weight: 800; margin: 0; font-size: 28px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; max-width: 1250px; margin: 0 auto 30px auto; flex-wrap: wrap; gap: 15px; margin-top: 40px;}
+        .container { display: flex; flex-wrap: wrap; gap: 40px; max-width: 1250px; margin: 0 auto; justify-content: center; align-items: flex-start;}
+
+        /* Login Screen */
+        .login-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg-body); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-box { background: var(--surface); padding: 40px; border-radius: var(--card-radius); box-shadow: var(--shadow); border: 1px solid var(--border); backdrop-filter: var(--glass-blur); width: 100%; max-width: 380px; text-align: center; }
+        .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 5px; font-family: 'Mogra', cursive; font-size: 24px;}
+        .login-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; font-weight: 600; }
+        .login-error { color: white; background: #ef4444; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none; }
         
-        .logo-box { width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; background: #f1f5f9; border-radius: 5px; overflow: hidden; border: 1px solid #cbd5e1;}
-        .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        /* Form & Panels */
+        .form-panel, .table-container { 
+            background: var(--surface); padding: 25px; border-radius: var(--card-radius); 
+            box-shadow: var(--shadow); border: 1px solid var(--border); backdrop-filter: var(--glass-blur);
+        }
+        .form-panel { flex: 1; min-width: 320px; max-width: 500px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start; }
+        .form-group { display: flex; flex-direction: column; text-align: left;}
+        .form-group.full-width { grid-column: span 2; }
+        .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
         
-        .details-box { display: flex; flex-direction: column; gap: 0px; }
-        .detail-item { display: flex; align-items: flex-start; font-size: 9.5px; line-height: 1.35; margin-bottom: 2.5px; }
-        .detail-icon { color: var(--secondary); width: 14px; font-size: 8.5px; text-align: center; margin-right: 5px; margin-top: 2px; }
-        .detail-label { color: var(--text-light); font-weight: 600; width: 58px; }
-        .detail-value { color: var(--text-dark); font-weight: 600; flex: 1; }
-        
-        .photo-box { width: 66px; height: 88px; border-radius: 4px; border: 2px solid var(--secondary); display: flex; justify-content: center; align-items: center; background: #e2e8f0; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
-        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; padding: 4px 16px 6px 16px; border-top: 1px solid #cbd5e1; background: linear-gradient(to top, #f4f7fb 90%, rgba(244,247,251,0.5) 100%); flex-shrink: 0; }
-        .sign-block { display: flex; flex-direction: column; }
-        .sign-block.left { align-items: flex-start; }
-        .sign-block.right { align-items: flex-end; }
-        .sign-block img { height: 22px; width: auto; max-width: 80px; object-fit: contain; margin-bottom: 2px; }
-        .sign-block p { margin: 0; font-size: 9px; color: var(--text-dark); font-weight: 600; line-height: 1.2; }
-        .sign-block span { font-weight: 500; color: var(--text-light); font-size: 8px; }
+        .form-group input, .form-group select { 
+            padding: 12px; background: var(--input-bg); border: 1px solid var(--border-dark); 
+            color: var(--text-main); border-radius: 8px; font-size: 14px; font-weight: 500; 
+            font-family: inherit; transition: 0.3s; outline: none; 
+        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        .hint-text { font-size: 11.5px; color: #b45309; margin-top: 4px; font-weight: 600; }
+
+        .transl-toggle-bar { grid-column: span 2; background: rgba(59, 130, 246, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; gap: 10px; }
+        .transl-toggle-bar label { margin: 0; color: var(--secondary); font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
 
         /* Buttons */
-        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-        .btn { padding: 10px 20px; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; color: white; }
+        .btn { padding: 12px 20px; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; color: white; justify-content: center;}
         .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-        .btn-save { background-color: #16a34a; width: 100%; justify-content: center; margin-top: 10px; }
-        .btn-clear { background-color: #64748b; width: 100%; justify-content: center; }
-        
-        .btn-print { background-color: var(--secondary); padding: 12px 25px; font-size: 15px; box-shadow: 0 4px 15px rgba(37,99,235,0.3);}
-        .btn-download-card { background-color: #8b5cf6; padding: 12px 25px; font-size: 15px; box-shadow: 0 4px 15px rgba(139,92,246,0.3);}
+        .btn-save { background-color: #10b981; width: 100%; margin-top: 10px; }
+        .btn-clear { background-color: var(--text-muted); width: 100%; }
+        .btn-print { background-color: var(--secondary); flex:1;}
+        .btn-download-card { background-color: #8b5cf6; flex:1;}
+        .btn-logout { background: #ef4444; padding: 10px 18px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 14px; transition: 0.3s;}
 
-        /* Database Table & Search */
-        .table-container { width: 100%; max-width: 1250px; margin: 40px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); overflow-x: auto; }
-        .table-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+        /* Card Preview (Keep Physical Card Colors Consistent) */
+        .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 10px;}
+        .card-scaler { transform: scale(1.25); transform-origin: top center; margin-bottom: 70px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 10px; }
+        .id-card { width: var(--card-w); height: var(--card-h); background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%); display: flex; flex-direction: column; border-radius: 10px; border: 1.5px solid #cbd5e1; overflow: hidden; color:#0f172a !important;}
+        .card-header { text-align: center; border-bottom: 2px solid #2563eb; padding: 6px 16px 4px 16px; background: rgba(255,255,255,0.9); }
+        .card-header h2 { margin: 0 0 3px 0; font-family: 'Mogra', serif; font-size: 12.5px; color: #0f3460 !important; font-weight: 400; line-height: 1.4; }
+        .card-header .address { margin: 0; font-size: 6.8px; font-weight: 600; line-height: 1.4; color:#0f172a;}
+        .card-header .contact { margin: 2px 0 0 0; font-size: 6.5px; color: #b91c1c; font-weight: 700; }
+        .card-body { display: grid; grid-template-columns: 50px 1fr 68px; gap: 12px; align-items: start; padding: 8px 16px; flex-grow: 1; }
+        .logo-box { width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; background: #f1f5f9; border-radius: 5px; border: 1px solid #cbd5e1;}
+        .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .details-box { display: flex; flex-direction: column; gap: 0px; }
+        .detail-item { display: flex; align-items: flex-start; font-size: 9.5px; line-height: 1.35; margin-bottom: 2.5px; }
+        .detail-icon { color: #2563eb; width: 14px; font-size: 8.5px; text-align: center; margin-right: 5px; margin-top: 2px; }
+        .detail-label { color: #334155; font-weight: 600; width: 58px; }
+        .detail-value { color: #0f172a; font-weight: 600; flex: 1; }
+        .photo-box { width: 66px; height: 88px; border-radius: 4px; border: 2px solid #2563eb; background: #e2e8f0; overflow: hidden; }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; padding: 4px 16px 6px 16px; border-top: 1px solid #cbd5e1; background: linear-gradient(to top, #f4f7fb 90%, rgba(244,247,251,0.5) 100%); }
+        .sign-block p { margin: 0; font-size: 9px; color: #0f172a; font-weight: 600; line-height: 1.2; }
+        .sign-block span { font-weight: 500; color: #334155; font-size: 8px; }
+
+        /* Database Table */
+        .table-container { width: 100%; max-width: 1250px; margin: 40px auto; overflow-x: auto; }
+        .table-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
         .table-title { margin: 0; color: var(--primary); font-family: 'Mogra', cursive; font-size: 20px; }
-        
         .action-group-right { display: flex; align-items: center; gap: 15px; flex-wrap: wrap;}
-        .export-btns { display: flex; gap: 10px; }
-        .btn-excel { background: #10b981; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 13px; transition: 0.2s;}
-        .btn-excel:hover { background: #059669; }
-        .btn-pdf { background: #f43f5e; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 13px; transition: 0.2s;}
-        .btn-pdf:hover { background: #e11d48; }
-
-        .search-box { position: relative; width: 100%; max-width: 320px; }
-        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
-        .search-box input { width: 100%; padding: 10px 15px 10px 40px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; box-sizing: border-box; }
-        .search-box input:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f1f5f9; color: var(--text-dark); font-weight: 600; white-space: nowrap; }
-        .action-btns { display: flex; gap: 8px; flex-wrap: wrap;}
-        .btn-sm { padding: 6px 10px; font-size: 13px; border: none; border-radius: 4px; cursor: pointer; color: white; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
-        .btn-sm:hover { opacity: 0.8; transform: scale(1.05);}
         
-        /* Individual Table Buttons */
+        .search-box { position: relative; width: 100%; max-width: 320px; }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-box input { width: 100%; padding: 10px 15px 10px 40px; border: 1px solid var(--border-dark); background: var(--input-bg); color: var(--text-main); border-radius: 8px; outline: none; transition: 0.3s; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th, td { padding: 12px; border-bottom: 1px solid var(--border); }
+        th { background: var(--border); color: var(--text-main); font-weight: 600; white-space: nowrap; }
+        
+        .action-btns { display: flex; gap: 8px; flex-wrap: wrap;}
+        .btn-sm { padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; color: white; transition: 0.2s;}
+        .btn-sm:hover { opacity: 0.8; transform: translateY(-2px);}
         .btn-print-sm { background: var(--secondary); }
-        .btn-download-sm { background: #8b5cf6; } /* Purple Download Button */
+        .btn-download-sm { background: #8b5cf6; } 
         .btn-edit { background: #f59e0b; }
         .btn-delete { background: #ef4444; }
-        
-        .date-badge { font-size: 12px; color: #475569; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;}
 
         /* Image Cropper Modal */
-        .crop-modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
-        .crop-container { background: #fff; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; text-align: center; }
-        .crop-container h3 { margin-top: 0; color: var(--primary); }
-        .img-crop-area { width: 100%; height: 350px; background: #e2e8f0; margin-bottom: 15px; border-radius: 8px; overflow: hidden; }
+        .crop-modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
+        .crop-container { background: var(--surface); padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; text-align: center; color: var(--text-main); }
+        .img-crop-area { width: 100%; height: 350px; background: #e2e8f0; margin: 15px 0; border-radius: 8px; overflow: hidden; }
         .img-crop-area img { max-width: 100%; display: block; }
-        .crop-btns { display: flex; gap: 10px; justify-content: center; }
-        .btn-crop-cancel { background-color: #64748b; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; width: 40%;}
-        .btn-crop-save { background-color: var(--secondary); color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; width: 60%;}
     </style>
 </head>
-<body>
+<body class="theme-glass">
+
+    <!-- THEME SWITCHER -->
+    <div class="theme-switcher">
+        <button class="theme-btn active" onclick="setTheme('theme-glass', this)"><i class="fa-solid fa-cube"></i> Glass</button>
+        <button class="theme-btn" onclick="setTheme('theme-enterprise', this)"><i class="fa-solid fa-building"></i> Clean</button>
+        <button class="theme-btn" onclick="setTheme('theme-dark', this)"><i class="fa-solid fa-moon"></i> Dark</button>
+    </div>
 
     <!-- 1. SECURE LOGIN SCREEN -->
     <div id="login-wrapper" class="login-wrapper">
         <div class="login-box">
             <h2><i class="fa-solid fa-shield-halved"></i> Security Login</h2>
             <p>શ્રી બત્રીસી જૈન આઈડી કાર્ડ સિસ્ટમ</p>
-            
             <div id="login-error" class="login-error">ખોટું ID અથવા Password!</div>
             
             <div class="form-group full-width">
                 <label>User ID</label>
                 <input type="text" id="loginId" placeholder="Enter User ID">
             </div>
-            
-            <div class="form-group full-width">
+            <div class="form-group full-width" style="margin-top: 15px; position: relative;">
                 <label>Password</label>
-                <div class="pwd-wrapper">
-                    <input type="password" id="loginPwd" placeholder="Enter Password" onkeypress="handleEnter(event)">
-                    <i class="fa-solid fa-eye" id="toggleEye" onclick="togglePassword()"></i>
-                </div>
-            </div>
-
-            <div class="remember-group full-width">
-                <label>
-                    <input type="checkbox" id="rememberMe"> Remember Password (પાસવર્ડ યાદ રાખો)
-                </label>
+                <input type="password" id="loginPwd" placeholder="Enter Password" onkeypress="handleEnter(event)" style="padding-right: 40px; width:100%;">
+                <i class="fa-solid fa-eye" id="toggleEye" onclick="togglePassword()" style="position: absolute; right: 15px; top: 38px; cursor: pointer; color: var(--text-muted);"></i>
             </div>
             
-            <button class="btn btn-save" onclick="performLogin()" style="margin-top: 10px; width: 100%;">
-                <i class="fa-solid fa-right-to-bracket"></i> Login System
-            </button>
+            <div style="display: flex; align-items: center; gap: 8px; margin: 15px 0;">
+                <input type="checkbox" id="rememberMe" style="width: 16px; height: 16px;">
+                <label for="rememberMe" style="margin:0; font-size: 13px; color: var(--text-muted); cursor:pointer;">Remember Password</label>
+            </div>
+            
+            <button class="btn btn-save" onclick="performLogin()"><i class="fa-solid fa-right-to-bracket"></i> Login System</button>
         </div>
     </div>
 
@@ -264,19 +295,17 @@
 
                 <div class="form-group full-width">
                     <label>વ્યક્તિનો ફોટો (Ultra HD Enhancer સાથે)</label>
-                    <input type="file" id="photoInput" accept="image/*" onchange="openCropper(event)">
+                    <input type="file" id="photoInput" accept="image/*" onchange="openCropper(event)" style="padding: 8px;">
                 </div>
 
                 <div class="form-group full-width">
-                    <button id="saveBtn" type="button" class="btn btn-save" onclick="saveRecord()"><i class="fa-solid fa-floppy-disk"></i> કાર્ડ સેવ કરો (Save Record)</button>
-                    <button type="button" class="btn btn-clear" onclick="clearForm()"><i class="fa-solid fa-broom"></i> નવું ફોર્મ ભરો (Clear Form)</button>
+                    <button id="saveBtn" type="button" class="btn btn-save" onclick="saveRecord()"><i class="fa-solid fa-floppy-disk"></i> કાર્ડ સેવ કરો (Save)</button>
+                    <button type="button" class="btn btn-clear" onclick="clearForm()" style="margin-top: 10px;"><i class="fa-solid fa-broom"></i> નવું ફોર્મ (Clear)</button>
                 </div>
             </div>
 
             <!-- Live Preview -->
             <div class="preview-panel">
-                
-                <!-- Wrapper for Zooming the Card -->
                 <div class="card-scaler" id="card-scaler-box">
                     <div class="id-card" id="print-card">
                         <div class="card-header">
@@ -285,9 +314,7 @@
                             <p class="contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
                         </div>
                         <div class="card-body">
-                            <div class="logo-box">
-                                <img id="img-logo" src="logo.png" onerror="this.style.display='none'">
-                            </div>
+                            <div class="logo-box"><img id="img-logo" src="logo.png" onerror="this.style.display='none'"></div>
                             <div class="details-box">
                                 <div class="detail-item"><i class="fa-solid fa-id-card detail-icon"></i><span class="detail-label">સભ્ય નંબર</span> <span class="detail-value">: <span id="val-memberNo">XXXX</span></span></div>
                                 <div class="detail-item"><i class="fa-solid fa-user detail-icon"></i><span class="detail-label">નામ</span> <span class="detail-value">: <span id="val-name">XXXX XXXX</span></span></div>
@@ -297,9 +324,7 @@
                                 <div class="detail-item"><i class="fa-solid fa-phone detail-icon"></i><span class="detail-label">મોબાઇલ</span> <span class="detail-value">: <span id="val-mobile">+91 XXXXX XXXXX</span></span></div>
                                 <div class="detail-item"><i class="fa-solid fa-droplet detail-icon"></i><span class="detail-label">બ્લડ ગ્રુપ</span> <span class="detail-value">: <span id="val-bloodgroup">-</span></span></div>
                             </div>
-                            <div class="photo-box">
-                                <img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Photo">
-                            </div>
+                            <div class="photo-box"><img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="></div>
                         </div>
                         <div class="card-footer">
                             <div class="sign-block left">
@@ -312,16 +337,14 @@
                             </div>
                         </div>
                     </div>
-                </div> <!-- End Scaler -->
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> ડેસ્કટોપ પ્રિન્ટ (Desktop)</button>
-                    <!-- મોબાઈલ માટે નવું બટન -->
-                    <button type="button" class="btn btn-download-card" onclick="downloadIndividualCardPDF()"><i class="fa-solid fa-download"></i> મોબાઈલમાં PDF ડાઉનલોડ</button>
                 </div>
-                <span style="font-size: 13.5px; font-weight: 600; color: #475569; margin-top: 5px; text-align: center;">
+
+                <div style="display: flex; gap: 12px; width: 100%;">
+                    <button type="button" class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> ડેસ્કટોપ પ્રિન્ટ</button>
+                    <button type="button" class="btn btn-download-card" onclick="downloadIndividualCardPDF()"><i class="fa-solid fa-download"></i> PDF ડાઉનલોડ</button>
+                </div>
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 5px; text-align: center;">
                     * Exact Print Size: 85.6mm × 54mm (CR80)<br>
-                    <small>મોબાઈલથી પ્રિન્ટ/શેર કરવા માટે 'PDF ડાઉનલોડ' નો ઉપયોગ કરો.</small>
                 </span>
             </div>
         </div>
@@ -330,17 +353,12 @@
         <div class="table-container">
             <div class="table-header-row">
                 <h2 class="table-title"><i class="fa-solid fa-database"></i> સેવ કરેલા સભ્યોની યાદી</h2>
-                
                 <div class="action-group-right">
-                    <!-- Export All Buttons -->
-                    <div class="export-btns">
-                        <button class="btn-excel" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> બધું Excel</button>
-                        <button class="btn-pdf" onclick="exportToPDF()"><i class="fa-solid fa-file-pdf"></i> બધું PDF</button>
-                    </div>
-
+                    <button class="btn" style="background:#10b981; padding: 10px 15px;" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                    <button class="btn" style="background:#f43f5e; padding: 10px 15px;" onclick="exportToPDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="searchInput" placeholder="નામ અથવા મોબાઈલ નંબરથી સર્ચ..." onkeyup="searchRecords()">
+                        <input type="text" id="searchInput" placeholder="નામ અથવા મોબાઈલ..." onkeyup="searchRecords()">
                     </div>
                 </div>
             </div>
@@ -348,17 +366,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th>સભ્ય નં.</th>
-                        <th>પૂરું નામ</th>
-                        <th>મોબાઇલ નંબર</th>
-                        <th>મૂળ વતન</th> 
-                        <th>તારીખ અને સમય</th> 
-                        <th>એક્શન (Actions)</th>
+                        <th>સભ્ય નં.</th> <th>પૂરું નામ</th> <th>મોબાઇલ નંબર</th>
+                        <th>મૂળ વતન</th> <th>તારીખ અને સમય</th> <th>એક્શન (Actions)</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
-                    <!-- Records will load here -->
-                </tbody>
+                <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
@@ -366,20 +378,36 @@
     <!-- 3. CROP & ENHANCE MODAL -->
     <div id="cropModal" class="crop-modal">
         <div class="crop-container">
-            <h3><i class="fa-solid fa-crop-simple"></i> ફોટો સેટ કરો</h3>
-            <div class="img-crop-area">
-                <img id="imageToCrop" src="">
-            </div>
-            <div class="crop-btns">
-                <button class="btn-crop-cancel" onclick="closeCropper()">Cancel</button>
-                <button class="btn-crop-save" onclick="applyCropAndEnhance()"><i class="fa-solid fa-wand-magic-sparkles"></i> Crop & Enhance HD</button>
+            <h3 style="margin-top:0; color: var(--primary);"><i class="fa-solid fa-crop-simple"></i> ફોટો સેટ કરો</h3>
+            <div class="img-crop-area"><img id="imageToCrop" src=""></div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn btn-clear" onclick="closeCropper()" style="width: 40%;">Cancel</button>
+                <button class="btn btn-print" onclick="applyCropAndEnhance()" style="width: 60%;"><i class="fa-solid fa-wand-magic-sparkles"></i> Crop & Enhance</button>
             </div>
         </div>
     </div>
 
     <script>
+        // Theme Switcher Logic
+        function setTheme(themeName, btnElement) {
+            document.body.className = themeName;
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            localStorage.setItem('selectedTheme', themeName);
+        }
+        
+        // Load saved theme
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('selectedTheme') || 'theme-glass';
+            document.body.className = savedTheme;
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                if (btn.getAttribute('onclick').includes(savedTheme)) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        });
+
         // ==============================================================
-        // 0. FIREBASE SETUP & CONFIGURATION
+        // ORIGINAL JAVASCRIPT LOGIC (Firebase, Cropper, Translate)
         // ==============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyDbZ4T8264CDQ5LSoH_4L0luB5VKQbiqkU",
@@ -390,13 +418,9 @@
             appId: "1:175592360155:web:ba95f9aba4558fda9d64fe",
             measurementId: "G-5N91PLG8LB"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // ==============================================================
-        // 1. LOGIN, SECURITY & REMEMBER ME SYSTEM
-        // ==============================================================
         function togglePassword() {
             const pwdInput = document.getElementById('loginPwd');
             const toggleIcon = document.getElementById('toggleEye');
@@ -416,32 +440,21 @@
             if (userId === "Batrisi" && userPwd === "Bat@3232") {
                 sessionStorage.setItem('isSecuredLoggedIn', 'true');
                 if (rememberMe) {
-                    localStorage.setItem('savedUserId', userId);
-                    localStorage.setItem('savedUserPwd', userPwd);
-                    localStorage.setItem('rememberPwdChecked', 'true');
+                    localStorage.setItem('savedUserId', userId); localStorage.setItem('savedUserPwd', userPwd); localStorage.setItem('rememberPwdChecked', 'true');
                 } else {
                     localStorage.removeItem('savedUserId'); localStorage.removeItem('savedUserPwd'); localStorage.removeItem('rememberPwdChecked');
                 }
-
                 document.getElementById('login-wrapper').style.display = 'none';
                 document.getElementById('app-wrapper').style.display = 'block';
                 errorMsg.style.display = 'none';
                 initializeSystem();
-            } else {
-                errorMsg.style.display = 'block';
-            }
+            } else { errorMsg.style.display = 'block'; }
         }
 
         function handleEnter(e) { if (e.key === 'Enter') performLogin(); }
 
-        function logoutApp() {
-            sessionStorage.removeItem('isSecuredLoggedIn');
-            window.location.reload(); 
-        }
+        function logoutApp() { sessionStorage.removeItem('isSecuredLoggedIn'); window.location.reload(); }
 
-        // ==============================================================
-        // 2. FORM PREVIEW 
-        // ==============================================================
         let currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
         function updateField(inputId, targetId) {
@@ -452,28 +465,16 @@
             document.getElementById(targetId).innerText = displayVal;
         }
 
-        // ==============================================================
-        // 3. IMAGE CROPPER & ULTRA HD ENHANCER LOGIC
-        // ==============================================================
         let cropper;
-
         function openCropper(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    let image = document.getElementById('imageToCrop');
-                    image.src = e.target.result;
-                    
+                    let image = document.getElementById('imageToCrop'); image.src = e.target.result;
                     document.getElementById('cropModal').style.display = 'flex';
-
                     if(cropper) { cropper.destroy(); }
-                    cropper = new Cropper(image, {
-                        aspectRatio: 3 / 4,
-                        viewMode: 1,
-                        autoCropArea: 1,
-                        background: false
-                    });
+                    cropper = new Cropper(image, { aspectRatio: 3 / 4, viewMode: 1, autoCropArea: 1, background: false });
                 }
                 reader.readAsDataURL(file);
             }
@@ -487,70 +488,43 @@
 
         function applyCropAndEnhance() {
             if (!cropper) return;
-
-            let croppedCanvas = cropper.getCroppedCanvas({
-                width: 600,
-                height: 800,
-                imageSmoothingEnabled: true,
-                imageSmoothingQuality: 'high'
-            });
-
+            let croppedCanvas = cropper.getCroppedCanvas({ width: 600, height: 800, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
             let enhancedCanvas = document.createElement('canvas');
-            enhancedCanvas.width = croppedCanvas.width;
-            enhancedCanvas.height = croppedCanvas.height;
+            enhancedCanvas.width = croppedCanvas.width; enhancedCanvas.height = croppedCanvas.height;
             let ctx = enhancedCanvas.getContext('2d');
-
             ctx.filter = 'contrast(115%) saturate(110%) brightness(105%)';
             ctx.drawImage(croppedCanvas, 0, 0);
-
             currentPhotoBase64 = enhancedCanvas.toDataURL('image/jpeg', 0.95);
             document.getElementById('img-photo').src = currentPhotoBase64;
-
             closeCropper();
         }
 
-        // ==============================================================
-        // 4. GOOGLE TRANSLITERATION & GUJARATI DIGITS
-        // ==============================================================
-        const engToGujDigits = {
-            '0': '૦', '1': '૧', '2': '૨', '3': '૩', '4': '૪',
-            '5': '૫', '6': '૬', '7': '૭', '8': '૮', '9': '૯'
-        };
+        const engToGujDigits = { '0':'૦', '1':'૧', '2':'૨', '3':'૩', '4':'૪', '5':'૫', '6':'૬', '7':'૭', '8':'૮', '9':'૯' };
 
         async function transliterateWord(word) {
             if (!/[a-zA-Z]/.test(word)) return word; 
             try {
                 const url = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=gu-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=id_card_app`;
-                let response = await fetch(url);
-                let data = await response.json();
+                let response = await fetch(url); let data = await response.json();
                 if (data[0] === 'SUCCESS') return data[1][0][1][0];
-            } catch (error) { console.error("Transliteration Error:", error); }
+            } catch (error) { console.error("Error:", error); }
             return word;
         }
 
         async function handleTransliteration(elementId, event) {
-            const isEnabled = document.getElementById('enableTransliteration').checked;
-            if (!isEnabled) return; 
-
+            if (!document.getElementById('enableTransliteration').checked) return; 
             if (event.code === 'Space' || event.key === ' ' || event.keyCode === 32) {
                 const el = document.getElementById(elementId);
-                const cursorPosition = el.selectionStart;
-                const text = el.value;
-                
+                const cursorPosition = el.selectionStart; const text = el.value;
                 let startPos = cursorPosition - 2; 
                 while (startPos >= 0 && text[startPos] !== ' ' && text[startPos] !== '\n') startPos--;
                 startPos++; 
-                
                 const wordToConvert = text.substring(startPos, cursorPosition - 1);
-                
                 if (/[a-zA-Z]/.test(wordToConvert)) {
                     const gujaratiWord = await transliterateWord(wordToConvert);
                     if (gujaratiWord !== wordToConvert) {
-                        const currentText = el.value;
-                        const currentCursor = el.selectionStart;
-                        const newText = currentText.substring(0, startPos) + gujaratiWord + currentText.substring(startPos + wordToConvert.length);
-                        el.value = newText;
-                        
+                        const currentText = el.value; const currentCursor = el.selectionStart;
+                        el.value = currentText.substring(0, startPos) + gujaratiWord + currentText.substring(startPos + wordToConvert.length);
                         const diffLength = gujaratiWord.length - wordToConvert.length;
                         if (currentCursor > startPos) el.selectionStart = el.selectionEnd = currentCursor + diffLength;
                         updateField(elementId, 'val-' + elementId);
@@ -560,17 +534,10 @@
         }
 
         function handleNumberConversion(elementId) {
-            const isEnabled = document.getElementById('enableTransliteration').checked;
-            if (!isEnabled) return;
-
+            if (!document.getElementById('enableTransliteration').checked) return;
             const el = document.getElementById(elementId);
-            const originalText = el.value;
-            const cursorPosition = el.selectionStart;
-
-            if (/[0-9]/.test(originalText)) {
-                const newText = originalText.replace(/[0-9]/g, match => engToGujDigits[match]);
-                el.value = newText;
-                el.selectionStart = el.selectionEnd = cursorPosition;
+            if (/[0-9]/.test(el.value)) {
+                el.value = el.value.replace(/[0-9]/g, match => engToGujDigits[match]);
                 updateField(elementId, 'val-' + elementId);
             }
         }
@@ -583,315 +550,121 @@
             }
         }
 
-        // ==============================================================
-        // 5. FIREBASE CLOUD DATABASE OPERATIONS
-        // ==============================================================
         let records = [];
 
         function getCleanDateStr(timestamp) {
             if(!timestamp) return "-";
             let d = new Date(timestamp);
-            let day = d.getDate().toString().padStart(2, '0');
-            let month = (d.getMonth() + 1).toString().padStart(2, '0');
-            let year = d.getFullYear();
-            let hours = d.getHours();
-            let minutes = d.getMinutes().toString().padStart(2, '0');
-            let ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12; hours = hours ? hours : 12; 
-            return `${day}/${month}/${year}, ${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
-        }
-
-        function formatDateTimeHTML(timestamp) {
-            if(!timestamp) return "-";
-            return `<i class="fa-regular fa-clock"></i> ${getCleanDateStr(timestamp)}`;
+            let hours = d.getHours(), ampm = hours >= 12 ? 'PM' : 'AM';
+            return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}, ${(hours%12||12).toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${ampm}`;
         }
 
         function saveRecord() {
-            let docId = document.getElementById('recordId').value;
-            let memberNo = document.getElementById('memberNo').value;
-            let name = document.getElementById('name').value;
-            
-            if(memberNo.trim() === "" || name.trim() === "") { 
-                alert("કૃપા કરીને સભ્ય નંબર અને પૂરું નામ દાખલ કરો!"); 
-                return; 
-            }
+            let docId = document.getElementById('recordId').value, memberNo = document.getElementById('memberNo').value, name = document.getElementById('name').value;
+            if(memberNo.trim() === "" || name.trim() === "") { alert("કૃપા કરીને સભ્ય નંબર અને પૂરું નામ દાખલ કરો!"); return; }
 
-            let saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> સેવ થઇ રહ્યું છે...';
-            saveBtn.disabled = true;
+            let saveBtn = document.getElementById('saveBtn'); saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> સેવ થઇ રહ્યું છે...'; saveBtn.disabled = true;
 
-            let recordData = {
-                memberNo: memberNo,
-                name: name,
-                address: document.getElementById('address').value,
-                hometown: document.getElementById('hometown').value,
-                dob: document.getElementById('dob').value,
-                mobile: document.getElementById('mobile').value,
-                bloodgroup: document.getElementById('bloodgroup').value,
-                photo: currentPhotoBase64
-            };
+            let recordData = { memberNo, name, address: document.getElementById('address').value, hometown: document.getElementById('hometown').value, dob: document.getElementById('dob').value, mobile: document.getElementById('mobile').value, bloodgroup: document.getElementById('bloodgroup').value, photo: currentPhotoBase64 };
 
-            if(docId) {
-                recordData.updatedAt = Date.now();
-                db.collection("idCards").doc(docId).update(recordData)
-                .then(() => {
-                    alert("ડેટા સફળતાપૂર્વક અપડેટ થઈ ગયો છે!");
-                    clearForm(); resetBtn(saveBtn);
-                }).catch(err => { alert("Error: " + err.message); resetBtn(saveBtn); });
-            } else {
-                recordData.timestamp = Date.now();
-                db.collection("idCards").add(recordData)
-                .then(() => {
-                    alert("ડેટા સફળતાપૂર્વક સેવ થઈ ગયો છે!");
-                    clearForm(); resetBtn(saveBtn);
-                }).catch(err => { alert("Error: " + err.message); resetBtn(saveBtn); });
-            }
+            let req = docId ? db.collection("idCards").doc(docId).update({...recordData, updatedAt: Date.now()}) : db.collection("idCards").add({...recordData, timestamp: Date.now()});
+            req.then(() => { alert("ડેટા સફળતાપૂર્વક સેવ થઈ ગયો છે!"); clearForm(); resetBtn(saveBtn); }).catch(err => { alert("Error: " + err.message); resetBtn(saveBtn); });
         }
 
-        function resetBtn(btn) {
-            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> કાર્ડ સેવ કરો (Save Record)';
-            btn.disabled = false;
-        }
+        function resetBtn(btn) { btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> કાર્ડ સેવ કરો (Save)'; btn.disabled = false; }
 
         function fetchFirebaseData() {
-            db.collection("idCards").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
-                records = [];
-                querySnapshot.forEach((doc) => {
-                    let data = doc.data(); data.docId = doc.id; records.push(data);
-                });
-                searchRecords(); 
-            }, (error) => {
-                console.error("Firebase Error: ", error); alert("ડેટાબેઝ માંથી ડેટા લાવવામાં ભૂલ આવી છે!");
+            db.collection("idCards").orderBy("timestamp", "desc").onSnapshot((qs) => {
+                records = []; qs.forEach((doc) => { let d = doc.data(); d.docId = doc.id; records.push(d); }); searchRecords(); 
             });
         }
 
         function searchRecords() {
             let query = document.getElementById('searchInput').value.toLowerCase().trim();
-            let filteredRecords = records.filter(rec => {
-                let nameMatch = rec.name.toLowerCase().includes(query);
-                let mobileMatch = (rec.mobile || "").includes(query);
-                return nameMatch || mobileMatch;
-            });
-            loadTable(filteredRecords);
+            loadTable(records.filter(rec => rec.name.toLowerCase().includes(query) || (rec.mobile || "").includes(query)));
         }
 
         function loadTable(dataArray) {
-            let tbody = document.getElementById('tableBody');
-            tbody.innerHTML = "";
-            
-            if (!dataArray || dataArray.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 25px; color: #64748b; font-weight: 500;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`;
-                return;
-            }
-
+            let tbody = document.getElementById('tableBody'); tbody.innerHTML = "";
+            if (dataArray.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 25px;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`; return; }
             dataArray.forEach(rec => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${rec.memberNo || "-"}</td>
-                    <td>${rec.name || "-"}</td>
-                    <td>${rec.mobile || "-"}</td>
-                    <td>${rec.hometown || "-"}</td>
-                    <td><span class="date-badge">${formatDateTimeHTML(rec.timestamp)}</span></td>
+                tbody.innerHTML += `<tr>
+                    <td>${rec.memberNo || "-"}</td><td>${rec.name || "-"}</td><td>${rec.mobile || "-"}</td><td>${rec.hometown || "-"}</td>
+                    <td><span style="font-size:12px; font-weight:600;"><i class="fa-regular fa-clock"></i> ${getCleanDateStr(rec.timestamp)}</span></td>
                     <td class="action-btns">
-                        <button type="button" class="btn-sm btn-print-sm" title="Print" onclick="printFromTable('${rec.docId}')"><i class="fa-solid fa-print"></i></button>
-                        <button type="button" class="btn-sm btn-download-sm" title="Download PDF (Mobile)" onclick="downloadIndividualCardPDF('${rec.docId}')"><i class="fa-solid fa-download"></i></button>
-                        <button type="button" class="btn-sm btn-edit" title="Edit" onclick="editRecord('${rec.docId}')"><i class="fa-solid fa-pen"></i></button>
-                        <button type="button" class="btn-sm btn-delete" title="Delete" onclick="deleteRecord('${rec.docId}')"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn-sm btn-print-sm" onclick="printFromTable('${rec.docId}')"><i class="fa-solid fa-print"></i></button>
+                        <button class="btn-sm btn-download-sm" onclick="downloadIndividualCardPDF('${rec.docId}')"><i class="fa-solid fa-download"></i></button>
+                        <button class="btn-sm btn-edit" onclick="editRecord('${rec.docId}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-sm btn-delete" onclick="deleteRecord('${rec.docId}')"><i class="fa-solid fa-trash"></i></button>
                     </td>
-                `;
-                tbody.appendChild(tr);
+                </tr>`;
             });
         }
 
         function editRecord(docId) {
-            let rec = records.find(r => r.docId === docId);
-            if(!rec) return;
-
+            let rec = records.find(r => r.docId === docId); if(!rec) return;
             document.getElementById('recordId').value = rec.docId; 
-            document.getElementById('memberNo').value = rec.memberNo || "";
-            document.getElementById('name').value = rec.name || "";
-            document.getElementById('address').value = rec.address || "";
-            document.getElementById('hometown').value = rec.hometown || "";
-            document.getElementById('dob').value = rec.dob || "";
-            document.getElementById('mobile').value = rec.mobile || "";
-            document.getElementById('bloodgroup').value = rec.bloodgroup || "-";
-            
-            currentPhotoBase64 = rec.photo;
-            document.getElementById('img-photo').src = currentPhotoBase64;
-
-            updateField('memberNo', 'val-memberNo'); updateField('name', 'val-name');
-            updateField('address', 'val-address'); updateField('hometown', 'val-hometown');
-            updateField('dob', 'val-dob'); updateField('mobile', 'val-mobile');
-            updateField('bloodgroup', 'val-bloodgroup');
-            
+            ['memberNo', 'name', 'address', 'hometown', 'dob', 'mobile'].forEach(id => { document.getElementById(id).value = rec[id] || ""; updateField(id, 'val-'+id); });
+            document.getElementById('bloodgroup').value = rec.bloodgroup || "-"; updateField('bloodgroup', 'val-bloodgroup');
+            document.getElementById('img-photo').src = currentPhotoBase64 = rec.photo;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function deleteRecord(docId) {
-            if(confirm("શું તમે ખરેખર આ રેકોર્ડ ડીલીટ કરવા માંગો છો? આ કાયમી ધોરણે ડીલીટ થઇ જશે!")) {
-                db.collection("idCards").doc(docId).delete().catch((error) => console.error("Error removing document: ", error));
-            }
-        }
+        function deleteRecord(docId) { if(confirm("શું તમે ખરેખર આ ડીલીટ કરવા માંગો છો?")) db.collection("idCards").doc(docId).delete(); }
 
         function clearForm() {
-            document.getElementById('recordId').value = ""; 
-            document.getElementById('memberNo').value = ""; document.getElementById('name').value = "";
-            document.getElementById('address').value = ""; document.getElementById('hometown').value = "";
-            document.getElementById('dob').value = ""; document.getElementById('mobile').value = "";
-            document.getElementById('bloodgroup').value = "-"; document.getElementById('photoInput').value = "";
-            document.getElementById('searchInput').value = "";
-            
-            currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-            document.getElementById('img-photo').src = currentPhotoBase64;
-            
+            document.getElementById('recordId').value = ""; document.getElementById('photoInput').value = "";
+            ['memberNo', 'name', 'address', 'hometown', 'dob', 'mobile', 'searchInput'].forEach(id => document.getElementById(id).value = "");
+            document.getElementById('bloodgroup').value = "-";
+            document.getElementById('img-photo').src = currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
             ['val-memberNo', 'val-name', 'val-address', 'val-hometown', 'val-mobile'].forEach(id => document.getElementById(id).innerText = "XXXX");
             document.getElementById('val-dob').innerText = "XX/XX/XXXX"; document.getElementById('val-bloodgroup').innerText = "-";
         }
 
-        // ==============================================================
-        // 6. EXCEL & PDF EXPORT LOGIC (BULK)
-        // ==============================================================
         function exportToExcel() {
-            if(records.length === 0) { alert("કોઈ ડેટા ઉપલબ્ધ નથી!"); return; }
-            
-            let exportData = records.map(r => ({
-                "સભ્ય નં.": r.memberNo || "-", "પૂરું નામ": r.name || "-", "સરનામું": r.address || "-",
-                "મૂળ વતન": r.hometown || "-", "જન્મ તારીખ": r.dob || "-", "મોબાઇલ નંબર": r.mobile || "-",
-                "બ્લડ ગ્રુપ": r.bloodgroup || "-", "બનાવ્યા તારીખ અને સમય": getCleanDateStr(r.timestamp)
-            }));
-
-            let ws = XLSX.utils.json_to_sheet(exportData);
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Members Data");
-            XLSX.writeFile(wb, "Batrisi_Jain_Members.xlsx");
+            if(records.length === 0) return alert("કોઈ ડેટા ઉપલબ્ધ નથી!");
+            let ws = XLSX.utils.json_to_sheet(records.map(r => ({"સભ્ય નં.": r.memberNo, "પૂરું નામ": r.name, "સરનામું": r.address, "મૂળ વતન": r.hometown, "જન્મ તારીખ": r.dob, "મોબાઇલ નંબર": r.mobile, "બ્લડ ગ્રુપ": r.bloodgroup, "તારીખ": getCleanDateStr(r.timestamp)})));
+            let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, "Batrisi_Jain_Members.xlsx");
         }
 
         function exportToPDF() {
-            if(records.length === 0) { alert("કોઈ ડેટા ઉપલબ્ધ નથી!"); return; }
-            
-            let tempDiv = document.createElement('div');
-            tempDiv.style.position = 'absolute'; tempDiv.style.left = '-9999px'; tempDiv.style.top = '0';
-            tempDiv.style.background = 'white'; tempDiv.style.padding = '30px'; tempDiv.style.width = '1000px';
-            
-            let html = `<h2 style="text-align:center; color:#0f3460; font-family: sans-serif;">શ્રી બત્રીસી જૈન - સેવ કરેલા સભ્યોની યાદી</h2>`;
-            html += `<table style="width:100%; border-collapse:collapse; font-family: sans-serif; text-align:left;" border="1">`;
-            html += `<tr style="background:#f1f5f9; color:#0f172a;"><th style="padding:10px;">સભ્ય નં.</th><th style="padding:10px;">પૂરું નામ</th><th style="padding:10px;">મોબાઇલ નંબર</th><th style="padding:10px;">મૂળ વતન</th><th style="padding:10px;">બ્લડ ગ્રુપ</th><th style="padding:10px;">બનાવ્યા તારીખ</th></tr>`;
-                     
-            records.forEach(r => {
-                html += `<tr>
-                            <td style="padding:10px; color:#334155;">${r.memberNo || "-"}</td><td style="padding:10px; color:#334155;">${r.name || "-"}</td>
-                            <td style="padding:10px; color:#334155;">${r.mobile || "-"}</td><td style="padding:10px; color:#334155;">${r.hometown || "-"}</td>
-                            <td style="padding:10px; color:#334155;">${r.bloodgroup || "-"}</td><td style="padding:10px; color:#334155;">${getCleanDateStr(r.timestamp)}</td>
-                         </tr>`;
-            });
-            html += `</table>`;
-            tempDiv.innerHTML = html; document.body.appendChild(tempDiv);
-
-            html2canvas(tempDiv, { scale: 2, useCORS: true }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
-                pdf.save("Batrisi_Jain_Members.pdf"); document.body.removeChild(tempDiv);
+            if(records.length === 0) return alert("કોઈ ડેટા ઉપલબ્ધ નથી!");
+            let tempDiv = document.createElement('div'); tempDiv.style.cssText = 'position:absolute;left:-9999px;top:0;background:white;padding:30px;width:1000px;';
+            let html = `<h2 style="text-align:center; color:#0f3460;">શ્રી બત્રીસી જૈન - યાદી</h2><table style="width:100%; border-collapse:collapse; text-align:left;" border="1"><tr style="background:#f1f5f9;"><th>સભ્ય નં.</th><th>નામ</th><th>મોબાઇલ</th><th>વતન</th><th>બ્લડ ગ્રુપ</th><th>તારીખ</th></tr>`;
+            records.forEach(r => html += `<tr><td>${r.memberNo||"-"}</td><td>${r.name||"-"}</td><td>${r.mobile||"-"}</td><td>${r.hometown||"-"}</td><td>${r.bloodgroup||"-"}</td><td>${getCleanDateStr(r.timestamp)}</td></tr>`);
+            tempDiv.innerHTML = html + `</table>`; document.body.appendChild(tempDiv);
+            html2canvas(tempDiv, { scale: 2 }).then(canvas => {
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 10, pdf.internal.pageSize.getWidth(), (canvas.height * pdf.internal.pageSize.getWidth()) / canvas.width);
+                pdf.save("Members.pdf"); document.body.removeChild(tempDiv);
             });
         }
 
-        // ==============================================================
-        // 7. DESKTOP PRINT LOGIC (Native HTML Print)
-        // ==============================================================
-        function printFromTable(docId) {
-            editRecord(docId); setTimeout(printCard, 800); 
-        }
-
+        function printFromTable(docId) { editRecord(docId); setTimeout(printCard, 800); }
         function printCard() {
-            const cardElement = document.getElementById('print-card');
-            const cardHTML = cardElement.outerHTML;
-            
             let printWin = window.open('', '_blank');
-            let styles = '';
-            for (let styleSheet of document.styleSheets) {
-                try { for (let rule of styleSheet.cssRules) { styles += rule.cssText + '\n'; } } catch(e) {}
-            }
-
-            printWin.document.write(`
-                <!DOCTYPE html>
-                <html lang="gu">
-                <head><title>Print ID Card</title>
-                <link href="https://fonts.googleapis.com/css2?family=Mogra&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-                <style>
-                    ${styles}
-                    @media print {
-                        @page { size: 85.6mm 54mm landscape; margin: 0; }
-                        body { margin: 0; display: flex; justify-content: center; align-items: center; background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;}
-                        #print-card { transform: scale(0.755) !important; transform-origin: center center !important; border: none !important; box-shadow: none !important; margin: 0 !important; }
-                    }
-                    body { background: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-                    #print-card { transform: scale(1); } 
-                </style>
-                </head><body>
-                    ${cardHTML}
-                    <script>
-                        window.onload = function() { setTimeout(() => { window.print(); window.close(); }, 800); };
-                    <\/script>
-                </body></html>
-            `);
+            let styles = ''; for (let s of document.styleSheets) try { for (let r of s.cssRules) styles += r.cssText + '\n'; } catch(e) {}
+            printWin.document.write(`<html><head><style>${styles}@media print{@page{size:85.6mm 54mm landscape;margin:0;}body{margin:0;display:flex;justify-content:center;align-items:center;background:white;}#print-card{transform:scale(0.755)!important;border:none!important;box-shadow:none!important;margin:0!important;}}body{background:white;display:flex;justify-content:center;align-items:center;height:100vh;}#print-card{transform:scale(1);}</style></head><body>${document.getElementById('print-card').outerHTML}<script>window.onload=()=>setTimeout(()=>{window.print();window.close();},800);<\/script></body></html>`);
             printWin.document.close();
         }
 
-        // ==============================================================
-        // 8. MOBILE PDF DOWNLOAD LOGIC (Individual ID Card)
-        // ==============================================================
         function downloadIndividualCardPDF(docId = null) {
-            if (docId) {
-                editRecord(docId); // પહેલા કાર્ડનો ડેટા પ્રિવ્યૂમાં લાવો
-            }
-
-            // ડેટા લોડ થવા માટે થોડી વાર રાહ જુઓ
+            if (docId) editRecord(docId);
             setTimeout(() => {
-                const card = document.getElementById('print-card');
-                const scalerBox = document.getElementById('card-scaler-box');
-                
-                // કાર્ડને પર્ફેક્ટ સાઈઝમાં ડાઉનલોડ કરવા માટે તેનું સ્કેલિંગ હંગામી ધોરણે કાઢી નાખીએ
-                scalerBox.style.transform = 'scale(1)';
-
-                // html2canvas નો ઉપયોગ કરીને હાઇ રિઝોલ્યુશન (scale: 4) ઈમેજ બનાવીએ
-                html2canvas(card, { scale: 4, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png'); 
-                    const { jsPDF } = window.jspdf;
-                    
-                    // CR80 Card Size (85.6mm x 54mm) નું PDF બનાવીએ
-                    const pdf = new jsPDF({
-                        orientation: 'landscape',
-                        unit: 'mm',
-                        format: [85.6, 54]
-                    });
-                    
-                    pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
-                    
-                    let memberName = document.getElementById('val-name').innerText.trim();
-                    if(memberName === "XXXX XXXX" || !memberName) memberName = "ID_Card";
-                    
-                    pdf.save(memberName + "_ID_Card.pdf");
-                    
-                    // ડાઉનલોડ થયા પછી પ્રિવ્યૂની સાઈઝ પાછી 1.25x કરી દઈએ 
-                    scalerBox.style.transform = 'scale(1.25)';
-                }).catch(err => {
-                    alert("PDF બનાવવામાં એરર: " + err);
+                const scalerBox = document.getElementById('card-scaler-box'); scalerBox.style.transform = 'scale(1)';
+                html2canvas(document.getElementById('print-card'), { scale: 4, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+                    const pdf = new jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
+                    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 85.6, 54);
+                    let name = document.getElementById('val-name').innerText.trim();
+                    pdf.save((name === "XXXX XXXX" || !name ? "ID_Card" : name) + "_ID_Card.pdf");
                     scalerBox.style.transform = 'scale(1.25)';
                 });
             }, docId ? 800 : 100); 
         }
 
-        // ==============================================================
-        // 9. INITIALIZATION
-        // ==============================================================
         function initializeSystem() {
             fetchFirebaseData(); 
-            setupTransliteration('memberNo'); setupTransliteration('name');
-            setupTransliteration('address'); setupTransliteration('hometown');
-            setupTransliteration('dob'); setupTransliteration('mobile');
+            ['memberNo','name','address','hometown','dob','mobile'].forEach(setupTransliteration);
         }
 
         window.onload = function() {
@@ -900,15 +673,10 @@
                 document.getElementById('loginPwd').value = localStorage.getItem('savedUserPwd') || '';
                 document.getElementById('rememberMe').checked = true;
             }
-
-            const isLoggedIn = sessionStorage.getItem('isSecuredLoggedIn');
-            if (isLoggedIn === 'true') {
+            if (sessionStorage.getItem('isSecuredLoggedIn') === 'true') {
                 document.getElementById('login-wrapper').style.display = 'none';
                 document.getElementById('app-wrapper').style.display = 'block';
                 initializeSystem();
-            } else {
-                document.getElementById('login-wrapper').style.display = 'flex';
-                document.getElementById('app-wrapper').style.display = 'none';
             }
         };
     </script>
