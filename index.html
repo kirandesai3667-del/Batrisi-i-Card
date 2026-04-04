@@ -30,6 +30,11 @@
     <style>
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
 
+        @font-face {
+            font-family: 'KAP_36_';
+            src: local('KAP_36_'); 
+        }
+
         :root {
             --primary: #0f3460; --secondary: #2563eb; --text-dark: #0f172a; --text-light: #334155; --bg-body: #f8fafc;
             --card-w: 428px; --card-h: 270px;
@@ -73,12 +78,60 @@
         .transl-toggle-bar label { margin: 0; color: #1e3a8a; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
         .transl-toggle-bar input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--secondary); margin: 0;}
 
+        /* Card Preview */
+        .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 10px;}
+        
+        /* ઓપરેટર માટે મોટી સાઈઝનું કાર્ડ (ZOOMED 25%) */
+        .card-scaler { 
+            transform: scale(1.25); 
+            transform-origin: top center; 
+            margin-bottom: 70px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+            border-radius: 10px;
+        }
+
+        .id-card { width: var(--card-w); height: var(--card-h); background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%); display: flex; flex-direction: column; box-sizing: border-box; border-radius: 10px; border: 1.5px solid #cbd5e1; overflow: hidden; }
+        .card-header { text-align: center; border-bottom: 2px solid var(--secondary); padding: 6px 16px 4px 16px; background: rgba(255,255,255,0.9); flex-shrink: 0; }
+        .card-header h2 { margin: 0 0 3px 0; font-family: 'Mogra', serif; font-size: 12.5px; color: var(--primary); font-weight: 400; line-height: 1.4; }
+        .card-header .address { margin: 0; font-size: 6.8px; color: var(--text-dark); font-weight: 600; line-height: 1.4; }
+        .card-header .contact { margin: 2px 0 0 0; font-size: 6.5px; color: #b91c1c; font-weight: 700; }
+        .card-body { display: grid; grid-template-columns: 50px 1fr 68px; gap: 12px; align-items: start; padding: 8px 16px; flex-grow: 1; }
+        
+        .logo-box { width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; background: #f1f5f9; border-radius: 5px; overflow: hidden; border: 1px solid #cbd5e1;}
+        .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .details-box { display: flex; flex-direction: column; gap: 0px; }
+        
+        /* UPDATED: Uniform Size and KAP_36_ Font for specific fields */
+        .detail-item { display: flex; align-items: flex-start; line-height: 1.4; margin-bottom: 3.5px; }
+        .detail-icon { color: var(--secondary); width: 14px; font-size: 8.5px; text-align: center; margin-right: 5px; margin-top: 2px; }
+        
+        .detail-label, .detail-value { 
+            font-family: 'KAP_36_', 'Noto Sans Gujarati', sans-serif;
+            font-size: 10px; /* SAME EXACT SIZE FOR BOTH */
+        }
+        
+        .detail-label { color: var(--text-light); font-weight: 600; width: 68px; }
+        .detail-value { color: var(--text-dark); font-weight: 600; flex: 1; display: flex; gap: 4px; }
+        
+        .photo-box { width: 66px; height: 88px; border-radius: 4px; border: 2px solid var(--secondary); display: flex; justify-content: center; align-items: center; background: #e2e8f0; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; padding: 4px 16px 6px 16px; border-top: 1px solid #cbd5e1; background: linear-gradient(to top, #f4f7fb 90%, rgba(244,247,251,0.5) 100%); flex-shrink: 0; }
+        .sign-block { display: flex; flex-direction: column; }
+        .sign-block.left { align-items: flex-start; }
+        .sign-block.right { align-items: flex-end; }
+        .sign-block img { height: 22px; width: auto; max-width: 80px; object-fit: contain; margin-bottom: 2px; }
+        .sign-block p { margin: 0; font-size: 9px; color: var(--text-dark); font-weight: 600; line-height: 1.2; }
+        .sign-block span { font-weight: 500; color: var(--text-light); font-size: 8px; }
+
         /* Buttons */
         .btn-group { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
         .btn { padding: 10px 20px; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; color: white; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
         .btn-save { background-color: #16a34a; width: 100%; justify-content: center; margin-top: 10px; }
         .btn-clear { background-color: #64748b; width: 100%; justify-content: center; }
+        
         .btn-print { background-color: var(--secondary); padding: 12px 25px; font-size: 15px; box-shadow: 0 4px 15px rgba(37,99,235,0.3);}
         .btn-download-card { background-color: #8b5cf6; padding: 12px 25px; font-size: 15px; box-shadow: 0 4px 15px rgba(139,92,246,0.3);}
 
@@ -105,10 +158,13 @@
         .action-btns { display: flex; gap: 8px; flex-wrap: wrap;}
         .btn-sm { padding: 6px 10px; font-size: 13px; border: none; border-radius: 4px; cursor: pointer; color: white; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
         .btn-sm:hover { opacity: 0.8; transform: scale(1.05);}
+        
+        /* Individual Table Buttons */
         .btn-print-sm { background: var(--secondary); }
-        .btn-download-sm { background: #8b5cf6; } 
+        .btn-download-sm { background: #8b5cf6; } /* Purple Download Button */
         .btn-edit { background: #f59e0b; }
         .btn-delete { background: #ef4444; }
+        
         .date-badge { font-size: 12px; color: #475569; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;}
 
         /* Image Cropper Modal */
@@ -120,180 +176,6 @@
         .crop-btns { display: flex; gap: 10px; justify-content: center; }
         .btn-crop-cancel { background-color: #64748b; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; width: 40%;}
         .btn-crop-save { background-color: var(--secondary); color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; width: 60%;}
-
-
-        /* =========================================
-           NEW PREMIUM CARD DESIGN CSS 
-           ========================================= */
-        @font-face {
-            font-family: 'KAP_36_';
-            src: local('KAP_36_'); 
-        }
-
-        .gu-text {
-            font-family: 'KAP_36_', 'Noto Sans Gujarati', sans-serif !important;
-        }
-
-        .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 10px;}
-        
-        .card-scaler { 
-            transform: scale(1.25); 
-            transform-origin: top center; 
-            margin-bottom: 70px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
-            border-radius: 12px;
-        }
-
-        .id-card {
-            position: relative;
-            width: var(--card-w);
-            height: var(--card-h);
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #cbd5e1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            z-index: 1;
-            box-sizing: border-box;
-        }
-
-        .card-watermark {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: -1;
-            opacity: 0.06;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='150'%3E%3Cg transform='rotate(-22 175 75)'%3E%3Ctext x='-50' y='60' font-family='sans-serif' font-size='16' font-weight='bold' fill='%230f3460'%3Eશ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ%3C/text%3E%3Ctext x='-100' y='140' font-family='sans-serif' font-size='16' font-weight='bold' fill='%230f3460'%3Eશ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ%3C/text%3E%3C/g%3E%3C/svg%3E");
-            background-repeat: repeat;
-            pointer-events: none;
-        }
-
-        .card-header {
-            background: #0f3460;
-            color: #ffffff;
-            text-align: center;
-            padding: 10px 15px 8px 15px;
-            border-bottom: 3px solid #d4af37;
-            flex-shrink: 0;
-        }
-        
-        .society-name {
-            margin: 0 0 4px 0;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-        
-        .header-address {
-            margin: 0 0 3px 0;
-            font-size: 7.5px;
-            font-weight: 400;
-            color: #e2e8f0;
-        }
-        
-        .header-contact {
-            margin: 0;
-            font-size: 7.5px;
-            font-weight: 600;
-            color: #fbbf24; 
-        }
-
-        .card-body {
-            display: flex;
-            padding: 12px 15px;
-            flex-grow: 1;
-            gap: 15px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(241,245,249,0.9) 100%);
-        }
-
-        .details-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            justify-content: center;
-        }
-
-        .detail-row {
-            display: grid;
-            grid-template-columns: 75px 10px 1fr;
-            align-items: center;
-            font-size: 10.5px;
-            line-height: 1.2;
-        }
-
-        .detail-row .label { color: #475569; font-weight: 600; }
-        .detail-row .colon { color: #0f3460; font-weight: bold; text-align: center; }
-        .detail-row .value { color: #0f172a; font-weight: 700; }
-
-        .name-highlight {
-            font-size: 12.5px;
-            color: #0f3460 !important;
-            border-bottom: 1px dashed #cbd5e1;
-            padding-bottom: 2px;
-        }
-
-        .blood-group-val {
-            color: #e11d48 !important;
-            font-weight: 800;
-            font-size: 12px;
-        }
-
-        .photo-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
-        .photo-box {
-            width: 72px;
-            height: 96px;
-            border: 2px solid #0f3460;
-            padding: 2px;
-            background: #ffffff;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-radius: 4px;
-        }
-
-        .photo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding: 5px 20px 8px 20px;
-            background: rgba(255,255,255,0.7);
-            border-top: 1px solid #cbd5e1;
-            flex-shrink: 0;
-        }
-
-        .sign-box {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .sign-box img {
-            height: 25px;
-            object-fit: contain;
-            margin-bottom: 2px;
-        }
-
-        .sign-name {
-            font-size: 8.5px;
-            font-weight: 600;
-            color: #0f3460;
-            border-top: 1px solid #0f3460;
-            padding-top: 2px;
-            min-width: 90px;
-        }
     </style>
 </head>
 <body>
@@ -409,71 +291,41 @@
                 
                 <!-- Wrapper for Zooming the Card -->
                 <div class="card-scaler" id="card-scaler-box">
-                    
-                    <!-- NEW PREMIUM ID CARD DESIGN -->
                     <div class="id-card" id="print-card">
-                        
-                        <div class="card-watermark"></div>
-                        
                         <div class="card-header">
-                            <h2 class="gu-text society-name">શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
-                            <p class="gu-text header-address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
-                            <p class="gu-text header-contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
+                            <h2>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
+                            <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
+                            <p class="contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
                         </div>
-
                         <div class="card-body">
-                            <div class="details-container">
-                                <div class="detail-row">
-                                    <span class="label gu-text">સભ્ય નંબર</span> <span class="colon">:</span> 
-                                    <span class="value gu-text" id="val-memberNo">XXXX</span>
-                                </div>
-                                <div class="detail-row" style="margin-top: 3px; margin-bottom: 3px;">
-                                    <span class="label gu-text">પૂરું નામ</span> <span class="colon">:</span> 
-                                    <span class="value gu-text name-highlight" id="val-name">XXXX XXXX</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="label gu-text">સરનામું</span> <span class="colon">:</span> 
-                                    <span class="value gu-text" id="val-address">XXXX XXXX XXXX</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="label gu-text">મૂળ વતન</span> <span class="colon">:</span> 
-                                    <span class="value gu-text" id="val-hometown">XXXX</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="label gu-text">જન્મ તારીખ</span> <span class="colon">:</span> 
-                                    <span class="value gu-text" id="val-dob">XX/XX/XXXX</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="label gu-text">મોબાઇલ નંબર</span> <span class="colon">:</span> 
-                                    <span class="value gu-text" id="val-mobile">XXXXX XXXXX</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="label gu-text">બ્લડ ગ્રુપ</span> <span class="colon">:</span> 
-                                    <span class="value gu-text blood-group-val" id="val-bloodgroup">-</span>
-                                </div>
+                            <div class="logo-box">
+                                <img id="img-logo" src="logo.png" onerror="this.style.display='none'">
                             </div>
-
-                            <div class="photo-container">
-                                <div class="photo-box">
-                                    <img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Photo">
-                                </div>
+                            <!-- UPDATED SECTION: Labels in Gujarati as requested + Uniform Size + KAP_36 Font -->
+                            <div class="details-box">
+                                <div class="detail-item"><i class="fa-solid fa-id-card detail-icon"></i><span class="detail-label">સભ્ય નંબર</span> <span class="detail-value"><span>:</span> <span id="val-memberNo">XXXX</span></span></div>
+                                <div class="detail-item"><i class="fa-solid fa-user detail-icon"></i><span class="detail-label">પૂરું નામ</span> <span class="detail-value"><span>:</span> <span id="val-name">XXXX XXXX</span></span></div>
+                                <div class="detail-item"><i class="fa-solid fa-location-dot detail-icon"></i><span class="detail-label">સરનામું</span> <span class="detail-value"><span>:</span> <span id="val-address">XXXX XXXX XXXX</span></span></div>
+                                <div class="detail-item"><i class="fa-solid fa-house detail-icon"></i><span class="detail-label">મૂળ વતન</span> <span class="detail-value"><span>:</span> <span id="val-hometown">XXXX</span></span></div>
+                                <div class="detail-item"><i class="fa-solid fa-calendar-days detail-icon"></i><span class="detail-label">જન્મ તારીખ</span> <span class="detail-value"><span>:</span> <span id="val-dob">XX/XX/XXXX</span></span></div>
+                                <div class="detail-item"><i class="fa-solid fa-phone detail-icon"></i><span class="detail-label">મોબાઇલ નંબર</span> <span class="detail-value"><span>:</span> <span id="val-mobile">XXXXX XXXXX</span></span></div>
+                                <div class="detail-item"><i class="fa-solid fa-droplet detail-icon"></i><span class="detail-label">બ્લડ ગ્રુપ</span> <span class="detail-value"><span>:</span> <span id="val-bloodgroup">-</span></span></div>
+                            </div>
+                            <div class="photo-box">
+                                <img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Photo">
                             </div>
                         </div>
-
                         <div class="card-footer">
-                            <div class="sign-box">
+                            <div class="sign-block left">
                                 <img id="img-sign1" src="sign1.png" onerror="this.style.display='none'">
-                                <div class="sign-name gu-text">સંદીપ એમ. શાહ (કન્વીનર)</div>
+                                <p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p>
                             </div>
-                            <div class="sign-box">
+                            <div class="sign-block right">
                                 <img id="img-sign2" src="sign2.png" onerror="this.style.display='none'">
-                                <div class="sign-name gu-text">મયંક આર. શાહ (મંત્રી)</div>
+                                <p>મયંક આર. શાહ <span>- મંત્રી</span></p>
                             </div>
                         </div>
-
                     </div>
-                    <!-- END OF NEW PREMIUM ID CARD DESIGN -->
-
                 </div> <!-- End Scaler -->
 
                 <div class="btn-group">
