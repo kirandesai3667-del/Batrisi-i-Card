@@ -103,10 +103,10 @@
             background: #ffffff; 
             display: flex; 
             flex-direction: column;
-            justify-content: space-between; /* Ensures proper spacing */
+            justify-content: space-between; 
             box-sizing: border-box; 
             border-radius: 16px; 
-            border: 1.5px solid #cbd5e1; 
+            border: 2px solid #0f172a; /* BORDER DARK KIYA GAYA HAI */
             position: relative;
             overflow: hidden; 
         }
@@ -115,7 +115,7 @@
         .card-header { 
             text-align: center; 
             border-bottom: 3px solid var(--secondary); 
-            padding: 4px 10px 2px 10px; /* Reduced vertical padding */
+            padding: 4px 10px 2px 10px; 
             background: #ffffff; 
             flex-shrink: 0; 
         }
@@ -127,10 +127,10 @@
         .card-body { 
             background: #f8fafc; 
             display: grid; 
-            grid-template-columns: 46px 1fr 60px; /* Compact columns */
+            grid-template-columns: 46px 1fr 60px; 
             gap: 8px; 
             align-items: start; 
-            padding: 5px 12px; /* Reduced padding */
+            padding: 5px 12px; 
             flex-grow: 1; 
             overflow: hidden; 
         }
@@ -138,11 +138,11 @@
         .logo-box { width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; background: transparent; }
         .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
-        /* --- BOTH SIDE BOXES DESIGN (Smaller Sizes) --- */
+        /* --- BOTH SIDE BOXES DESIGN --- */
         .details-box { 
             display: flex; 
             flex-direction: column; 
-            gap: 2.5px; /* Reduced space between rows */
+            gap: 2.5px; 
             width: 100%;
         }
         
@@ -152,14 +152,13 @@
             gap: 4px; 
         }
         
-        /* Box 1: Label */
         .detail-label-box {
             background-color: #e2e8f0; 
             border-left: 3px solid #0f3460; 
             color: #0f3460;
-            padding: 1.5px 4px; /* Tighter padding */
+            padding: 1.5px 4px; 
             border-radius: 2px 4px 4px 2px;
-            width: 70px; /* Compact width */
+            width: 70px; 
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -173,7 +172,6 @@
             align-items: center;
         }
         
-        /* Box 2: Value */
         .detail-value-box { 
             background-color: #ffffff; 
             border: 1px solid #cbd5e1;
@@ -181,10 +179,10 @@
             color: #0f3460; 
             font-weight: bold; 
             flex: 1; 
-            padding: 1.5px 4px; /* Tighter padding */
+            padding: 1.5px 4px; 
             display: flex;
             align-items: center;
-            min-height: 15px; /* Tighter height */
+            min-height: 15px; 
         }
 
         .blood-group-val {
@@ -195,7 +193,7 @@
         
         .photo-box { 
             width: 60px; 
-            height: 80px; /* Reduced photo size slightly */
+            height: 80px; 
             border-radius: 6px; 
             border: 2px solid var(--secondary); 
             display: flex; 
@@ -212,9 +210,9 @@
             display: flex; 
             justify-content: space-between; 
             align-items: flex-end; 
-            padding: 3px 20px 4px 20px; /* Tight padding to save space */
+            padding: 3px 20px 4px 20px; 
             background: #f1f5f9; 
-            flex-shrink: 0; /* Protects from cutting off */
+            flex-shrink: 0; 
             border-top: 1px solid #cbd5e1;
         }
         .sign-block { display: flex; flex-direction: column; }
@@ -941,7 +939,7 @@
         }
 
         // ==============================================================
-        // 7. DESKTOP PRINT LOGIC (Native HTML Print)
+        // 7. DESKTOP PRINT LOGIC (Native HTML Print) - FIXED
         // ==============================================================
         function printFromTable(docId) {
             editRecord(docId); setTimeout(printCard, 800); 
@@ -966,11 +964,32 @@
                 <style>
                     ${styles}
                     @media print {
-                        @page { size: 85.6mm 54mm landscape; margin: 0; }
-                        body { margin: 0; display: flex; justify-content: center; align-items: center; background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;}
-                        #print-card { transform: scale(0.755) !important; transform-origin: center center !important; border: none !important; box-shadow: none !important; margin: 0 !important; }
+                        @page { 
+                            size: 85.6mm 54mm landscape; 
+                            margin: 0; 
+                        }
+                        html, body { 
+                            margin: 0 !important; 
+                            padding: 0 !important;
+                            width: 85.6mm;
+                            height: 54mm;
+                            overflow: hidden !important;
+                            background: white; 
+                            -webkit-print-color-adjust: exact !important; 
+                            print-color-adjust: exact !important;
+                        }
+                        #print-card { 
+                            transform: scale(0.755) !important; 
+                            transform-origin: top left !important; 
+                            border: none !important; 
+                            box-shadow: none !important; 
+                            margin: 0 !important; 
+                            position: absolute !important;
+                            top: 0 !important;
+                            left: 0 !important;
+                        }
                     }
-                    body { background: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                    body { background: white; margin: 0; overflow: hidden; }
                     #print-card { transform: scale(1); } 
                 </style>
                 </head><body>
