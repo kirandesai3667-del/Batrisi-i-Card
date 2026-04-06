@@ -100,13 +100,13 @@
         .id-card { 
             width: var(--card-w); 
             height: var(--card-h); 
-            background: #e2e8f0; /* LIGHT GRAY BACKGROUND */
+            background: #e2e8f0; 
             display: flex; 
             flex-direction: column;
             justify-content: space-between; 
             box-sizing: border-box; 
             border-radius: 16px; 
-            border: 4px solid #0f172a; /* BORDER VISIBLE & THICK */
+            border: 2px solid #94a3b8; /* LIGHTER BORDER SATED HERE */
             position: relative;
             overflow: hidden; 
         }
@@ -125,7 +125,7 @@
         
         /* --- BODY (Compact) --- */
         .card-body { 
-            background: #e2e8f0; /* LIGHT GRAY BACKGROUND */
+            background: #e2e8f0; 
             display: grid; 
             grid-template-columns: 46px 1fr 60px; 
             gap: 8px; 
@@ -153,7 +153,7 @@
         }
         
         .detail-label-box {
-            background-color: #cbd5e1; /* Slightly darker gray for labels so it stands out */
+            background-color: #cbd5e1; 
             border-left: 3px solid #0f3460; 
             color: #0f3460;
             padding: 1.5px 4px; 
@@ -173,7 +173,7 @@
         }
         
         .detail-value-box { 
-            background-color: #ffffff; /* White box for typed details */
+            background-color: #ffffff; 
             border: 1px solid #94a3b8;
             border-radius: 4px;
             color: #0f3460; 
@@ -939,7 +939,7 @@
         }
 
         // ==============================================================
-        // 7. DESKTOP PRINT LOGIC (Native HTML Print) - FIXED
+        // 7. DESKTOP PRINT LOGIC (Native HTML Print) - CENTERED & LIGHT BORDER
         // ==============================================================
         function printFromTable(docId) {
             editRecord(docId); setTimeout(printCard, 800); 
@@ -955,6 +955,7 @@
                 try { for (let rule of styleSheet.cssRules) { styles += rule.cssText + '\n'; } } catch(e) {}
             }
 
+            // ખાસ સેન્ટર (Center) માં લેવા માટેનું સેટિંગ ઉમેર્યું છે
             printWin.document.write(`
                 <!DOCTYPE html>
                 <html lang="gu">
@@ -965,32 +966,36 @@
                     ${styles}
                     @media print {
                         @page { 
-                            size: 85.6mm 54mm landscape; 
+                            size: A4 portrait; /* Default A4 size for printing */
                             margin: 0; 
                         }
                         html, body { 
+                            width: 100vw !important;
+                            height: 100vh !important;
                             margin: 0 !important; 
                             padding: 0 !important;
-                            width: 85.6mm;
-                            height: 54mm;
-                            overflow: hidden !important;
-                            background: white; 
+                            display: flex !important;
+                            justify-content: center !important; /* CENTER HORIZONTALLY */
+                            align-items: center !important; /* CENTER VERTICALLY */
+                            background: white !important; 
                             -webkit-print-color-adjust: exact !important; 
                             print-color-adjust: exact !important;
                         }
                         #print-card { 
-                            transform: scale(0.755) !important; 
-                            transform-origin: top left !important; 
-                            border: 4px solid #0f172a !important; /* FIXED: Now border will print! */
+                            width: 428px !important;
+                            height: 270px !important;
+                            transform: scale(0.9) !important; /* Perfect size for A4 cutting */
+                            transform-origin: center !important; 
+                            border: 2px solid #94a3b8 !important; /* LIGHT BORDER IN PRINT */
                             box-shadow: none !important; 
-                            margin: 0 !important; 
-                            position: absolute !important;
-                            top: 0 !important;
-                            left: 0 !important;
+                            position: relative !important;
+                            top: unset !important;
+                            left: unset !important;
+                            margin: 0 !important;
                         }
                     }
-                    body { background: white; margin: 0; overflow: hidden; }
-                    #print-card { transform: scale(1); } 
+                    /* To show it centered in the browser window before the print dialog opens */
+                    body { background: white; margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; }
                 </style>
                 </head><body>
                     ${cardHTML}
