@@ -106,7 +106,7 @@
             justify-content: space-between; 
             box-sizing: border-box; 
             border-radius: 16px; 
-            border: 2px solid #94a3b8; /* LIGHTER BORDER SATED HERE */
+            border: 1px solid #cbd5e1; /* THIN LIGHT BORDER */
             position: relative;
             overflow: hidden; 
         }
@@ -939,7 +939,7 @@
         }
 
         // ==============================================================
-        // 7. DESKTOP PRINT LOGIC (Native HTML Print) - CENTERED & LIGHT BORDER
+        // 7. DESKTOP PRINT LOGIC (Native HTML Print) - PERFECT CENTERING & THIN BORDER
         // ==============================================================
         function printFromTable(docId) {
             editRecord(docId); setTimeout(printCard, 800); 
@@ -955,7 +955,6 @@
                 try { for (let rule of styleSheet.cssRules) { styles += rule.cssText + '\n'; } } catch(e) {}
             }
 
-            // ખાસ સેન્ટર (Center) માં લેવા માટેનું સેટિંગ ઉમેર્યું છે
             printWin.document.write(`
                 <!DOCTYPE html>
                 <html lang="gu">
@@ -966,7 +965,6 @@
                     ${styles}
                     @media print {
                         @page { 
-                            size: A4 portrait; /* Default A4 size for printing */
                             margin: 0; 
                         }
                         html, body { 
@@ -974,28 +972,26 @@
                             height: 100vh !important;
                             margin: 0 !important; 
                             padding: 0 !important;
-                            display: flex !important;
-                            justify-content: center !important; /* CENTER HORIZONTALLY */
-                            align-items: center !important; /* CENTER VERTICALLY */
                             background: white !important; 
                             -webkit-print-color-adjust: exact !important; 
                             print-color-adjust: exact !important;
                         }
+                        /* ABSOLUTE CENTERING - This guarantees it will never cut off */
                         #print-card { 
+                            position: absolute !important;
+                            top: 50% !important;
+                            left: 50% !important;
+                            transform: translate(-50%, -50%) !important; 
                             width: 428px !important;
                             height: 270px !important;
-                            transform: scale(0.9) !important; /* Perfect size for A4 cutting */
-                            transform-origin: center !important; 
-                            border: 2px solid #94a3b8 !important; /* LIGHT BORDER IN PRINT */
+                            border: 1px solid #cbd5e1 !important; /* VERY THIN & LIGHT BORDER */
                             box-shadow: none !important; 
-                            position: relative !important;
-                            top: unset !important;
-                            left: unset !important;
                             margin: 0 !important;
                         }
                     }
-                    /* To show it centered in the browser window before the print dialog opens */
-                    body { background: white; margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; }
+                    /* Browser preview before print dialog opens */
+                    body { background: #525659; margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; }
+                    #print-card { background: #e2e8f0; border: 1px solid #cbd5e1; }
                 </style>
                 </head><body>
                     ${cardHTML}
