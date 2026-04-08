@@ -63,6 +63,7 @@
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
         .hint-text { font-size: 11.5px; color: #b45309; margin-top: 4px; font-weight: 600; }
         .transl-toggle-bar { grid-column: span 2; background: #eff6ff; padding: 12px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; align-items: center; gap: 10px; }
+        .name-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
         /* ID Card Design (Untouched) */
         .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 10px;}
@@ -287,28 +288,84 @@
             <!-- MEMBER FORM FIELDS -->
             <div class="form-group full-width">
                 <label>પૂરું નામ (Member Full Name) *</label>
-                <input type="text" id="reg-name" placeholder="વ્યક્તિનું પૂરું નામ">
+                <div class="name-grid">
+                    <input type="text" id="reg-surname" placeholder="અટક (Surname)">
+                    <input type="text" id="reg-firstname" placeholder="પોતાનું નામ (First Name)">
+                    <input type="text" id="reg-middlename" placeholder="પિતા/પતિનું નામ (Middle Name)">
+                </div>
             </div>
+
             <div class="form-group">
                 <label>પિતાનું નામ (Father Name) *</label>
                 <input type="text" id="reg-fatherName" placeholder="પિતાનું નામ">
             </div>
+
             <div class="form-group">
-                <label>મૂળ વતન (Native Name) *</label>
-                <input type="text" id="reg-nativeName" placeholder="વતનનું નામ">
+                <label>મૂળ વતન (Native Village) *</label>
+                <select id="reg-nativeName">
+                    <option value="">-- ગામ પસંદ કરો --</option>
+                    <option value="અડાલજ">૧. અડાલજ</option>
+                    <option value="એણાસન">૨. એણાસન</option>
+                    <option value="આંબલીયારા">૩. આંબલીયારા</option>
+                    <option value="અમરાભાઇ ના મુવાડા">૪. અમરાભાઇ ના મુવાડા</option>
+                    <option value="બહિયલ">૫. બહિયલ</option>
+                    <option value="બારડોલી">૬. બારડોલી</option>
+                    <option value="બાલવા">૭. બાલવા</option>
+                    <option value="ભાડજ – ભુવાલડી">૮. ભાડજ – ભુવાલડી</option>
+                    <option value="ચિલોડા">૯. ચિલોડા</option>
+                    <option value="ડભોડા">૧૦. ડભોડા</option>
+                    <option value="ઘમીજ">૧૧. ઘમીજ</option>
+                    <option value="હરસોલી">૧૨. હરસોલી</option>
+                    <option value="જલુન્દ્રા">૧૩. જલુન્દ્રા</option>
+                    <option value="ઝુંડાલ">૧૪. ઝુંડાલ</option>
+                    <option value="કલોલ">૧૫. કલોલ</option>
+                    <option value="કુબડથલ">૧૬. કુબડથલ</option>
+                    <option value="કોઠી">૧૭. કોઠી</option>
+                    <option value="કરોલી">૧૮. કરોલી</option>
+                    <option value="કુહા">૧૯. કુહા</option>
+                    <option value="હિલોલ">૨૦. હિલોલ</option>
+                    <option value="ઝાણું">૨૧. ઝાણું</option>
+                    <option value="કોબા">૨૨. કોબા</option>
+                    <option value="મીરોલી">૨૩. મીરોલી</option>
+                    <option value="નરોડા">૨૪. નરોડા</option>
+                    <option value="ઓગણજ">૨૫. ઓગણજ</option>
+                    <option value="પરઢોલ">૨૬. પરઢોલ</option>
+                    <option value="પાલજ">૨૭. પાલજ</option>
+                    <option value="પસુંજ">૨૮. પસુંજ</option>
+                    <option value="પાલડી">૨૯. પાલડી</option>
+                    <option value="પ્રાંતિયા">૩૦. પ્રાંતિયા</option>
+                    <option value="રાયપુર">૩૧. રાયપુર</option>
+                    <option value="રાયસણ">૩૨. રાયસણ</option>
+                    <option value="સરખેજ">૩૩. સરખેજ</option>
+                    <option value="શીલજ">૩૪. શીલજ</option>
+                    <option value="સોનાયડા">૩૫. સોનાયડા</option>
+                    <option value="સાંતેજ">૩૬. સાંતેજ</option>
+                    <option value="થલતેજ">૩૭. થલતેજ</option>
+                    <option value="વલાદ">૩૮. વલાદ</option>
+                    <option value="વહેલાલ">૩૯. વહેલાલ</option>
+                    <option value="વિસલપુર">૪૦. વિસલપુર</option>
+                    <option value="વડોદરા">૪૧. વડોદરા</option>
+                </select>
             </div>
+
             <div class="form-group full-width">
                 <label>રહેઠાણનું સરનામું (Address) *</label>
                 <textarea id="reg-address" rows="2" placeholder="પૂરું સરનામું"></textarea>
             </div>
+            
             <div class="form-group">
                 <label>પીનકોડ (Pincode) *</label>
-                <!-- NUMBER CONVERSION -->
                 <input type="text" id="reg-pincode" placeholder="પીનકોડ" oninput="forceGujaratiNumbers(this)">
             </div>
+            
             <div class="form-group">
                 <label>WhatsApp મોબાઇલ નંબર *</label>
                 <input type="text" id="reg-mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="forceGujaratiNumbers(this)" readonly style="background:#f1f5f9;">
+            </div>
+
+            <div class="form-group full-width">
+                <label>ઈમેલ આઈડી (Email Address) - Optional</label>
+                <input type="email" id="reg-email" placeholder="example@email.com">
             </div>
 
             <!-- SAME AS ABOVE -->
@@ -352,8 +409,14 @@
             
             <!-- FAMILY MEMBER FIELDS (OPTIONAL) -->
             <div class="form-group full-width" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #cbd5e1;">
-                <label style="color:var(--primary); border-bottom:1px solid #cbd5e1; padding-bottom:5px; margin-bottom:10px; font-size:14px;">આપના ઘરમાંથી અન્ય વ્યક્તિઓ સભાસદ હોય તો વિગતો લખો <span style="color:#ef4444; font-size:12px;">(જો હોય તો જ લખવું - Optional)</span></label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <label style="color:var(--primary); font-size:14px; margin-bottom:10px;">આપના ઘરમાંથી અન્ય વ્યક્તિઓ સભાસદ હોય તો વિગતો લખો (Optional)</label>
+                
+                <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                    <label style="cursor:pointer; display:flex; align-items:center; gap:5px;"><input type="radio" name="hasFamily" value="yes" onchange="toggleFamilyFields(true)" style="width:16px; height:16px;"> હા (Yes)</label>
+                    <label style="cursor:pointer; display:flex; align-items:center; gap:5px;"><input type="radio" name="hasFamily" value="no" onchange="toggleFamilyFields(false)" checked style="width:16px; height:16px;"> ના (No)</label>
+                </div>
+
+                <div id="family-fields-container" style="display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
                     <div class="form-group" style="margin:0;">
                         <label style="font-size:12px;">સભાસદ નંબર (Member Number)</label>
                         <input type="text" id="reg-familyMemberNo" placeholder="સભાસદ નંબર" oninput="forceGujaratiNumbers(this)">
@@ -437,7 +500,7 @@
 
 
     <!-- ========================================================================= -->
-    <!-- ADMIN UPDATE & EXISTING SYSTEM (UNTOUCHED LOGIC) -->
+    <!-- ADMIN UPDATE & EXISTING SYSTEM -->
     <!-- ========================================================================= -->
     <div id="app-wrapper" style="display: none;">
         
@@ -453,7 +516,7 @@
         <div class="container">
             <div class="form-panel">
                 <input type="hidden" id="recordId"> 
-                <input type="hidden" id="adminRequestId"> <!-- Links card to request -->
+                <input type="hidden" id="adminRequestId">
 
                 <div class="transl-toggle-bar">
                     <input type="checkbox" id="enableTransliteration" checked>
@@ -467,7 +530,11 @@
                 
                 <div class="form-group full-width">
                     <label>પૂરું નામ</label>
-                    <input type="text" id="name" placeholder="વ્યક્તિનું નામ" oninput="updateField('name', 'val-name')">
+                    <div class="name-grid">
+                        <input type="text" id="surname" placeholder="અટક" oninput="combineAndDisplayAdminName()">
+                        <input type="text" id="firstname" placeholder="પોતાનું નામ" oninput="combineAndDisplayAdminName()">
+                        <input type="text" id="middlename" placeholder="પિતા/પતિનું નામ" oninput="combineAndDisplayAdminName()">
+                    </div>
                 </div>
                 
                 <div class="form-group full-width">
@@ -477,7 +544,50 @@
 
                 <div class="form-group">
                     <label>મૂળ વતન</label>
-                    <input type="text" id="hometown" placeholder="વતનનું નામ" oninput="updateField('hometown', 'val-hometown')">
+                    <select id="hometown" onchange="updateField('hometown', 'val-hometown')">
+                        <option value="">-- ગામ પસંદ કરો --</option>
+                        <option value="અડાલજ">૧. અડાલજ</option>
+                        <option value="એણાસન">૨. એણાસન</option>
+                        <option value="આંબલીયારા">૩. આંબલીયારા</option>
+                        <option value="અમરાભાઇ ના મુવાડા">૪. અમરાભાઇ ના મુવાડા</option>
+                        <option value="બહિયલ">૫. બહિયલ</option>
+                        <option value="બારડોલી">૬. બારડોલી</option>
+                        <option value="બાલવા">૭. બાલવા</option>
+                        <option value="ભાડજ – ભુવાલડી">૮. ભાડજ – ભુવાલડી</option>
+                        <option value="ચિલોડા">૯. ચિલોડા</option>
+                        <option value="ડભોડા">૧૦. ડભોડા</option>
+                        <option value="ઘમીજ">૧૧. ઘમીજ</option>
+                        <option value="હરસોલી">૧૨. હરસોલી</option>
+                        <option value="જલુન્દ્રા">૧૩. જલુન્દ્રા</option>
+                        <option value="ઝુંડાલ">૧૪. ઝુંડાલ</option>
+                        <option value="કલોલ">૧૫. કલોલ</option>
+                        <option value="કુબડથલ">૧૬. કુબડથલ</option>
+                        <option value="કોઠી">૧૭. કોઠી</option>
+                        <option value="કરોલી">૧૮. કરોલી</option>
+                        <option value="કુહા">૧૯. કુહા</option>
+                        <option value="હિલોલ">૨૦. હિલોલ</option>
+                        <option value="ઝાણું">૨૧. ઝાણું</option>
+                        <option value="કોબા">૨૨. કોબા</option>
+                        <option value="મીરોલી">૨૩. મીરોલી</option>
+                        <option value="નરોડા">૨૪. નરોડા</option>
+                        <option value="ઓગણજ">૨૫. ઓગણજ</option>
+                        <option value="પરઢોલ">૨૬. પરઢોલ</option>
+                        <option value="પાલજ">૨૭. પાલજ</option>
+                        <option value="પસુંજ">૨૮. પસુંજ</option>
+                        <option value="પાલડી">૨૯. પાલડી</option>
+                        <option value="પ્રાંતિયા">૩૦. પ્રાંતિયા</option>
+                        <option value="રાયપુર">૩૧. રાયપુર</option>
+                        <option value="રાયસણ">૩૨. રાયસણ</option>
+                        <option value="સરખેજ">૩૩. સરખેજ</option>
+                        <option value="શીલજ">૩૪. શીલજ</option>
+                        <option value="સોનાયડા">૩૫. સોનાયડા</option>
+                        <option value="સાંતેજ">૩૬. સાંતેજ</option>
+                        <option value="થલતેજ">૩૭. થલતેજ</option>
+                        <option value="વલાદ">૩૮. વલાદ</option>
+                        <option value="વહેલાલ">૩૯. વહેલાલ</option>
+                        <option value="વિસલપુર">૪૦. વિસલપુર</option>
+                        <option value="વડોદરા">૪૧. વડોદરા</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -491,6 +601,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label>ઈમેલ આઈડી (Optional)</label>
+                    <input type="email" id="email" placeholder="Email Address">
+                </div>
+
+                <div class="form-group full-width">
                     <label>બ્લડ ગ્રુપ</label>
                     <select id="bloodgroup" onchange="updateField('bloodgroup', 'val-bloodgroup')">
                         <option value="-">પસંદ કરો</option>
@@ -670,6 +785,28 @@
                 select.appendChild(opt);
             });
         });
+
+        // ==============================================================
+        // TOGGLE FAMILY FIELDS
+        // ==============================================================
+        function toggleFamilyFields(show) {
+            document.getElementById('family-fields-container').style.display = show ? 'grid' : 'none';
+            if(!show) {
+                document.getElementById('reg-familyMemberNo').value = '';
+                document.getElementById('reg-familyMemberName').value = '';
+            }
+        }
+
+        // ==============================================================
+        // COMBINE NAME FOR ADMIN PREVIEW
+        // ==============================================================
+        function combineAndDisplayAdminName() {
+            let s = document.getElementById('surname').value.trim();
+            let f = document.getElementById('firstname').value.trim();
+            let m = document.getElementById('middlename').value.trim();
+            let fullName = `${s} ${f} ${m}`.trim();
+            document.getElementById('val-name').innerText = fullName === "" ? "XXXX XXXX" : fullName;
+        }
 
         // ==============================================================
         // NUMBER CONVERSION
@@ -1030,14 +1167,20 @@
         // SUBMIT MEMBER FORM
         // ==============================================================
         function submitPublicForm() {
+            const surname = document.getElementById('reg-surname').value.trim();
+            const firstname = document.getElementById('reg-firstname').value.trim();
+            const middlename = document.getElementById('reg-middlename').value.trim();
+            const fullName = `${surname} ${firstname} ${middlename}`.trim();
+
             const data = {
                 photo: regPhotoBase64,
-                name: document.getElementById('reg-name').value.trim(),
+                name: fullName,
                 fatherName: document.getElementById('reg-fatherName').value.trim(),
-                nativeName: document.getElementById('reg-nativeName').value.trim(),
+                nativeName: document.getElementById('reg-nativeName').value,
                 address: document.getElementById('reg-address').value.trim(),
                 pincode: document.getElementById('reg-pincode').value.trim(),
                 mobile: document.getElementById('reg-mobile').value.trim(),
+                email: document.getElementById('reg-email').value.trim(),
                 vyavsay: document.getElementById('reg-vyavsay').value.trim(),
                 vyavsayAddress: document.getElementById('reg-vyavsayAddress').value.trim(),
                 vyavsayPincode: document.getElementById('reg-vyavsayPincode').value.trim(),
@@ -1050,7 +1193,8 @@
             };
 
             if(!data.photo) { alert("કૃપા કરીને ફોટો અપલોડ કરો અથવા સેલ્ફી લો."); return; }
-            if(!data.name || !data.fatherName || !data.nativeName || !data.address || !data.pincode || !data.mobile || !data.dob || !data.committeePhone) {
+            if(!surname || !firstname || !middlename) { alert("કૃપા કરીને અટક, નામ અને પિતા/પતિનું નામ પૂરેપૂરું ભરો."); return; }
+            if(!data.fatherName || !data.nativeName || !data.address || !data.pincode || !data.mobile || !data.dob || !data.committeePhone) {
                 alert("કૃપા કરીને બધા જરૂરી (*) ખાનાઓ ભરો."); return;
             }
 
@@ -1199,6 +1343,7 @@
             let html = `<table style="width:100%; border-collapse: collapse;">`;
             html += addRow('પૂરું નામ', rec.name); html += addRow('પિતાનું નામ', rec.fatherName); html += addRow('મૂળ વતન', rec.nativeName);
             html += addRow('રહેઠાણ', rec.address + " - " + rec.pincode); html += addRow('મોબાઇલ', rec.mobile);
+            if(rec.email) html += addRow('ઈમેલ આઈડી', rec.email);
             html += addRow('વ્યવસાય', rec.vyavsay); html += addRow('વ્યવસાય સરનામું', rec.vyavsayAddress + " - " + rec.vyavsayPincode);
             html += addRow('જન્મ તારીખ', rec.dob); html += addRow('શિક્ષણ', rec.education); html += addRow('બ્લડ ગ્રુપ', rec.bloodGroup);
             
@@ -1232,7 +1377,9 @@
             html += `<tr><td colspan="2" style="background:#0f3460; color:white; padding:8px; font-weight:bold; text-align:center;">ID Card Data Created by Admin</td></tr>`;
             html += addRow('સભ્ય નંબર', rec.memberNo); html += addRow('પૂરું નામ', rec.name);
             html += addRow('સરનામું', rec.address); html += addRow('મૂળ વતન', rec.hometown);
-            html += addRow('મોબાઇલ', rec.mobile); html += addRow('જન્મ તારીખ', rec.dob);
+            html += addRow('મોબાઇલ', rec.mobile); 
+            if(rec.email) html += addRow('ઈમેલ આઈડી', rec.email);
+            html += addRow('જન્મ તારીખ', rec.dob);
             html += addRow('બ્લડ ગ્રુપ', rec.bloodgroup);
             html += `</table>`;
             
@@ -1261,18 +1408,25 @@
 
         function importToIDForm(dataObj) {
             document.getElementById('adminRequestId').value = dataObj.id; // Link request
-            document.getElementById('name').value = dataObj.name || "";
+            
+            let nameParts = (dataObj.name || "").split(" ");
+            document.getElementById('surname').value = nameParts[0] || "";
+            document.getElementById('firstname').value = nameParts[1] || "";
+            document.getElementById('middlename').value = nameParts.slice(2).join(" ") || "";
+            combineAndDisplayAdminName();
+
             document.getElementById('address').value = `${dataObj.address || ""}, ${dataObj.pincode || ""}`;
             document.getElementById('hometown').value = dataObj.nativeName || "";
             document.getElementById('dob').value = dataObj.dob || "";
             document.getElementById('mobile').value = dataObj.mobile || "";
+            if(dataObj.email) document.getElementById('email').value = dataObj.email;
             
             let bgOpts = document.getElementById('bloodgroup').options;
             for(let i=0; i<bgOpts.length; i++){ if(bgOpts[i].value === dataObj.bloodGroup) { bgOpts[i].selected = true; break; } }
 
             if(dataObj.photo) { currentPhotoBase64 = dataObj.photo; document.getElementById('img-photo').src = currentPhotoBase64; }
 
-            ['name','address','hometown','dob','mobile','bloodgroup'].forEach(id => updateField(id, 'val-'+id));
+            ['address','hometown','dob','mobile','bloodgroup'].forEach(id => updateField(id, 'val-'+id));
             closeAdminApprovedModal();
             alert("ડેટા અને ફોટો ફોર્મમાં આવી ગયો છે! સભ્ય નંબર સેટ કરી 'કાર્ડ સેવ કરો' પર ક્લિક કરો.");
         }
@@ -1341,7 +1495,10 @@
                         const newText = el.value.substring(0, startPos) + gujaratiWord + el.value.substring(startPos + wordToConvert.length);
                         el.value = newText;
                         if (el.selectionStart > startPos) el.selectionStart = el.selectionEnd = el.selectionStart + (gujaratiWord.length - wordToConvert.length);
-                        if(document.getElementById('val-' + elementId)) updateField(elementId, 'val-' + elementId);
+                        
+                        // Update specific fields on transliteration
+                        if(['surname','firstname','middlename'].includes(elementId)) combineAndDisplayAdminName();
+                        else if(document.getElementById('val-' + elementId)) updateField(elementId, 'val-' + elementId);
                     }
                 }
             }
@@ -1353,7 +1510,7 @@
         }
 
         function setupRegTransliteration() {
-            const textFields = ['reg-name', 'reg-fatherName', 'reg-nativeName', 'reg-address', 'reg-vyavsay', 'reg-vyavsayAddress', 'reg-education', 'reg-familyMemberName'];
+            const textFields = ['reg-surname', 'reg-firstname', 'reg-middlename', 'reg-fatherName', 'reg-address', 'reg-vyavsay', 'reg-vyavsayAddress', 'reg-education', 'reg-familyMemberName'];
             textFields.forEach(f => setupTransliteration(f, 'enableTransliterationReg'));
         }
 
@@ -1367,14 +1524,20 @@
             let docId = document.getElementById('recordId').value;
             let reqId = document.getElementById('adminRequestId').value;
             let memberNo = document.getElementById('memberNo').value;
-            let name = document.getElementById('name').value;
-            if(memberNo.trim() === "" || name.trim() === "") { alert("કૃપા કરીને સભ્ય નંબર અને પૂરું નામ દાખલ કરો!"); return; }
+            
+            let s = document.getElementById('surname').value.trim();
+            let f = document.getElementById('firstname').value.trim();
+            let m = document.getElementById('middlename').value.trim();
+            let name = `${s} ${f} ${m}`.trim();
+
+            if(memberNo.trim() === "" || name === "") { alert("કૃપા કરીને સભ્ય નંબર અને પૂરું નામ દાખલ કરો!"); return; }
 
             let saveBtn = document.getElementById('saveBtn'); saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> સેવ થઇ રહ્યું છે...'; saveBtn.disabled = true;
             let recordData = {
                 memberNo: memberNo, name: name, address: document.getElementById('address').value,
                 hometown: document.getElementById('hometown').value, dob: document.getElementById('dob').value,
                 mobile: document.getElementById('mobile').value, bloodgroup: document.getElementById('bloodgroup').value,
+                email: document.getElementById('email').value,
                 photo: currentPhotoBase64
             };
 
@@ -1403,7 +1566,7 @@
 
         function searchRecords() {
             let query = document.getElementById('searchInput').value.toLowerCase().trim();
-            let filteredRecords = records.filter(rec => (rec.name.toLowerCase().includes(query) || (rec.mobile || "").includes(query)));
+            let filteredRecords = records.filter(rec => ((rec.name||"").toLowerCase().includes(query) || (rec.mobile || "").includes(query)));
             loadTable(filteredRecords);
         }
 
@@ -1423,17 +1586,29 @@
         function editRecord(docId) {
             let rec = records.find(r => r.docId === docId); if(!rec) return;
             document.getElementById('recordId').value = rec.docId; 
-            ['memberNo','name','address','hometown','dob','mobile'].forEach(id => document.getElementById(id).value = rec[id] || "");
+            
+            let nameParts = (rec.name || "").split(" ");
+            document.getElementById('surname').value = nameParts[0] || "";
+            document.getElementById('firstname').value = nameParts[1] || "";
+            document.getElementById('middlename').value = nameParts.slice(2).join(" ") || "";
+            combineAndDisplayAdminName();
+
+            ['memberNo','address','hometown','dob','mobile','email'].forEach(id => {
+                if(document.getElementById(id)) document.getElementById(id).value = rec[id] || "";
+            });
             document.getElementById('bloodgroup').value = rec.bloodgroup || "-";
             currentPhotoBase64 = rec.photo; document.getElementById('img-photo').src = currentPhotoBase64;
-            ['memberNo','name','address','hometown','dob','mobile','bloodgroup'].forEach(id => updateField(id, 'val-'+id));
+            
+            ['memberNo','address','hometown','dob','mobile','bloodgroup'].forEach(id => updateField(id, 'val-'+id));
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         function deleteRecord(docId) { if(confirm("ખરેખર ડીલીટ કરવું છે?")) { db.collection("idCards").doc(docId).delete(); } }
 
         function clearForm() {
             document.getElementById('recordId').value = ""; document.getElementById('adminRequestId').value = "";
-            ['memberNo','name','address','hometown','dob','mobile','searchInput','photoInput'].forEach(id => document.getElementById(id).value = "");
+            ['memberNo','surname','firstname','middlename','address','hometown','dob','mobile','email','searchInput','photoInput'].forEach(id => {
+                if(document.getElementById(id)) document.getElementById(id).value = "";
+            });
             document.getElementById('bloodgroup').value = "-";
             currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="; document.getElementById('img-photo').src = currentPhotoBase64;
             ['val-memberNo', 'val-name', 'val-address', 'val-hometown', 'val-mobile'].forEach(id => document.getElementById(id).innerText = "XXXX");
@@ -1442,7 +1617,7 @@
 
         function exportToExcel() {
             if(records.length === 0) return alert("કોઈ ડેટા નથી!");
-            let exportData = records.map(r => ({ "સભ્ય નં.": r.memberNo||"-", "પૂરું નામ": r.name||"-", "સરનામું": r.address||"-", "મૂળ વતન": r.hometown||"-", "જન્મ તારીખ": r.dob||"-", "મોબાઇલ": r.mobile||"-", "બ્લડ ગ્રુપ": r.bloodgroup||"-" }));
+            let exportData = records.map(r => ({ "સભ્ય નં.": r.memberNo||"-", "પૂરું નામ": r.name||"-", "સરનામું": r.address||"-", "મૂળ વતન": r.hometown||"-", "જન્મ તારીખ": r.dob||"-", "મોબાઇલ": r.mobile||"-", "ઈમેલ": r.email||"-", "બ્લડ ગ્રુપ": r.bloodgroup||"-" }));
             let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(exportData), "Members"); XLSX.writeFile(wb, "Members.xlsx");
         }
         function exportToPDF() {
@@ -1477,7 +1652,8 @@
         // ==============================================================
         function initializeSystem() {
             fetchFirebaseData(); 
-            setupTransliteration('name'); setupTransliteration('address'); setupTransliteration('hometown'); setupTransliteration('memberNo');
+            setupTransliteration('surname'); setupTransliteration('firstname'); setupTransliteration('middlename'); 
+            setupTransliteration('address'); setupTransliteration('memberNo');
             ['mobile','dob'].forEach(id => document.getElementById(id).addEventListener('input', function() { forceGujaratiNumbers(this); updateField(id, 'val-'+id); }));
         }
 
