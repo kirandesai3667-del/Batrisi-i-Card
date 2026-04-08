@@ -22,56 +22,39 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-    <!-- SheetJS for Excel Export -->
+    <!-- SheetJS & jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- jsPDF for PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
 
-        /* KAP_36_ Font Setup */
-        @font-face {
-            font-family: 'KAP_36_';
-            src: local('KAP_36_'); 
-        }
-        .gu-font {
-            font-family: 'KAP_36_', 'Noto Sans Gujarati', sans-serif !important;
-            font-size: 8.5px !important; 
-            line-height: 1.2 !important;
-        }
+        @font-face { font-family: 'KAP_36_'; src: local('KAP_36_'); }
+        .gu-font { font-family: 'KAP_36_', 'Noto Sans Gujarati', sans-serif !important; font-size: 8.5px !important; line-height: 1.2 !important; }
 
-        :root {
-            --primary: #0f3460; --secondary: #2563eb; --text-dark: #0f172a; --text-light: #334155; --bg-body: #f8fafc;
-            --card-w: 428px; --card-h: 270px;
-        }
+        :root { --primary: #0f3460; --secondary: #2563eb; --text-dark: #0f172a; --text-light: #334155; --bg-body: #f8fafc; --card-w: 428px; --card-h: 270px; }
 
         body { font-family: 'Poppins', 'Noto Sans Gujarati', sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px; color: var(--text-dark); overflow-x: hidden;}
         .header-title { text-align: center; color: var(--primary); font-weight: 800; margin: 0; font-size: 28px; }
-        
         .top-bar { display: flex; justify-content: space-between; align-items: center; max-width: 1250px; margin: 0 auto 30px auto; flex-wrap: wrap; gap: 15px;}
         .container { display: flex; flex-wrap: wrap; gap: 40px; max-width: 1250px; margin: 0 auto; justify-content: center; align-items: flex-start;}
 
-        /* Login Screen Styles */
+        /* Login Screens */
         .login-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); width: 100%; max-width: 380px; text-align: center; }
         .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 5px; font-family: 'Mogra', cursive; font-size: 24px;}
         .login-box p { color: var(--text-light); font-size: 14px; margin-bottom: 25px; font-weight: 600; }
         .login-box .form-group { text-align: left; margin-bottom: 15px; }
         .login-error { color: white; background: #ef4444; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none; }
-        
         .pwd-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
         .pwd-wrapper input { width: 100%; padding-right: 40px !important; box-sizing: border-box; }
         .pwd-wrapper i { position: absolute; right: 12px; cursor: pointer; color: var(--text-light); font-size: 16px; transition: 0.2s;}
-        .pwd-wrapper i:hover { color: var(--secondary); }
         .remember-group { display: flex; align-items: center; gap: 8px; margin-top: -5px; margin-bottom: 15px; cursor: pointer;}
         .remember-group label { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--text-light); cursor: pointer; display: flex; align-items: center; gap: 6px;}
         .remember-group input[type="checkbox"] { margin: 0; width: 15px; height: 15px; cursor: pointer; accent-color: var(--secondary);}
-
         .btn-logout { background: #ef4444; padding: 8px 16px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 14px; transition: 0.3s;}
-        .btn-logout:hover { background: #dc2626; transform: translateY(-2px); }
 
-        /* Form Styling */
+        /* Forms */
         .form-panel { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); flex: 1; min-width: 320px; max-width: 500px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start; }
         .form-group { display: flex; flex-direction: column; }
         .form-group.full-width { grid-column: span 2; }
@@ -79,12 +62,9 @@
         .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: 500; font-family: inherit; transition: 0.3s; outline: none; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
         .hint-text { font-size: 11.5px; color: #b45309; margin-top: 4px; font-weight: 600; }
-
         .transl-toggle-bar { grid-column: span 2; background: #eff6ff; padding: 12px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; align-items: center; gap: 10px; }
-        .transl-toggle-bar label { margin: 0; color: #1e3a8a; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
-        .transl-toggle-bar input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--secondary); margin: 0;}
 
-        /* Card Preview */
+        /* ID Card Design (Untouched) */
         .preview-panel { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 10px;}
         .card-scaler { transform: scale(1.25); transform-origin: top center; margin-bottom: 70px; box-shadow: 0 12px 30px rgba(0,0,0,0.18); border-radius: 16px; }
         .id-card { width: var(--card-w); height: var(--card-h); background: #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; border-radius: 16px; border: 1px solid #cbd5e1; position: relative; overflow: hidden; }
@@ -92,21 +72,17 @@
         .card-header h2 { margin: 0 0 2px 0; font-family: 'Mogra', serif; font-size: 13px; color: var(--primary); font-weight: bold; line-height: 1.2; }
         .card-header .address { margin: 0 0 1px 0; font-size: 6.2px; color: #000000; font-weight: 700; line-height: 1.2; }
         .card-header .contact { margin: 0; font-size: 6px; color: #dc2626; font-weight: 800; letter-spacing: 0.2px; line-height: 1; }
-        
         .card-body { background: #e2e8f0; display: grid; grid-template-columns: 46px 1fr 60px; gap: 8px; align-items: start; padding: 5px 12px; flex-grow: 1; overflow: hidden; }
         .logo-box { width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; background: transparent; }
         .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
         .details-box { display: flex; flex-direction: column; gap: 2.5px; width: 100%; }
         .detail-item { display: flex; align-items: stretch; gap: 4px; }
         .detail-label-box { background-color: #cbd5e1; border-left: 3px solid #0f3460; color: #0f3460; padding: 1.5px 4px; border-radius: 2px 4px 4px 2px; width: 70px; flex-shrink: 0; display: flex; align-items: center; font-weight: bold; }
         .detail-colon { color: #0f3460; font-weight: bold; display: flex; align-items: center; }
         .detail-value-box { background-color: #ffffff; border: 1px solid #94a3b8; border-radius: 4px; color: #0f3460; font-weight: bold; flex: 1; padding: 1.5px 4px; display: flex; align-items: center; min-height: 15px; }
         .blood-group-val { color: #dc2626 !important; font-weight: 800; font-size: 9.5px !important; }
-        
         .photo-box { width: 60px; height: 80px; border-radius: 6px; border: 2px solid var(--secondary); display: flex; justify-content: center; align-items: center; background: #ffffff; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-        
         .card-footer { display: flex; justify-content: space-between; align-items: flex-end; padding: 3px 20px 4px 20px; background: #f1f5f9; flex-shrink: 0; border-top: 1px solid #cbd5e1; }
         .sign-block { display: flex; flex-direction: column; }
         .sign-block.left { align-items: flex-start; }
@@ -114,6 +90,7 @@
         .sign-block img { height: 18px; width: auto; max-width: 80px; object-fit: contain; margin-bottom: 1px; }
         .sign-block p { margin: 0; font-size: 7.5px; color: #0f3460; font-weight: bold; line-height: 1.2; }
 
+        /* Buttons & Tables */
         .btn-group { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
         .btn { padding: 10px 20px; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; color: white; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
@@ -121,28 +98,18 @@
         .btn-clear { background-color: #64748b; width: 100%; justify-content: center; }
         .btn-print { background-color: var(--secondary); padding: 12px 25px; font-size: 15px; box-shadow: 0 4px 15px rgba(37,99,235,0.3);}
         .btn-download-card { background-color: #8b5cf6; padding: 12px 25px; font-size: 15px; box-shadow: 0 4px 15px rgba(139,92,246,0.3);}
+        .btn-warning { background-color: #f59e0b; }
 
         .table-container { width: 100%; max-width: 1250px; margin: 40px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); overflow-x: auto; }
         .table-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
         .table-title { margin: 0; color: var(--primary); font-family: 'Mogra', cursive; font-size: 20px; }
-        
-        .action-group-right { display: flex; align-items: center; gap: 15px; flex-wrap: wrap;}
-        .export-btns { display: flex; gap: 10px; }
-        .btn-excel { background: #10b981; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 13px; transition: 0.2s;}
-        .btn-pdf { background: #f43f5e; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-size: 13px; transition: 0.2s;}
-        
-        .search-box { position: relative; width: 100%; max-width: 320px; }
-        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
-        .search-box input { width: 100%; padding: 10px 15px 10px 40px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; box-sizing: border-box; }
-
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
         th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
         th { background: #f1f5f9; color: var(--text-dark); font-weight: 600; white-space: nowrap; }
         .action-btns { display: flex; gap: 8px; flex-wrap: wrap;}
         .btn-sm { padding: 6px 10px; font-size: 13px; border: none; border-radius: 4px; cursor: pointer; color: white; transition: 0.2s; display: flex; justify-content: center; align-items: center;}
         .btn-edit { background: #f59e0b; } .btn-delete { background: #ef4444; } .btn-print-sm { background: var(--secondary); } .btn-download-sm { background: #8b5cf6; } 
-        .date-badge { font-size: 12px; color: #475569; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;}
-
+        
         /* Modals */
         .crop-modal, .admin-modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
         .crop-container, .admin-modal-content { background: #fff; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; text-align: center; }
@@ -150,76 +117,92 @@
         .admin-modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; }
         .btn-close-modal { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
 
-        /* =========================================================
-           NEW ADDITIONS: PUBLIC FORM & WORKFLOW DASHBOARDS
-           ========================================================= */
-        #public-registration-wrapper, #workflow-dashboard-wrapper { display: none; width: 100%; max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); box-sizing: border-box; }
+        /* General Wrappers */
+        #public-registration-wrapper, #workflow-dashboard-wrapper, #member-dashboard-wrapper { display: none; width: 100%; max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); box-sizing: border-box; }
         
         .reg-header { text-align: center; border-bottom: 3px solid var(--secondary); padding-bottom: 20px; margin-bottom: 30px; }
         .reg-header h1 { color: var(--primary); font-family: 'Mogra', serif; margin: 0 0 5px 0; }
         .reg-header p { margin: 2px 0; color: var(--text-light); font-size: 14px; font-weight: 500; }
         .reg-header h2 { background: #eff6ff; color: var(--secondary); display: inline-block; padding: 8px 20px; border-radius: 8px; margin-top: 15px; font-size: 18px; border: 1px solid #bfdbfe; }
-
-        .reg-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 600px) { .reg-form-grid { grid-template-columns: 1fr; } }
         
-        .login-btn-public { background: #8b5cf6; padding: 12px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-sizing: border-box; }
+        .login-btn-public { background: #8b5cf6; padding: 12px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; }
+        .login-btn-member { background: #10b981; padding: 12px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; }
         
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white; }
         .badge-warning { background: #f59e0b; } .badge-success { background: #10b981; } .badge-danger { background: #ef4444; } .badge-info { background: #3b82f6; }
         
-        .workflow-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .workflow-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; flex-wrap: wrap; }
         .wf-tab { padding: 8px 15px; border: none; background: #f1f5f9; border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--text-light); }
         .wf-tab.active { background: var(--secondary); color: white; }
-        
         .admin-top-btn { background: #8b5cf6; margin-left: auto; }
+
+        .status-box { text-align: center; padding: 30px; border-radius: 12px; margin-bottom: 20px; }
+        .status-box i { font-size: 40px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <!-- 1. SECURE LOGIN SCREEN -->
+    <!-- ========================================================================= -->
+    <!-- LOGIN SYSTEM (ADMIN/COMMITTEE/APPROVER) -->
+    <!-- ========================================================================= -->
     <div id="login-wrapper" class="login-wrapper">
-        <div class="login-box">
+        <div class="login-box" id="main-login-box">
             <h2><i class="fa-solid fa-shield-halved"></i> Security Login</h2>
             <p>શ્રી બત્રીસી જૈન આઈડી કાર્ડ સિસ્ટમ</p>
             
             <div id="login-error" class="login-error">ખોટું ID અથવા Password!</div>
             
             <div class="form-group full-width">
-                <label>User ID (Admin ID / Mobile No.)</label>
+                <label>User ID / Mobile No.</label>
                 <input type="text" id="loginId" placeholder="Enter ID or Mobile">
             </div>
             
             <div class="form-group full-width">
                 <label>Password</label>
                 <div class="pwd-wrapper">
-                    <input type="password" id="loginPwd" placeholder="Enter Password" onkeypress="handleEnter(event)">
-                    <i class="fa-solid fa-eye" id="toggleEye" onclick="togglePassword()"></i>
+                    <input type="password" id="loginPwd" placeholder="Enter Password" onkeypress="handleEnter(event, 'admin')">
+                    <i class="fa-solid fa-eye" id="toggleEye" onclick="togglePassword('loginPwd', 'toggleEye')"></i>
                 </div>
             </div>
+            
+            <button class="btn btn-save" onclick="performLogin()" style="width: 100%; margin-bottom: 15px;">
+                <i class="fa-solid fa-right-to-bracket"></i> Login
+            </button>
 
-            <div class="remember-group full-width">
-                <label>
-                    <input type="checkbox" id="rememberMe"> Remember Password
-                </label>
+            <!-- Links to other forms -->
+            <button class="login-btn-public" onclick="showPublicForm()">
+                <i class="fa-solid fa-user-plus"></i> New Member Registration Form
+            </button>
+            <button class="login-btn-member" onclick="showMemberLogin()">
+                <i class="fa-solid fa-mobile-screen"></i> Member Application Status (સભાસદ લોગીન)
+            </button>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- MEMBER LOGIN (MOBILE ONLY) -->
+        <!-- ========================================================================= -->
+        <div class="login-box" id="member-login-box" style="display: none;">
+            <h2><i class="fa-solid fa-user"></i> Member Status</h2>
+            <p>તમારો રજીસ્ટર કરેલ મોબાઈલ નંબર નાખો</p>
+            
+            <div id="member-login-error" class="login-error">કોઈ રેકોર્ડ મળ્યો નથી!</div>
+            
+            <div class="form-group full-width">
+                <label>WhatsApp મોબાઇલ નંબર</label>
+                <input type="text" id="memberLoginMobile" placeholder="૧૦ આંકડાનો નંબર" onkeypress="handleEnter(event, 'member')">
             </div>
             
-            <button class="btn btn-save" onclick="performLogin()" style="margin-top: 10px; width: 100%;">
-                <i class="fa-solid fa-right-to-bracket"></i> Login System
+            <button class="btn btn-save" onclick="performMemberLogin()" style="width: 100%; margin-top: 10px;">
+                <i class="fa-solid fa-magnifying-glass"></i> Check Status
             </button>
-
-            <!-- TRIGGER PUBLIC FORM -->
-            <button class="login-btn-public" onclick="showPublicForm()">
-                <i class="fa-solid fa-user-plus"></i> New Member Registration
+            <button class="btn btn-clear" onclick="showMainLogin()" style="width: 100%; margin-top: 10px;">
+                <i class="fa-solid fa-arrow-left"></i> Back
             </button>
-            <p style="font-size: 11px; margin-top: 15px; color: #64748b;">
-                * Admin, Mantri, Convener, and Committee Members can login here.
-            </p>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- NEW MEMBER REGISTRATION FORM (NO LOGIN) -->
+    <!-- NEW MEMBER FORM (NO LOGIN REQUIRED) -->
     <!-- ========================================================================= -->
     <div id="public-registration-wrapper">
         <div class="reg-header">
@@ -237,6 +220,27 @@
         </div>
 
         <div class="form-panel" style="box-shadow: none; padding: 0;">
+            
+            <!-- PHOTO SYSTEM -->
+            <div class="form-group full-width" style="background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                <label style="font-size:15px; color:var(--primary);">વ્યક્તિનો ફોટો (Passport Size Photo) *</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px; margin-top: 5px;">
+                    <label class="btn btn-print" style="cursor:pointer; flex:1; justify-content:center; margin:0;">
+                        <i class="fa-solid fa-upload"></i> Upload Photo
+                        <input type="file" id="reg-photo-upload" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+                    </label>
+                    <button type="button" class="btn btn-download-card" style="flex:1; justify-content:center; margin:0;" onclick="openCameraModal()">
+                        <i class="fa-solid fa-camera"></i> Take Selfie
+                    </button>
+                </div>
+                <!-- IMAGE PROCESSING PREVIEW -->
+                <div id="reg-photo-preview-box" style="display:none; text-align:center; margin-top: 15px;">
+                    <img id="reg-photo-preview" src="" style="width: 120px; height: 160px; object-fit: cover; border: 2px solid var(--secondary); border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <p style="font-size: 12px; color: #16a34a; font-weight: bold; margin: 8px 0 0 0;"><i class="fa-solid fa-circle-check"></i> Photo Ready (Auto Cropped to Passport Size)</p>
+                </div>
+            </div>
+
+            <!-- MEMBER FORM -->
             <div class="form-group full-width">
                 <label>પૂરું નામ (Member Full Name) *</label>
                 <input type="text" id="reg-name" placeholder="વ્યક્તિનું પૂરું નામ">
@@ -261,6 +265,15 @@
                 <label>WhatsApp મોબાઇલ નંબર *</label>
                 <input type="text" id="reg-mobile" placeholder="૧૦ આંકડાનો નંબર">
             </div>
+
+            <!-- SAME AS ABOVE -->
+            <div class="form-group full-width" style="margin-top: 10px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--primary); margin: 0;">
+                    <input type="checkbox" id="reg-sameAsAbove" onchange="toggleSameAsAbove()" style="width: 16px; height: 16px;">
+                    <b>રહેઠાણનું સરનામું જ વ્યવસાયનું સરનામું છે (Same as Residential Address)</b>
+                </label>
+            </div>
+
             <div class="form-group">
                 <label>વ્યવસાય (Occupation)</label>
                 <input type="text" id="reg-vyavsay" placeholder="વ્યવસાયની વિગત">
@@ -291,9 +304,10 @@
                     <option value="AB+">AB+</option> <option value="AB-">AB-</option>
                 </select>
             </div>
+            
             <div class="form-group full-width">
-                <label>ઓળખાણ આપનાર સભ્યનું નામ અને નંબર (Reference)</label>
-                <input type="text" id="reg-reference" placeholder="Reference Member Name & No.">
+                <label>આપના ઘરમાંથી અન્ય વ્યક્તિઓ સભાસદ હોય તો નામ અને સભાસદ નંબર અવશ્ય લખવો</label>
+                <input type="text" id="reg-familyMember" placeholder="નામ અને સભાસદ નંબર">
             </div>
 
             <div class="form-group full-width" style="background: #fffbeb; padding: 15px; border-left: 4px solid #f59e0b; border-radius: 4px; margin-top: 10px;">
@@ -311,36 +325,106 @@
         </div>
     </div>
 
+    <!-- SELFIE CAMERA MODAL -->
+    <div id="cameraModal" class="crop-modal">
+        <div class="crop-container" style="max-width: 400px;">
+            <h3 style="color:var(--primary); margin-top:0;"><i class="fa-solid fa-camera"></i> Take Selfie</h3>
+            <video id="camera-stream" autoplay playsinline style="width: 100%; transform: scaleX(-1); border-radius: 8px; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"></video>
+            <p style="font-size:12px; color:var(--text-light); margin:10px 0;">Face the camera and click Capture.</p>
+            <div class="crop-btns" style="margin-top:15px;">
+                <button class="btn btn-clear" onclick="closeCamera()" style="width: 40%; justify-content:center;">Cancel</button>
+                <button class="btn btn-print" onclick="captureSelfie()" style="width: 60%; justify-content:center;"><i class="fa-solid fa-camera-retro"></i> Capture</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ========================================================================= -->
-    <!-- APPROVAL WORKFLOW DASHBOARD (FOR COMMITTEE & APPROVERS) -->
+    <!-- MEMBER DASHBOARD -->
+    <!-- ========================================================================= -->
+    <div id="member-dashboard-wrapper">
+        <div class="top-bar" style="margin-bottom: 20px;">
+            <h1 class="header-title">My Application Status</h1>
+            <button class="btn-logout" onclick="logoutApp()"><i class="fa-solid fa-power-off"></i> Logout</button>
+        </div>
+
+        <div id="member-status-container"></div>
+
+        <!-- HIDDEN CLONED ID CARD FOR MEMBER VIEW -->
+        <div class="preview-panel" id="member-card-preview-section" style="display:none; margin-top: 30px;">
+            <div class="card-scaler" id="member-card-scaler-box">
+                <div class="id-card" id="member-print-card">
+                    <div class="card-header">
+                        <h2>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h2>
+                        <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
+                        <p class="contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="logo-box"><img src="logo.png" alt="Logo"></div>
+                        <div class="details-box">
+                            <div class="detail-item"><div class="detail-label-box gu-font">સભ્ય નંબર</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font" id="m-val-memberNo"></div></div>
+                            <div class="detail-item"><div class="detail-label-box gu-font">પૂરું નામ</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font" id="m-val-name"></div></div>
+                            <div class="detail-item"><div class="detail-label-box gu-font">સરનામું</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font" id="m-val-address"></div></div>
+                            <div class="detail-item"><div class="detail-label-box gu-font">મૂળ વતન</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font" id="m-val-hometown"></div></div>
+                            <div class="detail-item"><div class="detail-label-box gu-font">જન્મ તારીખ</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font" id="m-val-dob"></div></div>
+                            <div class="detail-item"><div class="detail-label-box gu-font">મોબાઇલ નંબર</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font" id="m-val-mobile"></div></div>
+                            <div class="detail-item"><div class="detail-label-box gu-font">બ્લડ ગ્રુપ</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font blood-group-val" id="m-val-bloodgroup"></div></div>
+                        </div>
+                        <div class="photo-box"><img id="m-img-photo" src="" alt="Photo"></div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="sign-block left"><img src="sign1.png" alt="Sign 1"><p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p></div>
+                        <div class="sign-block right"><img src="sign2.png" alt="Sign 2"><p>મયંક આર. શાહ <span>- મંત્રી</span></p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-print" onclick="printMemberCard()"><i class="fa-solid fa-print"></i> Print Card</button>
+                <button type="button" class="btn btn-download-card" onclick="downloadMemberCardPDF()"><i class="fa-solid fa-download"></i> Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- DASHBOARDS (COMMITTEE & APPROVERS) -->
     <!-- ========================================================================= -->
     <div id="workflow-dashboard-wrapper">
         <div class="top-bar" style="margin-bottom: 20px;">
             <h1 class="header-title" id="wf-dashboard-title">Dashboard</h1>
-            <button class="btn-logout" onclick="logoutApp()"><i class="fa-solid fa-power-off"></i> Logout</button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-warning" onclick="openPwdModal()"><i class="fa-solid fa-key"></i> Settings</button>
+                <button class="btn-logout" onclick="logoutApp()"><i class="fa-solid fa-power-off"></i> Logout</button>
+            </div>
         </div>
 
         <div class="workflow-tabs">
-            <button class="wf-tab active" id="tab-pending" onclick="switchWfTab('pending')">Pending Requests</button>
+            <button class="wf-tab active" id="tab-pending" onclick="switchWfTab('pending')">Pending <span id="badge-pending" class="badge badge-warning">0</span></button>
             <button class="wf-tab" id="tab-approved" onclick="switchWfTab('approved')">Approved</button>
             <button class="wf-tab" id="tab-rejected" onclick="switchWfTab('rejected')">Rejected</button>
+            <button class="wf-tab" id="tab-idcards" onclick="switchWfTab('idcards')" style="display:none; background:#0f3460; color:white;"><i class="fa-solid fa-id-card"></i> ID Cards Created</button>
         </div>
 
         <div class="table-container" style="margin: 0; padding: 0; box-shadow: none;">
             <table>
-                <thead>
-                    <tr>
-                        <th>નામ</th>
-                        <th>મોબાઇલ</th>
-                        <th>ગામ</th>
-                        <th>સ્ટેટસ</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="wf-tableBody">
-                    <!-- Loaded via JS -->
-                </tbody>
+                <thead><tr><th>નામ</th><th>મોબાઇલ</th><th>ગામ</th><th>સ્ટેટસ</th><th>Action</th></tr></thead>
+                <tbody id="wf-tableBody"></tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- FULL DETAILS MODAL FOR DASHBOARDS -->
+    <div id="wfDetailsModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h3 style="margin:0; color:var(--primary);"><i class="fa-solid fa-file-lines"></i> સભ્યની સંપૂર્ણ વિગત (Full Details)</h3>
+                <button class="btn-close-modal" onclick="closeWfDetailsModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <!-- Show Photo in Details -->
+            <div style="text-align: center; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px;">
+                <img id="wfDetailsPhoto" src="" style="width: 120px; height: 160px; object-fit: cover; border: 3px solid var(--secondary); border-radius: 8px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            </div>
+            <div id="wfDetailsBody" style="font-size: 14px; line-height: 1.6;"></div>
         </div>
     </div>
 
@@ -353,8 +437,9 @@
         <div class="top-bar">
             <h1 class="header-title">Premium Corporate ID Card</h1>
             <div style="display: flex; gap: 10px;">
-                <!-- NEW BUTTON FOR ADMIN TO PULL APPROVED REQUESTS -->
+                <!-- ADMIN UPDATE -->
                 <button class="btn admin-top-btn" onclick="openAdminApprovedModal()"><i class="fa-solid fa-clipboard-check"></i> View Approved Registrations</button>
+                <button class="btn btn-warning" onclick="openPwdModal()"><i class="fa-solid fa-key"></i> Passwords</button>
                 <button class="btn-logout" onclick="logoutApp()"><i class="fa-solid fa-power-off"></i> Logout</button>
             </div>
         </div>
@@ -363,12 +448,11 @@
             <!-- Input Form (Existing) -->
             <div class="form-panel">
                 <input type="hidden" id="recordId"> 
+                <input type="hidden" id="adminRequestId"> <!-- Links card to request -->
 
                 <div class="transl-toggle-bar">
                     <input type="checkbox" id="enableTransliteration" checked>
-                    <label for="enableTransliteration">
-                        <i class="fa-solid fa-language"></i> ગુજરાતી ટાઈપિંગ (English માં લખી Space દબાવો)
-                    </label>
+                    <label for="enableTransliteration"><i class="fa-solid fa-language"></i> ગુજરાતી ટાઈપિંગ (English માં લખી Space દબાવો)</label>
                 </div>
 
                 <div class="form-group full-width">
@@ -379,7 +463,6 @@
                 <div class="form-group full-width">
                     <label>પૂરું નામ</label>
                     <input type="text" id="name" placeholder="વ્યક્તિનું નામ" oninput="updateField('name', 'val-name')">
-                    <div class="hint-text"><i class="fa-solid fa-circle-info"></i> નોંધ: કોઈપણ ખાનામાં English માં લખી Space દબાવશો એટલે આપમેળે ગુજરાતીમાં (આંકડા સહિત) ફેરવાઈ જશે.</div>
                 </div>
                 
                 <div class="form-group full-width">
@@ -433,12 +516,8 @@
                             <p class="address">શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
                             <p class="contact">ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ &nbsp;|&nbsp; મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ &nbsp;|&nbsp; ઇમેઇલ: 32cedusociety@gmail.com</p>
                         </div>
-                        
                         <div class="card-body">
-                            <div class="logo-box">
-                                <img id="img-logo" src="logo.png" alt="Logo">
-                            </div>
-                            
+                            <div class="logo-box"><img id="img-logo" src="logo.png" alt="Logo"></div>
                             <div class="details-box">
                                 <div class="detail-item"><div class="detail-label-box gu-font">સભ્ય નંબર</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font" id="val-memberNo">XXXX</div></div>
                                 <div class="detail-item"><div class="detail-label-box gu-font">પૂરું નામ</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font" id="val-name">XXXX XXXX</div></div>
@@ -448,12 +527,8 @@
                                 <div class="detail-item"><div class="detail-label-box gu-font">મોબાઇલ નંબર</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font" id="val-mobile">XXXXX XXXXX</div></div>
                                 <div class="detail-item"><div class="detail-label-box gu-font">બ્લડ ગ્રુપ</div><div class="detail-colon gu-font">:</div><div class="detail-value-box gu-font blood-group-val" id="val-bloodgroup">-</div></div>
                             </div>
-
-                            <div class="photo-box">
-                                <img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Photo">
-                            </div>
+                            <div class="photo-box"><img id="img-photo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Photo"></div>
                         </div>
-                        
                         <div class="card-footer">
                             <div class="sign-block left"><img id="img-sign1" src="sign1.png" alt="Sign 1"><p>સંદીપ એમ. શાહ <span>- કન્વીનર</span></p></div>
                             <div class="sign-block right"><img id="img-sign2" src="sign2.png" alt="Sign 2"><p>મયંક આર. શાહ <span>- મંત્રી</span></p></div>
@@ -468,7 +543,6 @@
             </div>
         </div>
 
-        <!-- Saved Records Database Table (Existing) -->
         <div class="table-container">
             <div class="table-header-row">
                 <h2 class="table-title"><i class="fa-solid fa-database"></i> સેવ કરેલા સભ્યોની યાદી</h2>
@@ -506,7 +580,7 @@
         </div>
     </div>
 
-    <!-- CROP & ENHANCE MODAL (Existing) -->
+    <!-- CROP MODAL (EXISTING APP) -->
     <div id="cropModal" class="crop-modal">
         <div class="crop-container">
             <h3><i class="fa-solid fa-crop-simple"></i> ફોટો સેટ કરો</h3>
@@ -514,6 +588,33 @@
             <div class="crop-btns">
                 <button class="btn btn-clear" onclick="closeCropper()" style="width: 40%;">Cancel</button>
                 <button class="btn btn-print" onclick="applyCropAndEnhance()" style="width: 60%;"><i class="fa-solid fa-wand-magic-sparkles"></i> Crop & Enhance HD</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASSWORD SYSTEM MODAL -->
+    <div id="passwordModal" class="admin-modal">
+        <div class="admin-modal-content" style="max-width: 400px;">
+            <div class="admin-modal-header">
+                <h3 style="margin:0; color:var(--primary);"><i class="fa-solid fa-key"></i> Settings</h3>
+                <button class="btn-close-modal" onclick="closePwdModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div id="pwd-change-section">
+                <div class="form-group full-width">
+                    <label>નવો પાસવર્ડ (New Password)</label>
+                    <input type="password" id="newPwdInput" placeholder="Enter new password">
+                </div>
+                <button class="btn btn-save" onclick="changeMyPassword()" style="width: 100%; margin-top: 15px;">Update Password</button>
+            </div>
+
+            <div id="pwd-admin-section" style="display:none; margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 20px;">
+                <h4 style="color:var(--text-light); margin-top:0;">Admin: Reset User Password</h4>
+                <div class="form-group full-width">
+                    <label>વપરાશકર્તાનો મોબાઈલ (User Mobile)</label>
+                    <input type="text" id="resetPwdMobile" placeholder="User ID / Mobile">
+                </div>
+                <button class="btn btn-warning" onclick="adminResetPassword()" style="width: 100%; margin-top: 10px;">Reset to Default (Bat@3232)</button>
             </div>
         </div>
     </div>
@@ -556,25 +657,74 @@
             { name: "MIHIR DINESHBHAI SHAH", phone: "9909902687" }
         ];
 
-        // Populate dropdown
         window.addEventListener('DOMContentLoaded', () => {
             const select = document.getElementById('reg-committee');
             committeeList.forEach(m => {
                 let opt = document.createElement('option');
-                opt.value = m.phone;
-                opt.text = `${m.name} (${m.phone})`;
+                opt.value = m.phone; opt.text = `${m.name} (${m.phone})`;
                 select.appendChild(opt);
             });
+            // Init Number Conversions for Logins
+            document.getElementById('memberLoginMobile').addEventListener('input', () => handleNumberConversion('memberLoginMobile'));
         });
 
         // ==============================================================
-        // 1. MULTI-ROLE LOGIN SYSTEM
+        // PASSWORD SYSTEM (LOCAL STORAGE)
         // ==============================================================
-        function togglePassword() {
-            const pwdInput = document.getElementById('loginPwd');
-            const toggleIcon = document.getElementById('toggleEye');
+        function getStoredPassword(userId) {
+            let pwds = JSON.parse(localStorage.getItem('userPasswords') || '{}');
+            return pwds[userId] || 'Bat@3232'; // Default
+        }
+        function saveStoredPassword(userId, newPwd) {
+            let pwds = JSON.parse(localStorage.getItem('userPasswords') || '{}');
+            pwds[userId] = newPwd;
+            localStorage.setItem('userPasswords', JSON.stringify(pwds));
+        }
+
+        function openPwdModal() {
+            document.getElementById('passwordModal').style.display = 'flex';
+            document.getElementById('newPwdInput').value = '';
+            if(sessionStorage.getItem('userRole') === 'admin') {
+                document.getElementById('pwd-admin-section').style.display = 'block';
+            } else {
+                document.getElementById('pwd-admin-section').style.display = 'none';
+            }
+        }
+        function closePwdModal() { document.getElementById('passwordModal').style.display = 'none'; }
+        
+        function changeMyPassword() {
+            const newPwd = document.getElementById('newPwdInput').value;
+            if(!newPwd) return alert("પાસવર્ડ ખાલી ના રાખી શકાય.");
+            const userId = sessionStorage.getItem('userPhone');
+            saveStoredPassword(userId, newPwd);
+            alert("તમારો પાસવર્ડ સફળતાપૂર્વક બદલાઈ ગયો છે.");
+            closePwdModal();
+        }
+        function adminResetPassword() {
+            const targetMobile = document.getElementById('resetPwdMobile').value.trim();
+            if(!targetMobile) return;
+            saveStoredPassword(targetMobile, 'Bat@3232');
+            alert(targetMobile + " નો પાસવર્ડ Bat@3232 રિસેટ થઈ ગયો છે.");
+            document.getElementById('resetPwdMobile').value = '';
+        }
+
+        // ==============================================================
+        // LOGIN SYSTEM
+        // ==============================================================
+        function togglePassword(inputId, iconId) {
+            const pwdInput = document.getElementById(inputId); const toggleIcon = document.getElementById(iconId);
             if (pwdInput.type === 'password') { pwdInput.type = 'text'; toggleIcon.classList.replace('fa-eye-slash', 'fa-eye'); } 
             else { pwdInput.type = 'password'; toggleIcon.classList.replace('fa-eye', 'fa-eye-slash'); }
+        }
+
+        function showMemberLogin() {
+            document.getElementById('main-login-box').style.display = 'none';
+            document.getElementById('member-login-box').style.display = 'block';
+            document.getElementById('member-login-error').style.display = 'none';
+        }
+        function showMainLogin() {
+            document.getElementById('main-login-box').style.display = 'block';
+            document.getElementById('member-login-box').style.display = 'none';
         }
 
         function performLogin() {
@@ -582,17 +732,20 @@
             const userPwd = document.getElementById('loginPwd').value;
             const errorMsg = document.getElementById('login-error');
 
-            if (userPwd === "Bat@3232") {
+            const validPwd = getStoredPassword(userId);
+
+            if (userPwd === validPwd) {
                 if (userId === "Batrisi") {
-                    setSessionAndRoute('admin', userId);
-                } else if (userId === '9537714100') {
-                    setSessionAndRoute('approver_mantri', userId);
-                } else if (userId === '9327054179') {
-                    setSessionAndRoute('approver_convener', userId);
-                } else if (committeeList.some(c => c.phone === userId)) {
-                    setSessionAndRoute('committee', userId);
+                    setSessionAndRoute('admin', userId, 'Admin');
+                } else if (userId === '9537714100' || userId === '૯૫૩૭૭૧૪૧૦૦') {
+                    setSessionAndRoute('approver_mantri', '9537714100', 'MAYANKKUMAR RAMANLAL SHAH');
+                } else if (userId === '9327054179' || userId === '૯૩૨૭૦૫૪૧૭૯') {
+                    setSessionAndRoute('approver_convener', '9327054179', 'SANDIP MAHENDARABHAI SHAH');
                 } else {
-                    errorMsg.style.display = 'block'; return;
+                    // Check against english or gujarati format of committee mobile
+                    let member = committeeList.find(c => c.phone === userId || convertToGujarati(c.phone) === userId);
+                    if(member) setSessionAndRoute('committee', member.phone, member.name);
+                    else { errorMsg.style.display = 'block'; return; }
                 }
                 
                 if (document.getElementById('rememberMe').checked) {
@@ -601,54 +754,256 @@
                     localStorage.removeItem('savedUserId'); localStorage.removeItem('savedUserPwd'); localStorage.removeItem('rememberPwdChecked');
                 }
                 errorMsg.style.display = 'none';
-            } else {
-                errorMsg.style.display = 'block';
-            }
+            } else { errorMsg.style.display = 'block'; }
         }
 
-        function setSessionAndRoute(role, userId) {
+        function convertToGujarati(engStr) {
+            return engStr.replace(/[0-9]/g, match => engToGujDigits[match]);
+        }
+
+        function setSessionAndRoute(role, userId, userName) {
             sessionStorage.setItem('isSecuredLoggedIn', 'true');
             sessionStorage.setItem('userRole', role);
             sessionStorage.setItem('userPhone', userId);
+            sessionStorage.setItem('userName', userName);
             routeUser();
         }
 
         function routeUser() {
             document.getElementById('login-wrapper').style.display = 'none';
             document.getElementById('public-registration-wrapper').style.display = 'none';
+            document.getElementById('member-dashboard-wrapper').style.display = 'none';
             
             const role = sessionStorage.getItem('userRole');
             if(role === 'admin') {
                 document.getElementById('app-wrapper').style.display = 'block';
                 document.getElementById('workflow-dashboard-wrapper').style.display = 'none';
                 initializeSystem();
+            } else if (role === 'member') {
+                document.getElementById('app-wrapper').style.display = 'none';
+                document.getElementById('workflow-dashboard-wrapper').style.display = 'none';
+                document.getElementById('member-dashboard-wrapper').style.display = 'block';
             } else {
                 document.getElementById('app-wrapper').style.display = 'none';
                 document.getElementById('workflow-dashboard-wrapper').style.display = 'block';
                 initWorkflowDashboard();
             }
         }
-
-        function handleEnter(e) { if (e.key === 'Enter') performLogin(); }
-
-        function logoutApp() {
-            sessionStorage.clear();
-            window.location.reload(); 
-        }
+        function handleEnter(e, type) { if (e.key === 'Enter') { if(type==='admin') performLogin(); else performMemberLogin(); } }
+        function logoutApp() { sessionStorage.clear(); window.location.reload(); }
 
         // ==============================================================
-        // 2. PUBLIC REGISTRATION FORM LOGIC
+        // MEMBER LOGIN & DASHBOARD
+        // ==============================================================
+        function performMemberLogin() {
+            const mobile = document.getElementById('memberLoginMobile').value.trim();
+            const errorMsg = document.getElementById('member-login-error');
+            if(!mobile) return;
+
+            errorMsg.style.display = 'none';
+            // Search in requests first
+            db.collection("memberRequests").where("mobile", "==", mobile).get().then(snap => {
+                if(!snap.empty) {
+                    let reqData = snap.docs[0].data();
+                    let docId = snap.docs[0].id;
+                    sessionStorage.setItem('memberDocId', docId);
+                    sessionStorage.setItem('memberMobile', mobile);
+                    setSessionAndRoute('member', mobile, reqData.name);
+                    renderMemberDashboard(reqData);
+                } else {
+                    // Try ID cards directly
+                    db.collection("idCards").where("mobile", "==", mobile).get().then(idSnap => {
+                        if(!idSnap.empty) {
+                            let cardData = idSnap.docs[0].data();
+                            sessionStorage.setItem('memberMobile', mobile);
+                            setSessionAndRoute('member', mobile, cardData.name);
+                            renderMemberDashboard({ status: 'card_generated', idCardData: cardData });
+                        } else {
+                            errorMsg.style.display = 'block';
+                        }
+                    });
+                }
+            });
+        }
+
+        function renderMemberDashboard(reqData) {
+            const container = document.getElementById('member-status-container');
+            const previewSection = document.getElementById('member-card-preview-section');
+            previewSection.style.display = 'none';
+
+            if(reqData.status === 'card_generated' || reqData.idCardData) {
+                container.innerHTML = `
+                    <div class="status-box" style="background: #ecfdf5; border: 2px solid #10b981;">
+                        <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
+                        <h2 style="color: #065f46; margin-top:0;">અભિનંદન! તમારું ID કાર્ડ તૈયાર છે.</h2>
+                        <p style="color: #047857; font-weight: 600;">તમે નીચેથી તમારું કાર્ડ પ્રિન્ટ અથવા ડાઉનલોડ કરી શકો છો.</p>
+                    </div>`;
+                
+                // Fetch ID card data if not supplied
+                if(!reqData.idCardData && reqData.cardId) {
+                    db.collection('idCards').doc(reqData.cardId).get().then(doc => {
+                        if(doc.exists) populateMemberCard(doc.data());
+                    });
+                } else if(reqData.idCardData) {
+                    populateMemberCard(reqData.idCardData);
+                } else {
+                    // Fallback search
+                    db.collection('idCards').where('mobile', '==', reqData.mobile).get().then(snap => {
+                        if(!snap.empty) populateMemberCard(snap.docs[0].data());
+                    });
+                }
+            } 
+            else if(reqData.status.includes('rejected')) {
+                container.innerHTML = `
+                    <div class="status-box" style="background: #fef2f2; border: 2px solid #ef4444;">
+                        <i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i>
+                        <h2 style="color: #991b1b; margin-top:0;">એપ્લિકેશન રદ (Rejected)</h2>
+                        <p style="color: #b91c1c; font-weight: 600;">વધુ માહિતી માટે કમિટી મેમ્બર નો સંપર્ક કરો.</p>
+                    </div>`;
+            }
+            else {
+                container.innerHTML = `
+                    <div class="status-box" style="background: #fffbeb; border: 2px solid #f59e0b;">
+                        <i class="fa-solid fa-clock-rotate-left" style="color: #f59e0b;"></i>
+                        <h2 style="color: #b45309; margin-top:0;">એપ્લિકેશન પ્રોસેસમાં છે (Under Process)</h2>
+                        <p style="color: #d97706; font-weight: 600;">કમિટી દ્વારા મંજૂરી ની પ્રક્રિયા ચાલુ છે. કૃપા કરીને થોડી રાહ જુઓ.</p>
+                    </div>`;
+            }
+        }
+
+        function populateMemberCard(data) {
+            document.getElementById('m-val-memberNo').innerText = data.memberNo || "XXXX";
+            document.getElementById('m-val-name').innerText = data.name || "XXXX XXXX";
+            document.getElementById('m-val-address').innerText = data.address || "XXXX XXXX XXXX";
+            document.getElementById('m-val-hometown').innerText = data.hometown || "XXXX";
+            document.getElementById('m-val-dob').innerText = data.dob || "XX/XX/XXXX";
+            document.getElementById('m-val-mobile').innerText = data.mobile || "XXXXX XXXXX";
+            document.getElementById('m-val-bloodgroup').innerText = data.bloodgroup || "-";
+            document.getElementById('m-img-photo').src = data.photo || "";
+            document.getElementById('member-card-preview-section').style.display = 'flex';
+        }
+
+        // Print/Download Member Card
+        function printMemberCard() {
+            const cardHTML = document.getElementById('member-print-card').outerHTML;
+            let printWin = window.open('', '_blank'); let styles = '';
+            for (let sheet of document.styleSheets) { try { for (let rule of sheet.cssRules) { styles += rule.cssText + '\n'; } } catch(e) {} }
+            printWin.document.write(`<html><head><style>${styles} @media print { @page{margin:0;} html,body{width:100vw;height:100vh;margin:0;background:white;} #member-print-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:428px;height:270px;border:1px solid #cbd5e1;box-shadow:none;margin:0;} }</style></head><body>${cardHTML}<script>window.onload=function(){setTimeout(()=>{window.print();window.close();},800);}<\/script></body></html>`);
+            printWin.document.close();
+        }
+        function downloadMemberCardPDF() {
+            const card = document.getElementById('member-print-card'); const scalerBox = document.getElementById('member-card-scaler-box'); scalerBox.style.transform = 'scale(1)';
+            html2canvas(card, { scale: 4, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+                const { jsPDF } = window.jspdf; const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 85.6, 54);
+                let n = document.getElementById('m-val-name').innerText.trim(); pdf.save((n === "XXXX XXXX" ? "ID_Card" : n) + "_ID_Card.pdf");
+                scalerBox.style.transform = 'scale(1.25)';
+            });
+        }
+
+
+        // ==============================================================
+        // IMAGE PROCESSING (AUTO PASSPORT SIZE CROP)
+        // ==============================================================
+        let regPhotoBase64 = "";
+
+        // Process image to center crop and scale to 300x400 (3:4 ratio)
+        function processAndCropImage(sourceElement, isVideo) {
+            const targetW = 300; const targetH = 400;
+            const canvas = document.createElement('canvas');
+            canvas.width = targetW; canvas.height = targetH;
+            const ctx = canvas.getContext('2d');
+
+            let srcW = isVideo ? sourceElement.videoWidth : sourceElement.width;
+            let srcH = isVideo ? sourceElement.videoHeight : sourceElement.height;
+            let srcRatio = srcW / srcH; let targetRatio = targetW / targetH;
+            
+            let cropW, cropH, cropX, cropY;
+            if (srcRatio > targetRatio) { cropH = srcH; cropW = srcH * targetRatio; cropX = (srcW - cropW) / 2; cropY = 0; } 
+            else { cropW = srcW; cropH = srcW / targetRatio; cropX = 0; cropY = (srcH - cropH) / 2; }
+
+            // Mirror if front camera
+            if (isVideo) { ctx.translate(targetW, 0); ctx.scale(-1, 1); }
+            ctx.drawImage(sourceElement, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
+            return canvas.toDataURL('image/jpeg', 0.9);
+        }
+
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const img = new Image(); const url = URL.createObjectURL(file);
+            img.onload = function() {
+                regPhotoBase64 = processAndCropImage(img, false);
+                document.getElementById('reg-photo-preview').src = regPhotoBase64;
+                document.getElementById('reg-photo-preview-box').style.display = 'block';
+                URL.revokeObjectURL(url);
+            }
+            img.src = url;
+        }
+
+        let cameraStream = null;
+        async function openCameraModal() {
+            document.getElementById('cameraModal').style.display = 'flex';
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                document.getElementById('camera-stream').srcObject = cameraStream;
+            } catch (err) {
+                alert("Camera access denied or not available!"); closeCamera();
+            }
+        }
+
+        function closeCamera() {
+            document.getElementById('cameraModal').style.display = 'none';
+            if(cameraStream) { cameraStream.getTracks().forEach(track => track.stop()); cameraStream = null; }
+        }
+
+        function captureSelfie() {
+            const video = document.getElementById('camera-stream');
+            if(!video.videoWidth) return;
+            regPhotoBase64 = processAndCropImage(video, true);
+            document.getElementById('reg-photo-preview').src = regPhotoBase64;
+            document.getElementById('reg-photo-preview-box').style.display = 'block';
+            closeCamera();
+        }
+
+
+        // ==============================================================
+        // SAME AS ABOVE LOGIC
+        // ==============================================================
+        function toggleSameAsAbove() {
+            const isChecked = document.getElementById('reg-sameAsAbove').checked;
+            const vyavsayAddr = document.getElementById('reg-vyavsayAddress');
+            const vyavsayPin = document.getElementById('reg-vyavsayPincode');
+            
+            if(isChecked) {
+                vyavsayAddr.value = document.getElementById('reg-address').value;
+                vyavsayPin.value = document.getElementById('reg-pincode').value;
+                vyavsayAddr.readOnly = true; vyavsayPin.readOnly = true;
+                vyavsayAddr.style.backgroundColor = "#f1f5f9"; vyavsayPin.style.backgroundColor = "#f1f5f9";
+            } else {
+                vyavsayAddr.readOnly = false; vyavsayPin.readOnly = false;
+                vyavsayAddr.style.backgroundColor = ""; vyavsayPin.style.backgroundColor = "";
+            }
+        }
+        function syncSameAsAbove() { if(document.getElementById('reg-sameAsAbove').checked) toggleSameAsAbove(); }
+
+
+        // ==============================================================
+        // NEW MEMBER FORM LOGIC
         // ==============================================================
         function showPublicForm() {
             document.getElementById('login-wrapper').style.display = 'none';
             document.getElementById('public-registration-wrapper').style.display = 'block';
-            
-            // Attach transliteration to new form fields
             setupRegTransliteration();
+            
+            // Bind Same as Above auto-sync
+            document.getElementById('reg-address').addEventListener('input', syncSameAsAbove);
+            document.getElementById('reg-pincode').addEventListener('input', syncSameAsAbove);
         }
 
         function submitPublicForm() {
             const data = {
+                photo: regPhotoBase64,
                 name: document.getElementById('reg-name').value.trim(),
                 fatherName: document.getElementById('reg-fatherName').value.trim(),
                 nativeName: document.getElementById('reg-nativeName').value.trim(),
@@ -661,48 +1016,54 @@
                 dob: document.getElementById('reg-dob').value.trim(),
                 education: document.getElementById('reg-education').value.trim(),
                 bloodGroup: document.getElementById('reg-bloodgroup').value,
-                reference: document.getElementById('reg-reference').value.trim(),
+                familyMember: document.getElementById('reg-familyMember').value.trim(),
                 committeePhone: document.getElementById('reg-committee').value
             };
 
+            if(!data.photo) { alert("કૃપા કરીને ફોટો અપલોડ કરો અથવા સેલ્ફી લો."); return; }
             if(!data.name || !data.fatherName || !data.nativeName || !data.address || !data.pincode || !data.mobile || !data.dob || !data.committeePhone) {
                 alert("કૃપા કરીને બધા જરૂરી (*) ખાનાઓ ભરો."); return;
             }
 
-            const payload = {
-                ...data,
-                status: "pending_committee", 
-                approvals: { mantri: false, convener: false },
-                timestamp: Date.now()
-            };
+            const payload = { ...data, status: "pending_committee", timestamp: Date.now() };
 
             db.collection("memberRequests").add(payload).then(() => {
-                alert("તમારું ફોર્મ સફળતાપૂર્વક સબમિટ થઇ ગયું છે. કમિટી મેમ્બર દ્વારા મંજૂરી મળશે.");
+                alert("તમારું ફોર્મ સફળતાપૂર્વક સબમિટ થઇ ગયું છે.");
                 window.location.reload();
             }).catch(err => alert("Error: " + err.message));
         }
 
         // ==============================================================
-        // 3. WORKFLOW DASHBOARD (COMMITTEE & APPROVERS)
+        // APPROVAL SYSTEM & DASHBOARDS
         // ==============================================================
         let workflowRecords = [];
+        let idCardsRecords = []; // For Admin Sync view
         let currentWfTab = 'pending';
 
         function initWorkflowDashboard() {
             const role = sessionStorage.getItem('userRole');
-            const phone = sessionStorage.getItem('userPhone');
             const titleEl = document.getElementById('wf-dashboard-title');
             
             if(role === 'committee') titleEl.innerText = "Committee Dashboard";
             if(role === 'approver_mantri') titleEl.innerText = "Mantri Dashboard";
             if(role === 'approver_convener') titleEl.innerText = "Convener Dashboard";
 
-            // Listen to real-time changes
+            // Listen to Member Requests
             db.collection("memberRequests").orderBy("timestamp", "desc").onSnapshot(snapshot => {
                 workflowRecords = [];
                 snapshot.forEach(doc => workflowRecords.push({ docId: doc.id, ...doc.data() }));
                 renderWfTable();
             });
+
+            // Listen to Generated ID Cards (Only for Approvers)
+            if(role === 'approver_mantri' || role === 'approver_convener') {
+                document.getElementById('tab-idcards').style.display = 'inline-block';
+                db.collection("idCards").orderBy("timestamp", "desc").onSnapshot(snap => {
+                    idCardsRecords = [];
+                    snap.forEach(doc => idCardsRecords.push({ docId: doc.id, ...doc.data() }));
+                    if(currentWfTab === 'idcards') renderWfTable();
+                });
+            }
         }
 
         function switchWfTab(tab) {
@@ -718,123 +1079,172 @@
             const tbody = document.getElementById('wf-tableBody');
             tbody.innerHTML = "";
 
+            // If Approver wants to see Admin DB generated cards
+            if(currentWfTab === 'idcards') {
+                if(idCardsRecords.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`; return;
+                }
+                idCardsRecords.forEach(rec => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${rec.name}</td><td>${rec.mobile}</td><td>${rec.hometown}</td>
+                            <td><span class="badge badge-success" style="background:#0f3460">ID Card Created</span></td>
+                            <td><button class="btn-sm btn-edit" onclick="viewIdCardDetails('${rec.docId}')"><i class="fa-solid fa-eye"></i> View</button></td>
+                        </tr>`;
+                });
+                return;
+            }
+
             let filtered = workflowRecords.filter(r => {
+                // Convert committeePhone to standard mapping format if needed
+                let reqCommPhone = r.committeePhone;
                 if(role === 'committee') {
-                    if(r.committeePhone !== phone) return false;
+                    if(reqCommPhone !== phone && convertToGujarati(phone) !== reqCommPhone && phone !== convertToGujarati(reqCommPhone)) return false;
                     if(currentWfTab === 'pending') return r.status === 'pending_committee';
                     if(currentWfTab === 'approved') return r.status !== 'pending_committee' && r.status !== 'rejected_committee';
                     if(currentWfTab === 'rejected') return r.status === 'rejected_committee';
                 }
                 else if(role === 'approver_mantri' || role === 'approver_convener') {
-                    let isMantri = role === 'approver_mantri';
-                    if(currentWfTab === 'pending') {
-                        return r.status === 'pending_approvers' && (isMantri ? !r.approvals.mantri : !r.approvals.convener);
-                    }
-                    if(currentWfTab === 'approved') {
-                        return (isMantri ? r.approvals.mantri : r.approvals.convener);
-                    }
-                    if(currentWfTab === 'rejected') {
-                        return r.status === 'rejected_approver';
-                    }
+                    if(currentWfTab === 'pending') return r.status === 'pending_approvers';
+                    if(currentWfTab === 'approved') return r.status === 'approved_final' || r.status === 'id_card_created' || r.status === 'card_generated';
+                    if(currentWfTab === 'rejected') return r.status === 'rejected_approver';
                 }
                 return false;
             });
 
-            if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`;
-                return;
+            // Update Notification Badge
+            if(currentWfTab === 'pending') {
+                document.getElementById('badge-pending').innerText = filtered.length;
             }
+
+            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`; return; }
 
             filtered.forEach(rec => {
                 let statusBadge = getStatusBadge(rec.status);
-                let actionsHtml = "";
+                let actionsHtml = `<button class="btn-sm btn-edit" onclick="viewWfDetails('${rec.docId}')" title="View Full Form"><i class="fa-solid fa-eye"></i> View</button> `;
 
                 if(currentWfTab === 'pending') {
                     if(role === 'committee') {
-                        actionsHtml = `
+                        actionsHtml += `
                             <button class="btn-sm btn-print-sm" onclick="wfAction('${rec.docId}', 'approve_committee')">Yes - I Know Him</button>
-                            <button class="btn-sm btn-delete" onclick="wfAction('${rec.docId}', 'reject_committee')">No - Reject</button>
+                            <button class="btn-sm btn-delete" onclick="wfAction('${rec.docId}', 'reject_committee')">Reject</button>
                         `;
                     } else {
-                        actionsHtml = `
-                            <button class="btn-sm btn-print-sm" onclick="wfAction('${rec.docId}', 'approve_approver')">Approve Form</button>
+                        actionsHtml += `
+                            <button class="btn-sm btn-print-sm" onclick="wfAction('${rec.docId}', 'approve_approver')">Final Approve</button>
                             <button class="btn-sm btn-delete" onclick="wfAction('${rec.docId}', 'reject_approver')">Reject</button>
                         `;
                     }
-                } else {
-                    actionsHtml = `<span style="color:#64748b; font-size:12px;">No Actions</span>`;
                 }
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${rec.name}</td>
-                        <td>${rec.mobile}</td>
-                        <td>${rec.nativeName}</td>
-                        <td>${statusBadge}</td>
-                        <td class="action-btns">${actionsHtml}</td>
-                    </tr>
-                `;
+                tbody.innerHTML += `<tr><td>${rec.name}</td><td>${rec.mobile}</td><td>${rec.nativeName}</td><td>${statusBadge}</td><td class="action-btns">${actionsHtml}</td></tr>`;
             });
         }
 
         function getStatusBadge(status) {
             if(status === 'pending_committee') return `<span class="badge badge-warning">Pending Committee</span>`;
-            if(status === 'rejected_committee') return `<span class="badge badge-danger">Rejected by Comm.</span>`;
+            if(status === 'rejected_committee') return `<span class="badge badge-danger">Rejected (Comm.)</span>`;
             if(status === 'pending_approvers') return `<span class="badge badge-info">Pending Final</span>`;
-            if(status === 'rejected_approver') return `<span class="badge badge-danger">Rejected by Approver</span>`;
-            if(status === 'approved_final') return `<span class="badge badge-success">Approved - Ready for ID</span>`;
-            if(status === 'id_card_created') return `<span class="badge badge-success" style="background:#0f3460">ID Card Created</span>`;
+            if(status === 'rejected_approver') return `<span class="badge badge-danger">Rejected (Final)</span>`;
+            if(status === 'approved_final') return `<span class="badge badge-success">Approved (Ready)</span>`;
+            if(status === 'id_card_created' || status === 'card_generated') return `<span class="badge badge-success" style="background:#0f3460">Card Created</span>`;
             return `<span class="badge">${status}</span>`;
         }
 
+        // --- APPROVAL LOGIC (ANY ONE EITHER/OR) ---
         function wfAction(docId, action) {
-            const role = sessionStorage.getItem('userRole');
+            const userName = sessionStorage.getItem('userName');
             const docRef = db.collection("memberRequests").doc(docId);
             
-            if(action === 'approve_committee') docRef.update({ status: 'pending_approvers' });
-            if(action === 'reject_committee') docRef.update({ status: 'rejected_committee' });
+            if(action === 'approve_committee') {
+                docRef.update({ status: 'pending_approvers', committeeApprovedBy: `${userName}` });
+            }
+            if(action === 'reject_committee') docRef.update({ status: 'rejected_committee', rejectedBy: userName });
+            if(action === 'reject_approver') docRef.update({ status: 'rejected_approver', rejectedBy: userName });
             
-            if(action === 'reject_approver') docRef.update({ status: 'rejected_approver' });
+            // ANY ONE (Mantri or Convener) approves -> Final Approved
             if(action === 'approve_approver') {
-                docRef.get().then(snap => {
-                    let data = snap.data();
-                    let newApprovals = { ...data.approvals };
-                    if(role === 'approver_mantri') newApprovals.mantri = true;
-                    if(role === 'approver_convener') newApprovals.convener = true;
-                    
-                    let newStatus = (newApprovals.mantri && newApprovals.convener) ? 'approved_final' : 'pending_approvers';
-                    docRef.update({ approvals: newApprovals, status: newStatus });
-                });
+                docRef.update({ status: 'approved_final', finalApprovedBy: `${userName}` });
             }
         }
 
+        // --- SHOW FULL FORM DETAILS MODAL ---
+        function viewWfDetails(docId) {
+            const rec = workflowRecords.find(r => r.docId === docId);
+            if(!rec) return;
+            const body = document.getElementById('wfDetailsBody');
+            
+            // Show Photo
+            const photoEl = document.getElementById('wfDetailsPhoto');
+            if(rec.photo) { photoEl.src = rec.photo; photoEl.style.display = 'inline-block'; } 
+            else { photoEl.style.display = 'none'; }
+            
+            const addRow = (lbl, val) => `<tr><td style="padding:8px; border-bottom:1px solid #e2e8f0; font-weight:bold; width:35%;">${lbl}</td><td style="padding:8px; border-bottom:1px solid #e2e8f0;">${val || '-'}</td></tr>`;
+            
+            let html = `<table style="width:100%; border-collapse: collapse;">`;
+            html += addRow('પૂરું નામ', rec.name); html += addRow('પિતાનું નામ', rec.fatherName); html += addRow('મૂળ વતન', rec.nativeName);
+            html += addRow('રહેઠાણ', rec.address + " - " + rec.pincode); html += addRow('મોબાઇલ', rec.mobile);
+            html += addRow('વ્યવસાય', rec.vyavsay); html += addRow('વ્યવસાય સરનામું', rec.vyavsayAddress + " - " + rec.vyavsayPincode);
+            html += addRow('જન્મ તારીખ', rec.dob); html += addRow('શિક્ષણ', rec.education); html += addRow('બ્લડ ગ્રુપ', rec.bloodGroup);
+            html += addRow('અન્ય સભાસદ વિગત', rec.familyMember);
+            
+            html += `<tr><td colspan="2" style="background:#f1f5f9; padding:8px; font-weight:bold; text-align:center; color:#0f3460;">Approval History (મંજૂરી ની વિગત)</td></tr>`;
+            let reqCommPhoneObj = committeeList.find(c => c.phone === rec.committeePhone || convertToGujarati(c.phone) === rec.committeePhone);
+            html += addRow('Selected Committee', reqCommPhoneObj ? reqCommPhoneObj.name : rec.committeePhone);
+            if(rec.committeeApprovedBy) html += addRow('Committee Approved By', rec.committeeApprovedBy);
+            if(rec.finalApprovedBy) html += addRow('Final Approved By', rec.finalApprovedBy);
+            if(rec.rejectedBy) html += addRow('Rejected By', rec.rejectedBy);
+            
+            html += `</table>`;
+            body.innerHTML = html;
+            document.getElementById('wfDetailsModal').style.display = 'flex';
+        }
+
+        // View for ID Cards Tab (Admin Save Sync)
+        function viewIdCardDetails(docId) {
+            const rec = idCardsRecords.find(r => r.docId === docId);
+            if(!rec) return;
+            const body = document.getElementById('wfDetailsBody');
+            
+            const photoEl = document.getElementById('wfDetailsPhoto');
+            if(rec.photo) { photoEl.src = rec.photo; photoEl.style.display = 'inline-block'; } 
+            else { photoEl.style.display = 'none'; }
+            
+            const addRow = (lbl, val) => `<tr><td style="padding:8px; border-bottom:1px solid #e2e8f0; font-weight:bold; width:35%;">${lbl}</td><td style="padding:8px; border-bottom:1px solid #e2e8f0;">${val || '-'}</td></tr>`;
+            
+            let html = `<table style="width:100%; border-collapse: collapse;">`;
+            html += `<tr><td colspan="2" style="background:#0f3460; color:white; padding:8px; font-weight:bold; text-align:center;">ID Card Data Created by Admin</td></tr>`;
+            html += addRow('સભ્ય નંબર', rec.memberNo); html += addRow('પૂરું નામ', rec.name);
+            html += addRow('સરનામું', rec.address); html += addRow('મૂળ વતન', rec.hometown);
+            html += addRow('મોબાઇલ', rec.mobile); html += addRow('જન્મ તારીખ', rec.dob);
+            html += addRow('બ્લડ ગ્રુપ', rec.bloodgroup);
+            html += `</table>`;
+            
+            body.innerHTML = html;
+            document.getElementById('wfDetailsModal').style.display = 'flex';
+        }
+
+        function closeWfDetailsModal() { document.getElementById('wfDetailsModal').style.display = 'none'; }
+
+
         // ==============================================================
-        // 4. ADMIN MODAL LOGIC (PULL APPROVED FORMS TO ID CARD)
+        // ADMIN PULL APPROVED DATA TO EXISTING FORM
         // ==============================================================
         function openAdminApprovedModal() {
             document.getElementById('adminApprovedModal').style.display = 'flex';
-            
             db.collection("memberRequests").where("status", "==", "approved_final").onSnapshot(snap => {
-                const tbody = document.getElementById('adminApprovedTableBody');
-                tbody.innerHTML = "";
-                if(snap.empty) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">કોઈ નવો રેકોર્ડ નથી.</td></tr>`; return;
-                }
+                const tbody = document.getElementById('adminApprovedTableBody'); tbody.innerHTML = "";
+                if(snap.empty) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">કોઈ નવો રેકોર્ડ નથી.</td></tr>`; return; }
                 snap.forEach(doc => {
                     let r = doc.data();
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${r.name}</td><td>${r.nativeName}</td><td>${r.mobile}</td>
-                            <td><button class="btn-sm btn-print-sm" onclick='importToIDForm(${JSON.stringify({id: doc.id, ...r})})'>Import to Card</button></td>
-                        </tr>
-                    `;
+                    tbody.innerHTML += `<tr><td>${r.name}</td><td>${r.nativeName}</td><td>${r.mobile}</td>
+                    <td><button class="btn-sm btn-print-sm" onclick='importToIDForm(${JSON.stringify({id: doc.id, ...r})})'>Import to Card</button></td></tr>`;
                 });
             });
         }
-
         function closeAdminApprovedModal() { document.getElementById('adminApprovedModal').style.display = 'none'; }
 
         function importToIDForm(dataObj) {
+            document.getElementById('adminRequestId').value = dataObj.id; // Link request
             document.getElementById('name').value = dataObj.name || "";
             document.getElementById('address').value = `${dataObj.address || ""}, ${dataObj.pincode || ""}`;
             document.getElementById('hometown').value = dataObj.nativeName || "";
@@ -842,25 +1252,22 @@
             document.getElementById('mobile').value = dataObj.mobile || "";
             
             let bgOpts = document.getElementById('bloodgroup').options;
-            for(let i=0; i<bgOpts.length; i++){
-                if(bgOpts[i].value === dataObj.bloodGroup) { bgOpts[i].selected = true; break; }
+            for(let i=0; i<bgOpts.length; i++){ if(bgOpts[i].value === dataObj.bloodGroup) { bgOpts[i].selected = true; break; } }
+
+            // Apply processed photo directly to admin form
+            if(dataObj.photo) {
+                currentPhotoBase64 = dataObj.photo;
+                document.getElementById('img-photo').src = currentPhotoBase64;
             }
 
-            // Update UI
-            updateField('name', 'val-name'); updateField('address', 'val-address');
-            updateField('hometown', 'val-hometown'); updateField('dob', 'val-dob');
-            updateField('mobile', 'val-mobile'); updateField('bloodgroup', 'val-bloodgroup');
-
-            // Mark as done in workflow
-            db.collection("memberRequests").doc(dataObj.id).update({ status: 'id_card_created' });
-            
+            ['name','address','hometown','dob','mobile','bloodgroup'].forEach(id => updateField(id, 'val-'+id));
             closeAdminApprovedModal();
-            alert("ડેટા કાર્ડ ફોર્મમાં આવી ગયો છે! હવે સભ્ય નંબર અને ફોટો સેટ કરી 'કાર્ડ સેવ કરો' પર ક્લિક કરો.");
+            alert("ડેટા અને ફોટો ફોર્મમાં આવી ગયો છે! સભ્ય નંબર સેટ કરી 'કાર્ડ સેવ કરો' પર ક્લિક કરો.");
         }
 
 
         // ==============================================================
-        // 5. EXISTING LOGIC (ID CARD SYSTEM & TRANSLITERATION)
+        // EXISTING LOGIC (TRANSLITERATION, ID CARDS)
         // ==============================================================
         let currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
@@ -878,10 +1285,9 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    let image = document.getElementById('imageToCrop');
-                    image.src = e.target.result;
+                    let image = document.getElementById('imageToCrop'); image.src = e.target.result;
                     document.getElementById('cropModal').style.display = 'flex';
-                    if(cropper) { cropper.destroy(); }
+                    if(cropper) cropper.destroy();
                     cropper = new Cropper(image, { aspectRatio: 3 / 4, viewMode: 1, autoCropArea: 1, background: false });
                 }
                 reader.readAsDataURL(file);
@@ -891,27 +1297,20 @@
         function applyCropAndEnhance() {
             if (!cropper) return;
             let croppedCanvas = cropper.getCroppedCanvas({ width: 600, height: 800, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
-            let enhancedCanvas = document.createElement('canvas');
-            enhancedCanvas.width = croppedCanvas.width; enhancedCanvas.height = croppedCanvas.height;
-            let ctx = enhancedCanvas.getContext('2d');
-            ctx.filter = 'contrast(115%) saturate(110%) brightness(105%)';
-            ctx.drawImage(croppedCanvas, 0, 0);
+            let enhancedCanvas = document.createElement('canvas'); enhancedCanvas.width = croppedCanvas.width; enhancedCanvas.height = croppedCanvas.height;
+            let ctx = enhancedCanvas.getContext('2d'); ctx.filter = 'contrast(115%) saturate(110%) brightness(105%)'; ctx.drawImage(croppedCanvas, 0, 0);
             currentPhotoBase64 = enhancedCanvas.toDataURL('image/jpeg', 0.95);
             document.getElementById('img-photo').src = currentPhotoBase64;
             closeCropper();
         }
 
-        // --- GUJARATI TYPING LOGIC ---
-        const engToGujDigits = { '0':'૦', '1':'૧', '2':'૨', '3':'૩', '4':'૪', '5':'૫', '6':'૬', '7':'૭', '8':'૮', '9':'૯' };
         async function transliterateWord(word) {
             if (!/[a-zA-Z]/.test(word)) return word; 
             try {
                 const url = `https://inputtools.google.com/request?text=${encodeURIComponent(word)}&itc=gu-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=id_card_app`;
-                let response = await fetch(url);
-                let data = await response.json();
+                let response = await fetch(url); let data = await response.json();
                 if (data[0] === 'SUCCESS') return data[1][0][1][0];
-            } catch (error) { console.error("Transliteration Error:", error); }
-            return word;
+            } catch (error) {} return word;
         }
 
         async function handleTransliteration(elementId, event, toggleId = 'enableTransliteration') {
@@ -920,40 +1319,20 @@
 
             if (event.code === 'Space' || event.key === ' ' || event.keyCode === 32) {
                 const el = document.getElementById(elementId);
-                const cursorPosition = el.selectionStart;
-                const text = el.value;
+                const cursorPosition = el.selectionStart; const text = el.value;
                 let startPos = cursorPosition - 2; 
                 while (startPos >= 0 && text[startPos] !== ' ' && text[startPos] !== '\n') startPos--;
-                startPos++; 
-                const wordToConvert = text.substring(startPos, cursorPosition - 1);
+                startPos++; const wordToConvert = text.substring(startPos, cursorPosition - 1);
                 
                 if (/[a-zA-Z]/.test(wordToConvert)) {
                     const gujaratiWord = await transliterateWord(wordToConvert);
                     if (gujaratiWord !== wordToConvert) {
-                        const currentText = el.value;
-                        const currentCursor = el.selectionStart;
-                        const newText = currentText.substring(0, startPos) + gujaratiWord + currentText.substring(startPos + wordToConvert.length);
+                        const newText = el.value.substring(0, startPos) + gujaratiWord + el.value.substring(startPos + wordToConvert.length);
                         el.value = newText;
-                        const diffLength = gujaratiWord.length - wordToConvert.length;
-                        if (currentCursor > startPos) el.selectionStart = el.selectionEnd = currentCursor + diffLength;
-                        
-                        // Update target field if exists
+                        if (el.selectionStart > startPos) el.selectionStart = el.selectionEnd = el.selectionStart + (gujaratiWord.length - wordToConvert.length);
                         if(document.getElementById('val-' + elementId)) updateField(elementId, 'val-' + elementId);
                     }
                 }
-            }
-        }
-
-        function handleNumberConversion(elementId, toggleId = 'enableTransliteration') {
-            const isEnabled = document.getElementById(toggleId).checked;
-            if (!isEnabled) return;
-            const el = document.getElementById(elementId);
-            const originalText = el.value;
-            const cursorPosition = el.selectionStart;
-            if (/[0-9]/.test(originalText)) {
-                const newText = originalText.replace(/[0-9]/g, match => engToGujDigits[match]);
-                el.value = newText; el.selectionStart = el.selectionEnd = cursorPosition;
-                if(document.getElementById('val-' + elementId)) updateField(elementId, 'val-' + elementId);
             }
         }
 
@@ -966,27 +1345,29 @@
         }
 
         function setupRegTransliteration() {
-            const fields = ['reg-name', 'reg-fatherName', 'reg-nativeName', 'reg-address', 'reg-vyavsay', 'reg-vyavsayAddress', 'reg-education', 'reg-reference'];
-            fields.forEach(f => setupTransliteration(f, 'enableTransliterationReg'));
+            const textFields = ['reg-name', 'reg-fatherName', 'reg-nativeName', 'reg-address', 'reg-vyavsay', 'reg-vyavsayAddress', 'reg-education', 'reg-familyMember'];
+            textFields.forEach(f => setupTransliteration(f, 'enableTransliterationReg'));
+            const numFields = ['reg-pincode', 'reg-mobile', 'reg-vyavsayPincode', 'reg-dob'];
+            numFields.forEach(f => {
+                const el = document.getElementById(f);
+                if(el) el.addEventListener('input', () => handleNumberConversion(f, 'enableTransliterationReg'));
+            });
         }
 
-        // --- DATABASE OPERATIONS (ADMIN ID CARDS) ---
         let records = [];
         function getCleanDateStr(timestamp) {
-            if(!timestamp) return "-";
-            let d = new Date(timestamp);
+            if(!timestamp) return "-"; let d = new Date(timestamp);
             return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}, ${(d.getHours()%12||12).toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} ${d.getHours()>=12?'PM':'AM'}`;
         }
 
         function saveRecord() {
             let docId = document.getElementById('recordId').value;
+            let reqId = document.getElementById('adminRequestId').value;
             let memberNo = document.getElementById('memberNo').value;
             let name = document.getElementById('name').value;
             if(memberNo.trim() === "" || name.trim() === "") { alert("કૃપા કરીને સભ્ય નંબર અને પૂરું નામ દાખલ કરો!"); return; }
 
-            let saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> સેવ થઇ રહ્યું છે...'; saveBtn.disabled = true;
-
+            let saveBtn = document.getElementById('saveBtn'); saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> સેવ થઇ રહ્યું છે...'; saveBtn.disabled = true;
             let recordData = {
                 memberNo: memberNo, name: name, address: document.getElementById('address').value,
                 hometown: document.getElementById('hometown').value, dob: document.getElementById('dob').value,
@@ -994,12 +1375,20 @@
                 photo: currentPhotoBase64
             };
 
+            const afterSave = (newDocId) => {
+                // If linked to a request, mark it generated so member can view card
+                if(reqId) {
+                    db.collection("memberRequests").doc(reqId).update({ status: 'card_generated', cardId: newDocId });
+                }
+                alert("સેવ થઈ ગયું!"); clearForm(); resetBtn(saveBtn);
+            };
+
             if(docId) {
                 recordData.updatedAt = Date.now();
-                db.collection("idCards").doc(docId).update(recordData).then(() => { alert("અપડેટ થઈ ગયું!"); clearForm(); resetBtn(saveBtn); }).catch(err => { alert(err.message); resetBtn(saveBtn); });
+                db.collection("idCards").doc(docId).update(recordData).then(() => afterSave(docId)).catch(err => { alert(err.message); resetBtn(saveBtn); });
             } else {
                 recordData.timestamp = Date.now();
-                db.collection("idCards").add(recordData).then(() => { alert("સેવ થઈ ગયું!"); clearForm(); resetBtn(saveBtn); }).catch(err => { alert(err.message); resetBtn(saveBtn); });
+                db.collection("idCards").add(recordData).then((docRef) => afterSave(docRef.id)).catch(err => { alert(err.message); resetBtn(saveBtn); });
             }
         }
 
@@ -1007,8 +1396,7 @@
 
         function fetchFirebaseData() {
             db.collection("idCards").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
-                records =[];
-                querySnapshot.forEach((doc) => { let data = doc.data(); data.docId = doc.id; records.push(data); });
+                records =[]; querySnapshot.forEach((doc) => { let data = doc.data(); data.docId = doc.id; records.push(data); });
                 searchRecords(); 
             });
         }
@@ -1023,15 +1411,12 @@
             let tbody = document.getElementById('tableBody'); tbody.innerHTML = "";
             if (!dataArray || dataArray.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`; return; }
             dataArray.forEach(rec => {
-                tbody.innerHTML += `<tr>
-                    <td>${rec.memberNo || "-"}</td><td>${rec.name || "-"}</td><td>${rec.mobile || "-"}</td>
+                tbody.innerHTML += `<tr><td>${rec.memberNo || "-"}</td><td>${rec.name || "-"}</td><td>${rec.mobile || "-"}</td>
                     <td>${rec.hometown || "-"}</td><td><span class="date-badge"><i class="fa-regular fa-clock"></i> ${getCleanDateStr(rec.timestamp)}</span></td>
-                    <td class="action-btns">
-                        <button class="btn-sm btn-print-sm" onclick="printFromTable('${rec.docId}')"><i class="fa-solid fa-print"></i></button>
-                        <button class="btn-sm btn-download-sm" onclick="downloadIndividualCardPDF('${rec.docId}')"><i class="fa-solid fa-download"></i></button>
-                        <button class="btn-sm btn-edit" onclick="editRecord('${rec.docId}')"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn-sm btn-delete" onclick="deleteRecord('${rec.docId}')"><i class="fa-solid fa-trash"></i></button>
-                    </td></tr>`;
+                    <td class="action-btns"><button class="btn-sm btn-print-sm" onclick="printFromTable('${rec.docId}')"><i class="fa-solid fa-print"></i></button>
+                    <button class="btn-sm btn-download-sm" onclick="downloadIndividualCardPDF('${rec.docId}')"><i class="fa-solid fa-download"></i></button>
+                    <button class="btn-sm btn-edit" onclick="editRecord('${rec.docId}')"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-sm btn-delete" onclick="deleteRecord('${rec.docId}')"><i class="fa-solid fa-trash"></i></button></td></tr>`;
             });
         }
 
@@ -1047,16 +1432,14 @@
         function deleteRecord(docId) { if(confirm("ખરેખર ડીલીટ કરવું છે?")) { db.collection("idCards").doc(docId).delete(); } }
 
         function clearForm() {
-            document.getElementById('recordId').value = ""; 
+            document.getElementById('recordId').value = ""; document.getElementById('adminRequestId').value = "";
             ['memberNo','name','address','hometown','dob','mobile','searchInput','photoInput'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('bloodgroup').value = "-";
-            currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-            document.getElementById('img-photo').src = currentPhotoBase64;
+            currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="; document.getElementById('img-photo').src = currentPhotoBase64;
             ['val-memberNo', 'val-name', 'val-address', 'val-hometown', 'val-mobile'].forEach(id => document.getElementById(id).innerText = "XXXX");
             document.getElementById('val-dob').innerText = "XX/XX/XXXX"; document.getElementById('val-bloodgroup').innerText = "-";
         }
 
-        // --- EXPORT & PRINT LOGIC ---
         function exportToExcel() {
             if(records.length === 0) return alert("કોઈ ડેટા નથી!");
             let exportData = records.map(r => ({ "સભ્ય નં.": r.memberNo||"-", "પૂરું નામ": r.name||"-", "સરનામું": r.address||"-", "મૂળ વતન": r.hometown||"-", "જન્મ તારીખ": r.dob||"-", "મોબાઇલ": r.mobile||"-", "બ્લડ ગ્રુપ": r.bloodgroup||"-" }));
@@ -1072,11 +1455,9 @@
         }
         function printFromTable(docId) { editRecord(docId); setTimeout(printCard, 800); }
         function printCard() {
-            const cardHTML = document.getElementById('print-card').outerHTML;
-            let printWin = window.open('', '_blank'); let styles = '';
+            const cardHTML = document.getElementById('print-card').outerHTML; let printWin = window.open('', '_blank'); let styles = '';
             for (let sheet of document.styleSheets) { try { for (let rule of sheet.cssRules) { styles += rule.cssText + '\n'; } } catch(e) {} }
-            printWin.document.write(`<html><head><style>${styles} @media print { @page{margin:0;} html,body{width:100vw;height:100vh;margin:0;background:white;} #print-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:428px;height:270px;border:1px solid #cbd5e1;box-shadow:none;margin:0;} }</style></head><body>${cardHTML}<script>window.onload=function(){setTimeout(()=>{window.print();window.close();},800);}<\/script></body></html>`);
-            printWin.document.close();
+            printWin.document.write(`<html><head><style>${styles} @media print { @page{margin:0;} html,body{width:100vw;height:100vh;margin:0;background:white;} #print-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:428px;height:270px;border:1px solid #cbd5e1;box-shadow:none;margin:0;} }</style></head><body>${cardHTML}<script>window.onload=function(){setTimeout(()=>{window.print();window.close();},800);}<\/script></body></html>`); printWin.document.close();
         }
         function downloadIndividualCardPDF(docId = null) {
             if (docId) editRecord(docId);
@@ -1105,10 +1486,7 @@
                 document.getElementById('loginPwd').value = localStorage.getItem('savedUserPwd') || '';
                 document.getElementById('rememberMe').checked = true;
             }
-
-            if (sessionStorage.getItem('isSecuredLoggedIn') === 'true') {
-                routeUser();
-            }
+            if (sessionStorage.getItem('isSecuredLoggedIn') === 'true') { routeUser(); }
         };
     </script>
 </body>
