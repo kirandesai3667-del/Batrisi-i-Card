@@ -118,15 +118,14 @@
         .btn-close-modal { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
 
         /* General Wrappers */
-        #public-registration-wrapper, #workflow-dashboard-wrapper, #member-dashboard-wrapper { display: none; width: 100%; max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); box-sizing: border-box; }
+        #public-registration-wrapper, #workflow-dashboard-wrapper, #member-status-wrapper { display: none; width: 100%; max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); box-sizing: border-box; }
         
         .reg-header { text-align: center; border-bottom: 3px solid var(--secondary); padding-bottom: 20px; margin-bottom: 30px; }
-        .reg-header h1 { color: var(--primary); font-family: 'Mogra', serif; margin: 0 0 5px 0; }
+        .reg-header h1 { color: var(--primary); font-family: 'Mogra', serif; margin: 0 0 5px 0; font-size: 22px;}
         .reg-header p { margin: 2px 0; color: var(--text-light); font-size: 14px; font-weight: 500; }
         .reg-header h2 { background: #eff6ff; color: var(--secondary); display: inline-block; padding: 8px 20px; border-radius: 8px; margin-top: 15px; font-size: 18px; border: 1px solid #bfdbfe; }
         
         .login-btn-public { background: #8b5cf6; padding: 12px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; }
-        .login-btn-member { background: #10b981; padding: 12px; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; }
         
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white; }
         .badge-warning { background: #f59e0b; } .badge-success { background: #10b981; } .badge-danger { background: #ef4444; } .badge-info { background: #3b82f6; }
@@ -143,7 +142,7 @@
 <body>
 
     <!-- ========================================================================= -->
-    <!-- LOGIN SYSTEM (ADMIN/COMMITTEE/APPROVER) -->
+    <!-- LOGIN PAGE UPDATE -->
     <!-- ========================================================================= -->
     <div id="login-wrapper" class="login-wrapper">
         <div class="login-box" id="main-login-box">
@@ -166,185 +165,47 @@
             </div>
             
             <button class="btn btn-save" onclick="performLogin()" style="width: 100%; margin-bottom: 15px;">
-                <i class="fa-solid fa-right-to-bracket"></i> Login
+                <i class="fa-solid fa-right-to-bracket"></i> System Login
             </button>
 
-            <!-- Links to other forms -->
-            <button class="login-btn-public" onclick="showPublicForm()">
+            <!-- TRIGGER MOBILE VERIFY BEFORE FORM -->
+            <button class="login-btn-public" onclick="showMobileVerify()">
                 <i class="fa-solid fa-user-plus"></i> New Member Registration Form
             </button>
-            <button class="login-btn-member" onclick="showMemberLogin()">
-                <i class="fa-solid fa-mobile-screen"></i> Member Application Status (સભાસદ લોગીન)
-            </button>
+            <p style="font-size: 11px; margin-top: 15px; color: #64748b;">
+                * Admin, Mantri, Convener, and Committee Members can login securely.
+            </p>
         </div>
+    </div>
 
-        <!-- ========================================================================= -->
-        <!-- MEMBER LOGIN (MOBILE ONLY) -->
-        <!-- ========================================================================= -->
-        <div class="login-box" id="member-login-box" style="display: none;">
-            <h2><i class="fa-solid fa-user"></i> Member Status</h2>
-            <p>તમારો રજીસ્ટર કરેલ મોબાઈલ નંબર નાખો</p>
-            
-            <div id="member-login-error" class="login-error">કોઈ રેકોર્ડ મળ્યો નથી!</div>
+    <!-- ========================================================================= -->
+    <!-- MOBILE VERIFY BEFORE FORM & MEMBER LOGIN SYSTEM -->
+    <!-- ========================================================================= -->
+    <div id="mobile-verify-wrapper" class="login-wrapper" style="display: none;">
+        <div class="login-box">
+            <h2><i class="fa-solid fa-mobile-screen"></i> Check Status / Register</h2>
+            <p style="margin-bottom:10px;">ફોર્મ ભરવા અથવા સ્ટેટસ જાણવા માટે તમારો WhatsApp મોબાઇલ નંબર નાખો</p>
             
             <div class="form-group full-width">
-                <label>WhatsApp મોબાઇલ નંબર</label>
-                <input type="text" id="memberLoginMobile" placeholder="૧૦ આંકડાનો નંબર" onkeypress="handleEnter(event, 'member')">
+                <input type="text" id="verifyMobileInput" placeholder="૧૦ આંકડાનો નંબર" oninput="forceGujaratiNumbers(this)" onkeypress="handleEnter(event, 'verify')">
             </div>
             
-            <button class="btn btn-save" onclick="performMemberLogin()" style="width: 100%; margin-top: 10px;">
-                <i class="fa-solid fa-magnifying-glass"></i> Check Status
+            <button class="btn btn-save" onclick="verifyMobile()" style="width: 100%; margin-top:10px;">
+                Continue <i class="fa-solid fa-arrow-right"></i>
             </button>
             <button class="btn btn-clear" onclick="showMainLogin()" style="width: 100%; margin-top: 10px;">
-                <i class="fa-solid fa-arrow-left"></i> Back
+                <i class="fa-solid fa-arrow-left"></i> Back to Login
             </button>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- NEW MEMBER FORM (NO LOGIN REQUIRED) -->
+    <!-- MEMBER STATUS DISPLAY (ALL IN ONE PAGE) -->
     <!-- ========================================================================= -->
-    <div id="public-registration-wrapper">
-        <div class="reg-header">
-            <h1>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h1>
-            <p>શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, અમદાવાદ - ૩૮૦૦૨૭</p>
-            <p>ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ | મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ | ઇમેઇલ: 32cedusociety@gmail.com</p>
-            <h2>New Member Form (નવા સભ્ય માટેનું ફોર્મ)</h2>
-        </div>
-
-        <div class="transl-toggle-bar" style="margin-bottom: 20px;">
-            <input type="checkbox" id="enableTransliterationReg" checked>
-            <label for="enableTransliterationReg">
-                <i class="fa-solid fa-language"></i> ગુજરાતી ટાઈપિંગ (English માં લખી Space દબાવો)
-            </label>
-        </div>
-
-        <div class="form-panel" style="box-shadow: none; padding: 0;">
-            
-            <!-- PHOTO SYSTEM -->
-            <div class="form-group full-width" style="background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
-                <label style="font-size:15px; color:var(--primary);">વ્યક્તિનો ફોટો (Passport Size Photo) *</label>
-                <div style="display: flex; gap: 10px; margin-bottom: 10px; margin-top: 5px;">
-                    <label class="btn btn-print" style="cursor:pointer; flex:1; justify-content:center; margin:0;">
-                        <i class="fa-solid fa-upload"></i> Upload Photo
-                        <input type="file" id="reg-photo-upload" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
-                    </label>
-                    <button type="button" class="btn btn-download-card" style="flex:1; justify-content:center; margin:0;" onclick="openCameraModal()">
-                        <i class="fa-solid fa-camera"></i> Take Selfie
-                    </button>
-                </div>
-                <!-- IMAGE PROCESSING PREVIEW -->
-                <div id="reg-photo-preview-box" style="display:none; text-align:center; margin-top: 15px;">
-                    <img id="reg-photo-preview" src="" style="width: 120px; height: 160px; object-fit: cover; border: 2px solid var(--secondary); border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                    <p style="font-size: 12px; color: #16a34a; font-weight: bold; margin: 8px 0 0 0;"><i class="fa-solid fa-circle-check"></i> Photo Ready (Auto Cropped to Passport Size)</p>
-                </div>
-            </div>
-
-            <!-- MEMBER FORM -->
-            <div class="form-group full-width">
-                <label>પૂરું નામ (Member Full Name) *</label>
-                <input type="text" id="reg-name" placeholder="વ્યક્તિનું પૂરું નામ">
-            </div>
-            <div class="form-group">
-                <label>પિતાનું નામ (Father Name) *</label>
-                <input type="text" id="reg-fatherName" placeholder="પિતાનું નામ">
-            </div>
-            <div class="form-group">
-                <label>મૂળ વતન (Native Name) *</label>
-                <input type="text" id="reg-nativeName" placeholder="વતનનું નામ">
-            </div>
-            <div class="form-group full-width">
-                <label>રહેઠાણનું સરનામું (Address) *</label>
-                <textarea id="reg-address" rows="2" placeholder="પૂરું સરનામું"></textarea>
-            </div>
-            <div class="form-group">
-                <label>પીનકોડ (Pincode) *</label>
-                <input type="text" id="reg-pincode" placeholder="પીનકોડ">
-            </div>
-            <div class="form-group">
-                <label>WhatsApp મોબાઇલ નંબર *</label>
-                <input type="text" id="reg-mobile" placeholder="૧૦ આંકડાનો નંબર">
-            </div>
-
-            <!-- SAME AS ABOVE -->
-            <div class="form-group full-width" style="margin-top: 10px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed #cbd5e1;">
-                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--primary); margin: 0;">
-                    <input type="checkbox" id="reg-sameAsAbove" onchange="toggleSameAsAbove()" style="width: 16px; height: 16px;">
-                    <b>રહેઠાણનું સરનામું જ વ્યવસાયનું સરનામું છે (Same as Residential Address)</b>
-                </label>
-            </div>
-
-            <div class="form-group">
-                <label>વ્યવસાય (Occupation)</label>
-                <input type="text" id="reg-vyavsay" placeholder="વ્યવસાયની વિગત">
-            </div>
-            <div class="form-group full-width">
-                <label>વ્યવસાયનું સરનામું (Occupation Address)</label>
-                <textarea id="reg-vyavsayAddress" rows="2" placeholder="વ્યવસાયનું સરનામું"></textarea>
-            </div>
-            <div class="form-group">
-                <label>વ્યવસાયનો પીનકોડ</label>
-                <input type="text" id="reg-vyavsayPincode" placeholder="પીનકોડ">
-            </div>
-            <div class="form-group">
-                <label>જન્મ તારીખ (Date of Birth) *</label>
-                <input type="text" id="reg-dob" placeholder="DD/MM/YYYY">
-            </div>
-            <div class="form-group">
-                <label>શિક્ષણ (Education)</label>
-                <input type="text" id="reg-education" placeholder="શૈક્ષણિક લાયકાત">
-            </div>
-            <div class="form-group">
-                <label>બ્લડ ગ્રુપ (Blood Group)</label>
-                <select id="reg-bloodgroup">
-                    <option value="-">પસંદ કરો</option>
-                    <option value="A+">A+</option> <option value="A-">A-</option>
-                    <option value="B+">B+</option> <option value="B-">B-</option>
-                    <option value="O+">O+</option> <option value="O-">O-</option>
-                    <option value="AB+">AB+</option> <option value="AB-">AB-</option>
-                </select>
-            </div>
-            
-            <div class="form-group full-width">
-                <label>આપના ઘરમાંથી અન્ય વ્યક્તિઓ સભાસદ હોય તો નામ અને સભાસદ નંબર અવશ્ય લખવો</label>
-                <input type="text" id="reg-familyMember" placeholder="નામ અને સભાસદ નંબર">
-            </div>
-
-            <div class="form-group full-width" style="background: #fffbeb; padding: 15px; border-left: 4px solid #f59e0b; border-radius: 4px; margin-top: 10px;">
-                <label style="color: #b45309; font-size: 14px;">Select Committee Member You Know (તમે ઓળખતા હોય તેવા કમિટી મેમ્બર પસંદ કરો) *</label>
-                <select id="reg-committee" style="border-color: #fcd34d; background: white; font-weight: bold;">
-                    <option value="">-- Select Member --</option>
-                    <!-- Filled by JS -->
-                </select>
-            </div>
-
-            <div class="form-group full-width" style="display: flex; flex-direction: row; gap: 15px; margin-top: 20px;">
-                <button type="button" class="btn btn-save" onclick="submitPublicForm()"><i class="fa-solid fa-paper-plane"></i> Submit Form</button>
-                <button type="button" class="btn btn-clear" onclick="window.location.reload()"><i class="fa-solid fa-arrow-left"></i> Back to Login</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SELFIE CAMERA MODAL -->
-    <div id="cameraModal" class="crop-modal">
-        <div class="crop-container" style="max-width: 400px;">
-            <h3 style="color:var(--primary); margin-top:0;"><i class="fa-solid fa-camera"></i> Take Selfie</h3>
-            <video id="camera-stream" autoplay playsinline style="width: 100%; transform: scaleX(-1); border-radius: 8px; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"></video>
-            <p style="font-size:12px; color:var(--text-light); margin:10px 0;">Face the camera and click Capture.</p>
-            <div class="crop-btns" style="margin-top:15px;">
-                <button class="btn btn-clear" onclick="closeCamera()" style="width: 40%; justify-content:center;">Cancel</button>
-                <button class="btn btn-print" onclick="captureSelfie()" style="width: 60%; justify-content:center;"><i class="fa-solid fa-camera-retro"></i> Capture</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- MEMBER DASHBOARD -->
-    <!-- ========================================================================= -->
-    <div id="member-dashboard-wrapper">
+    <div id="member-status-wrapper">
         <div class="top-bar" style="margin-bottom: 20px;">
             <h1 class="header-title">My Application Status</h1>
-            <button class="btn-logout" onclick="logoutApp()"><i class="fa-solid fa-power-off"></i> Logout</button>
+            <button class="btn-logout" onclick="window.location.reload()"><i class="fa-solid fa-arrow-left"></i> Back</button>
         </div>
 
         <div id="member-status-container"></div>
@@ -385,6 +246,153 @@
         </div>
     </div>
 
+
+    <!-- ========================================================================= -->
+    <!-- NEW MEMBER FORM -->
+    <!-- ========================================================================= -->
+    <div id="public-registration-wrapper">
+        <div class="reg-header">
+            <h1>શ્રી બત્રીસી જૈન કો-ઓ.એજ્યુકેશન સોસાયટી લિમિટેડ</h1>
+            <p>શેઠ શ્રી હીરાલાલ હરગોવનદાસ બત્રીસી હોલ, આર.ટી.ઓ સર્કલ પાસે, સુભાષબ્રિજ, કલેક્ટર કચેરી, અમદાવાદ - ૩૮૦૦૨૭</p>
+            <p>ફોન: ૦૭૯-૨૭૫૫૭૬૬૮ | મોબાઇલ: +૯૧ ૯૫૮૬૪ ૨૩૨૩૨ | ઇમેઇલ: 32cedusociety@gmail.com</p>
+            <h2>New Member Form (નવા સભ્ય માટેનું ફોર્મ)</h2>
+        </div>
+
+        <div class="transl-toggle-bar" style="margin-bottom: 20px;">
+            <input type="checkbox" id="enableTransliterationReg" checked>
+            <label for="enableTransliterationReg">
+                <i class="fa-solid fa-language"></i> ગુજરાતી ટાઈપિંગ (English માં લખી Space દબાવો)
+            </label>
+        </div>
+
+        <div class="form-panel" style="box-shadow: none; padding: 0;">
+            
+            <!-- PHOTO SYSTEM -->
+            <div class="form-group full-width" style="background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                <label style="font-size:15px; color:var(--primary);">વ્યક્તિનો ફોટો (Upload Passport Size Photo) *</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px; margin-top: 5px;">
+                    <label class="btn btn-print" style="cursor:pointer; flex:1; justify-content:center; margin:0;">
+                        <i class="fa-solid fa-upload"></i> Upload Photo
+                        <input type="file" id="reg-photo-upload" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+                    </label>
+                    <button type="button" class="btn btn-download-card" style="flex:1; justify-content:center; margin:0;" onclick="openCameraModal()">
+                        <i class="fa-solid fa-camera"></i> Take Selfie
+                    </button>
+                </div>
+                <div id="reg-photo-preview-box" style="display:none; text-align:center; margin-top: 15px;">
+                    <img id="reg-photo-preview" src="" style="width: 120px; height: 160px; object-fit: cover; border: 2px solid var(--secondary); border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <p style="font-size: 12px; color: #16a34a; font-weight: bold; margin: 8px 0 0 0;"><i class="fa-solid fa-circle-check"></i> Photo Ready (Auto Cropped)</p>
+                </div>
+            </div>
+
+            <!-- MEMBER FORM FIELDS -->
+            <div class="form-group full-width">
+                <label>પૂરું નામ (Member Full Name) *</label>
+                <input type="text" id="reg-name" placeholder="વ્યક્તિનું પૂરું નામ">
+            </div>
+            <div class="form-group">
+                <label>પિતાનું નામ (Father Name) *</label>
+                <input type="text" id="reg-fatherName" placeholder="પિતાનું નામ">
+            </div>
+            <div class="form-group">
+                <label>મૂળ વતન (Native Name) *</label>
+                <input type="text" id="reg-nativeName" placeholder="વતનનું નામ">
+            </div>
+            <div class="form-group full-width">
+                <label>રહેઠાણનું સરનામું (Address) *</label>
+                <textarea id="reg-address" rows="2" placeholder="પૂરું સરનામું"></textarea>
+            </div>
+            <div class="form-group">
+                <label>પીનકોડ (Pincode) *</label>
+                <!-- NUMBER CONVERSION -->
+                <input type="text" id="reg-pincode" placeholder="પીનકોડ" oninput="forceGujaratiNumbers(this)">
+            </div>
+            <div class="form-group">
+                <label>WhatsApp મોબાઇલ નંબર *</label>
+                <input type="text" id="reg-mobile" placeholder="૧૦ આંકડાનો નંબર" oninput="forceGujaratiNumbers(this)" readonly style="background:#f1f5f9;">
+            </div>
+
+            <!-- SAME AS ABOVE -->
+            <div class="form-group full-width" style="margin-top: 10px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--primary); margin: 0;">
+                    <input type="checkbox" id="reg-sameAsAbove" onchange="toggleSameAsAbove()" style="width: 16px; height: 16px;">
+                    <b>રહેઠાણનું સરનામું જ વ્યવસાયનું સરનામું છે (Same as Above)</b>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>વ્યવસાય (Occupation)</label>
+                <input type="text" id="reg-vyavsay" placeholder="વ્યવસાયની વિગત">
+            </div>
+            <div class="form-group full-width">
+                <label>વ્યવસાયનું સરનામું (Occupation Address)</label>
+                <textarea id="reg-vyavsayAddress" rows="2" placeholder="વ્યવસાયનું સરનામું"></textarea>
+            </div>
+            <div class="form-group">
+                <label>વ્યવસાયનો પીનકોડ</label>
+                <input type="text" id="reg-vyavsayPincode" placeholder="પીનકોડ" oninput="forceGujaratiNumbers(this)">
+            </div>
+            <div class="form-group">
+                <label>જન્મ તારીખ (Date of Birth) *</label>
+                <input type="text" id="reg-dob" placeholder="DD/MM/YYYY" oninput="forceGujaratiNumbers(this)">
+            </div>
+            <div class="form-group">
+                <label>શિક્ષણ (Education)</label>
+                <input type="text" id="reg-education" placeholder="શૈક્ષણિક લાયકાત">
+            </div>
+            <div class="form-group">
+                <label>બ્લડ ગ્રુપ (Blood Group)</label>
+                <select id="reg-bloodgroup">
+                    <option value="-">પસંદ કરો</option>
+                    <option value="A+">A+</option> <option value="A-">A-</option>
+                    <option value="B+">B+</option> <option value="B-">B-</option>
+                    <option value="O+">O+</option> <option value="O-">O-</option>
+                    <option value="AB+">AB+</option> <option value="AB-">AB-</option>
+                </select>
+            </div>
+            
+            <!-- FAMILY MEMBER FIELDS -->
+            <div class="form-group full-width" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #cbd5e1;">
+                <label style="color:var(--primary); border-bottom:1px solid #cbd5e1; padding-bottom:5px; margin-bottom:10px; font-size:14px;">આપના ઘરમાંથી અન્ય વ્યક્તિઓ સભાસદ હોય તો વિગતો લખો</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group" style="margin:0;">
+                        <label style="font-size:12px;">સભાસદ નંબર (Member Number)</label>
+                        <input type="text" id="reg-familyMemberNo" placeholder="સભાસદ નંબર" oninput="forceGujaratiNumbers(this)">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label style="font-size:12px;">સભાસદનું નામ (Member Name)</label>
+                        <input type="text" id="reg-familyMemberName" placeholder="સભાસદનું નામ">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group full-width" style="background: #fffbeb; padding: 15px; border-left: 4px solid #f59e0b; border-radius: 4px; margin-top: 10px;">
+                <label style="color: #b45309; font-size: 14px;">Select Committee Member You Know (કમિટી મેમ્બર પસંદ કરો) *</label>
+                <select id="reg-committee" style="border-color: #fcd34d; background: white; font-weight: bold;">
+                    <option value="">-- Select Member --</option>
+                    <!-- Filled by JS -->
+                </select>
+            </div>
+
+            <div class="form-group full-width" style="display: flex; flex-direction: row; gap: 15px; margin-top: 20px;">
+                <button type="button" class="btn btn-save" onclick="submitPublicForm()"><i class="fa-solid fa-paper-plane"></i> Submit Form</button>
+                <button type="button" class="btn btn-clear" onclick="window.location.reload()"><i class="fa-solid fa-arrow-left"></i> Exit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SELFIE CAMERA MODAL -->
+    <div id="cameraModal" class="crop-modal">
+        <div class="crop-container" style="max-width: 400px;">
+            <h3 style="color:var(--primary); margin-top:0;"><i class="fa-solid fa-camera"></i> Take Selfie</h3>
+            <video id="camera-stream" autoplay playsinline style="width: 100%; transform: scaleX(-1); border-radius: 8px; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"></video>
+            <p style="font-size:12px; color:var(--text-light); margin:10px 0;">Face the camera and click Capture.</p>
+            <div class="crop-btns" style="margin-top:15px;">
+                <button class="btn btn-clear" onclick="closeCamera()" style="width: 40%; justify-content:center;">Cancel</button>
+                <button class="btn btn-print" onclick="captureSelfie()" style="width: 60%; justify-content:center;"><i class="fa-solid fa-camera-retro"></i> Capture</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ========================================================================= -->
     <!-- DASHBOARDS (COMMITTEE & APPROVERS) -->
@@ -430,14 +438,13 @@
 
 
     <!-- ========================================================================= -->
-    <!-- 2. MAIN APPLICATION (ADMIN PANEL - EXISTING) -->
+    <!-- ADMIN UPDATE & EXISTING SYSTEM (UNTOUCHED LOGIC) -->
     <!-- ========================================================================= -->
     <div id="app-wrapper" style="display: none;">
         
         <div class="top-bar">
             <h1 class="header-title">Premium Corporate ID Card</h1>
             <div style="display: flex; gap: 10px;">
-                <!-- ADMIN UPDATE -->
                 <button class="btn admin-top-btn" onclick="openAdminApprovedModal()"><i class="fa-solid fa-clipboard-check"></i> View Approved Registrations</button>
                 <button class="btn btn-warning" onclick="openPwdModal()"><i class="fa-solid fa-key"></i> Passwords</button>
                 <button class="btn-logout" onclick="logoutApp()"><i class="fa-solid fa-power-off"></i> Logout</button>
@@ -445,14 +452,13 @@
         </div>
 
         <div class="container">
-            <!-- Input Form (Existing) -->
             <div class="form-panel">
                 <input type="hidden" id="recordId"> 
                 <input type="hidden" id="adminRequestId"> <!-- Links card to request -->
 
                 <div class="transl-toggle-bar">
                     <input type="checkbox" id="enableTransliteration" checked>
-                    <label for="enableTransliteration"><i class="fa-solid fa-language"></i> ગુજરાતી ટાઈપિંગ (English માં લખી Space દબાવો)</label>
+                    <label for="enableTransliteration"><i class="fa-solid fa-language"></i> ગુજરાતી ટાઈપિંગ</label>
                 </div>
 
                 <div class="form-group full-width">
@@ -507,7 +513,7 @@
                 </div>
             </div>
 
-            <!-- Live Preview (Existing) -->
+            <!-- Live Preview -->
             <div class="preview-panel">
                 <div class="card-scaler" id="card-scaler-box">
                     <div class="id-card" id="print-card">
@@ -537,8 +543,8 @@
                 </div>
 
                 <div class="btn-group">
-                    <button type="button" class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> ડેસ્કટોપ પ્રિન્ટ (Desktop)</button>
-                    <button type="button" class="btn btn-download-card" onclick="downloadIndividualCardPDF()"><i class="fa-solid fa-download"></i> મોબાઈલમાં PDF ડાઉનલોડ</button>
+                    <button type="button" class="btn btn-print" onclick="printCard()"><i class="fa-solid fa-print"></i> ડેસ્કટોપ પ્રિન્ટ</button>
+                    <button type="button" class="btn btn-download-card" onclick="downloadIndividualCardPDF()"><i class="fa-solid fa-download"></i> મોબાઈલમાં PDF</button>
                 </div>
             </div>
         </div>
@@ -664,41 +670,47 @@
                 opt.value = m.phone; opt.text = `${m.name} (${m.phone})`;
                 select.appendChild(opt);
             });
-            // Init Number Conversions for Logins
-            document.getElementById('memberLoginMobile').addEventListener('input', () => handleNumberConversion('memberLoginMobile'));
         });
+
+        // ==============================================================
+        // NUMBER CONVERSION
+        // ==============================================================
+        const engToGujDigits = { '0':'૦', '1':'૧', '2':'૨', '3':'૩', '4':'૪', '5':'૫', '6':'૬', '7':'૭', '8':'૮', '9':'૯' };
+        
+        function forceGujaratiNumbers(el) {
+            const originalText = el.value;
+            const cursorPosition = el.selectionStart;
+            if (/[0-9]/.test(originalText)) {
+                el.value = originalText.replace(/[0-9]/g, match => engToGujDigits[match]);
+                el.selectionStart = el.selectionEnd = cursorPosition;
+            }
+        }
+        function convertToGujarati(engStr) { return engStr.replace(/[0-9]/g, match => engToGujDigits[match]); }
 
         // ==============================================================
         // PASSWORD SYSTEM (LOCAL STORAGE)
         // ==============================================================
         function getStoredPassword(userId) {
             let pwds = JSON.parse(localStorage.getItem('userPasswords') || '{}');
-            return pwds[userId] || 'Bat@3232'; // Default
+            return pwds[userId] || 'Bat@3232'; 
         }
         function saveStoredPassword(userId, newPwd) {
             let pwds = JSON.parse(localStorage.getItem('userPasswords') || '{}');
             pwds[userId] = newPwd;
             localStorage.setItem('userPasswords', JSON.stringify(pwds));
         }
-
         function openPwdModal() {
             document.getElementById('passwordModal').style.display = 'flex';
             document.getElementById('newPwdInput').value = '';
-            if(sessionStorage.getItem('userRole') === 'admin') {
-                document.getElementById('pwd-admin-section').style.display = 'block';
-            } else {
-                document.getElementById('pwd-admin-section').style.display = 'none';
-            }
+            if(sessionStorage.getItem('userRole') === 'admin') { document.getElementById('pwd-admin-section').style.display = 'block'; } 
+            else { document.getElementById('pwd-admin-section').style.display = 'none'; }
         }
         function closePwdModal() { document.getElementById('passwordModal').style.display = 'none'; }
-        
         function changeMyPassword() {
             const newPwd = document.getElementById('newPwdInput').value;
             if(!newPwd) return alert("પાસવર્ડ ખાલી ના રાખી શકાય.");
-            const userId = sessionStorage.getItem('userPhone');
-            saveStoredPassword(userId, newPwd);
-            alert("તમારો પાસવર્ડ સફળતાપૂર્વક બદલાઈ ગયો છે.");
-            closePwdModal();
+            saveStoredPassword(sessionStorage.getItem('userPhone'), newPwd);
+            alert("તમારો પાસવર્ડ સફળતાપૂર્વક બદલાઈ ગયો છે."); closePwdModal();
         }
         function adminResetPassword() {
             const targetMobile = document.getElementById('resetPwdMobile').value.trim();
@@ -717,32 +729,22 @@
             else { pwdInput.type = 'password'; toggleIcon.classList.replace('fa-eye', 'fa-eye-slash'); }
         }
 
-        function showMemberLogin() {
-            document.getElementById('main-login-box').style.display = 'none';
-            document.getElementById('member-login-box').style.display = 'block';
-            document.getElementById('member-login-error').style.display = 'none';
-        }
         function showMainLogin() {
             document.getElementById('main-login-box').style.display = 'block';
-            document.getElementById('member-login-box').style.display = 'none';
+            document.getElementById('mobile-verify-wrapper').style.display = 'none';
         }
 
         function performLogin() {
             const userId = document.getElementById('loginId').value.trim();
             const userPwd = document.getElementById('loginPwd').value;
             const errorMsg = document.getElementById('login-error');
-
             const validPwd = getStoredPassword(userId);
 
             if (userPwd === validPwd) {
-                if (userId === "Batrisi") {
-                    setSessionAndRoute('admin', userId, 'Admin');
-                } else if (userId === '9537714100' || userId === '૯૫૩૭૭૧૪૧૦૦') {
-                    setSessionAndRoute('approver_mantri', '9537714100', 'MAYANKKUMAR RAMANLAL SHAH');
-                } else if (userId === '9327054179' || userId === '૯૩૨૭૦૫૪૧૭૯') {
-                    setSessionAndRoute('approver_convener', '9327054179', 'SANDIP MAHENDARABHAI SHAH');
-                } else {
-                    // Check against english or gujarati format of committee mobile
+                if (userId === "Batrisi") { setSessionAndRoute('admin', userId, 'Admin'); } 
+                else if (userId === '9537714100' || userId === '૯૫૩૭૭૧૪૧૦૦') { setSessionAndRoute('approver_mantri', '9537714100', 'MAYANKKUMAR RAMANLAL SHAH'); } 
+                else if (userId === '9327054179' || userId === '૯૩૨૭૦૫૪૧૭૯') { setSessionAndRoute('approver_convener', '9327054179', 'SANDIP MAHENDARABHAI SHAH'); } 
+                else {
                     let member = committeeList.find(c => c.phone === userId || convertToGujarati(c.phone) === userId);
                     if(member) setSessionAndRoute('committee', member.phone, member.name);
                     else { errorMsg.style.display = 'block'; return; }
@@ -750,15 +752,9 @@
                 
                 if (document.getElementById('rememberMe').checked) {
                     localStorage.setItem('savedUserId', userId); localStorage.setItem('savedUserPwd', userPwd); localStorage.setItem('rememberPwdChecked', 'true');
-                } else {
-                    localStorage.removeItem('savedUserId'); localStorage.removeItem('savedUserPwd'); localStorage.removeItem('rememberPwdChecked');
-                }
+                } else { localStorage.removeItem('savedUserId'); localStorage.removeItem('savedUserPwd'); localStorage.removeItem('rememberPwdChecked'); }
                 errorMsg.style.display = 'none';
             } else { errorMsg.style.display = 'block'; }
-        }
-
-        function convertToGujarati(engStr) {
-            return engStr.replace(/[0-9]/g, match => engToGujDigits[match]);
         }
 
         function setSessionAndRoute(role, userId, userName) {
@@ -771,62 +767,65 @@
 
         function routeUser() {
             document.getElementById('login-wrapper').style.display = 'none';
+            document.getElementById('mobile-verify-wrapper').style.display = 'none';
             document.getElementById('public-registration-wrapper').style.display = 'none';
-            document.getElementById('member-dashboard-wrapper').style.display = 'none';
+            document.getElementById('member-status-wrapper').style.display = 'none';
             
             const role = sessionStorage.getItem('userRole');
             if(role === 'admin') {
                 document.getElementById('app-wrapper').style.display = 'block';
                 document.getElementById('workflow-dashboard-wrapper').style.display = 'none';
                 initializeSystem();
-            } else if (role === 'member') {
-                document.getElementById('app-wrapper').style.display = 'none';
-                document.getElementById('workflow-dashboard-wrapper').style.display = 'none';
-                document.getElementById('member-dashboard-wrapper').style.display = 'block';
             } else {
                 document.getElementById('app-wrapper').style.display = 'none';
                 document.getElementById('workflow-dashboard-wrapper').style.display = 'block';
                 initWorkflowDashboard();
             }
         }
-        function handleEnter(e, type) { if (e.key === 'Enter') { if(type==='admin') performLogin(); else performMemberLogin(); } }
+        function handleEnter(e, type) { if (e.key === 'Enter') { if(type==='admin') performLogin(); else if(type==='verify') verifyMobile(); } }
         function logoutApp() { sessionStorage.clear(); window.location.reload(); }
 
         // ==============================================================
-        // MEMBER LOGIN & DASHBOARD
+        // MOBILE VERIFY BEFORE FORM (NEW MEMBER LOGIN SYSTEM)
         // ==============================================================
-        function performMemberLogin() {
-            const mobile = document.getElementById('memberLoginMobile').value.trim();
-            const errorMsg = document.getElementById('member-login-error');
-            if(!mobile) return;
+        function showMobileVerify() {
+            document.getElementById('main-login-box').style.display = 'none';
+            document.getElementById('mobile-verify-wrapper').style.display = 'flex';
+        }
 
-            errorMsg.style.display = 'none';
-            // Search in requests first
-            db.collection("memberRequests").where("mobile", "==", mobile).get().then(snap => {
-                if(!snap.empty) {
-                    let reqData = snap.docs[0].data();
-                    let docId = snap.docs[0].id;
-                    sessionStorage.setItem('memberDocId', docId);
-                    sessionStorage.setItem('memberMobile', mobile);
-                    setSessionAndRoute('member', mobile, reqData.name);
-                    renderMemberDashboard(reqData);
-                } else {
-                    // Try ID cards directly
-                    db.collection("idCards").where("mobile", "==", mobile).get().then(idSnap => {
-                        if(!idSnap.empty) {
-                            let cardData = idSnap.docs[0].data();
-                            sessionStorage.setItem('memberMobile', mobile);
-                            setSessionAndRoute('member', mobile, cardData.name);
-                            renderMemberDashboard({ status: 'card_generated', idCardData: cardData });
+        function verifyMobile() {
+            let mob = document.getElementById('verifyMobileInput').value.trim();
+            if(!mob) return alert('મોબાઇલ નંબર નાખો');
+            
+            db.collection("memberRequests").where("mobile", "==", mob).get().then(snap => {
+                if(snap.empty) {
+                    db.collection("idCards").where("mobile", "==", mob).get().then(idSnap => {
+                        if(idSnap.empty) {
+                            // NEW REGISTRATION
+                            document.getElementById('mobile-verify-wrapper').style.display = 'none';
+                            document.getElementById('public-registration-wrapper').style.display = 'block';
+                            document.getElementById('reg-mobile').value = mob;
+                            setupRegTransliteration();
+                            document.getElementById('reg-address').addEventListener('input', syncSameAsAbove);
+                            document.getElementById('reg-pincode').addEventListener('input', syncSameAsAbove);
                         } else {
-                            errorMsg.style.display = 'block';
+                            // ALREADY CREATED (LEGACY)
+                            showMemberStatus({ status: 'card_generated', idCardData: idSnap.docs[0].data() });
                         }
                     });
+                } else {
+                    // SHOW STATUS
+                    showMemberStatus(snap.docs[0].data());
                 }
             });
         }
 
-        function renderMemberDashboard(reqData) {
+        // ==============================================================
+        // MEMBER STATUS DISPLAY
+        // ==============================================================
+        function showMemberStatus(reqData) {
+            document.getElementById('mobile-verify-wrapper').style.display = 'none';
+            document.getElementById('member-status-wrapper').style.display = 'block';
             const container = document.getElementById('member-status-container');
             const previewSection = document.getElementById('member-card-preview-section');
             previewSection.style.display = 'none';
@@ -839,7 +838,6 @@
                         <p style="color: #047857; font-weight: 600;">તમે નીચેથી તમારું કાર્ડ પ્રિન્ટ અથવા ડાઉનલોડ કરી શકો છો.</p>
                     </div>`;
                 
-                // Fetch ID card data if not supplied
                 if(!reqData.idCardData && reqData.cardId) {
                     db.collection('idCards').doc(reqData.cardId).get().then(doc => {
                         if(doc.exists) populateMemberCard(doc.data());
@@ -847,7 +845,6 @@
                 } else if(reqData.idCardData) {
                     populateMemberCard(reqData.idCardData);
                 } else {
-                    // Fallback search
                     db.collection('idCards').where('mobile', '==', reqData.mobile).get().then(snap => {
                         if(!snap.empty) populateMemberCard(snap.docs[0].data());
                     });
@@ -857,7 +854,7 @@
                 container.innerHTML = `
                     <div class="status-box" style="background: #fef2f2; border: 2px solid #ef4444;">
                         <i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i>
-                        <h2 style="color: #991b1b; margin-top:0;">એપ્લિકેશન રદ (Rejected)</h2>
+                        <h2 style="color: #991b1b; margin-top:0;">એપ્લિકેશન રદ (Application rejected)</h2>
                         <p style="color: #b91c1c; font-weight: 600;">વધુ માહિતી માટે કમિટી મેમ્બર નો સંપર્ક કરો.</p>
                     </div>`;
             }
@@ -865,8 +862,8 @@
                 container.innerHTML = `
                     <div class="status-box" style="background: #fffbeb; border: 2px solid #f59e0b;">
                         <i class="fa-solid fa-clock-rotate-left" style="color: #f59e0b;"></i>
-                        <h2 style="color: #b45309; margin-top:0;">એપ્લિકેશન પ્રોસેસમાં છે (Under Process)</h2>
-                        <p style="color: #d97706; font-weight: 600;">કમિટી દ્વારા મંજૂરી ની પ્રક્રિયા ચાલુ છે. કૃપા કરીને થોડી રાહ જુઓ.</p>
+                        <h2 style="color: #b45309; margin-top:0;">Your application is under process</h2>
+                        <p style="color: #d97706; font-weight: 600;">કમિટી દ્વારા મંજૂરી ની પ્રક્રિયા ચાલુ છે.</p>
                     </div>`;
             }
         }
@@ -883,7 +880,6 @@
             document.getElementById('member-card-preview-section').style.display = 'flex';
         }
 
-        // Print/Download Member Card
         function printMemberCard() {
             const cardHTML = document.getElementById('member-print-card').outerHTML;
             let printWin = window.open('', '_blank'); let styles = '';
@@ -903,15 +899,13 @@
 
 
         // ==============================================================
-        // IMAGE PROCESSING (AUTO PASSPORT SIZE CROP)
+        // PHOTO SYSTEM
         // ==============================================================
         let regPhotoBase64 = "";
 
-        // Process image to center crop and scale to 300x400 (3:4 ratio)
         function processAndCropImage(sourceElement, isVideo) {
             const targetW = 300; const targetH = 400;
-            const canvas = document.createElement('canvas');
-            canvas.width = targetW; canvas.height = targetH;
+            const canvas = document.createElement('canvas'); canvas.width = targetW; canvas.height = targetH;
             const ctx = canvas.getContext('2d');
 
             let srcW = isVideo ? sourceElement.videoWidth : sourceElement.width;
@@ -922,15 +916,13 @@
             if (srcRatio > targetRatio) { cropH = srcH; cropW = srcH * targetRatio; cropX = (srcW - cropW) / 2; cropY = 0; } 
             else { cropW = srcW; cropH = srcW / targetRatio; cropX = 0; cropY = (srcH - cropH) / 2; }
 
-            // Mirror if front camera
             if (isVideo) { ctx.translate(targetW, 0); ctx.scale(-1, 1); }
             ctx.drawImage(sourceElement, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
             return canvas.toDataURL('image/jpeg', 0.9);
         }
 
         function handlePhotoUpload(event) {
-            const file = event.target.files[0];
-            if(!file) return;
+            const file = event.target.files[0]; if(!file) return;
             const img = new Image(); const url = URL.createObjectURL(file);
             img.onload = function() {
                 regPhotoBase64 = processAndCropImage(img, false);
@@ -947,9 +939,7 @@
             try {
                 cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 document.getElementById('camera-stream').srcObject = cameraStream;
-            } catch (err) {
-                alert("Camera access denied or not available!"); closeCamera();
-            }
+            } catch (err) { alert("Camera access denied!"); closeCamera(); }
         }
 
         function closeCamera() {
@@ -958,17 +948,15 @@
         }
 
         function captureSelfie() {
-            const video = document.getElementById('camera-stream');
-            if(!video.videoWidth) return;
+            const video = document.getElementById('camera-stream'); if(!video.videoWidth) return;
             regPhotoBase64 = processAndCropImage(video, true);
             document.getElementById('reg-photo-preview').src = regPhotoBase64;
             document.getElementById('reg-photo-preview-box').style.display = 'block';
             closeCamera();
         }
 
-
         // ==============================================================
-        // SAME AS ABOVE LOGIC
+        // SAME AS ABOVE
         // ==============================================================
         function toggleSameAsAbove() {
             const isChecked = document.getElementById('reg-sameAsAbove').checked;
@@ -987,20 +975,9 @@
         }
         function syncSameAsAbove() { if(document.getElementById('reg-sameAsAbove').checked) toggleSameAsAbove(); }
 
-
         // ==============================================================
-        // NEW MEMBER FORM LOGIC
+        // SUBMIT MEMBER FORM
         // ==============================================================
-        function showPublicForm() {
-            document.getElementById('login-wrapper').style.display = 'none';
-            document.getElementById('public-registration-wrapper').style.display = 'block';
-            setupRegTransliteration();
-            
-            // Bind Same as Above auto-sync
-            document.getElementById('reg-address').addEventListener('input', syncSameAsAbove);
-            document.getElementById('reg-pincode').addEventListener('input', syncSameAsAbove);
-        }
-
         function submitPublicForm() {
             const data = {
                 photo: regPhotoBase64,
@@ -1016,7 +993,8 @@
                 dob: document.getElementById('reg-dob').value.trim(),
                 education: document.getElementById('reg-education').value.trim(),
                 bloodGroup: document.getElementById('reg-bloodgroup').value,
-                familyMember: document.getElementById('reg-familyMember').value.trim(),
+                familyMemberNo: document.getElementById('reg-familyMemberNo').value.trim(),
+                familyMemberName: document.getElementById('reg-familyMemberName').value.trim(),
                 committeePhone: document.getElementById('reg-committee').value
             };
 
@@ -1034,10 +1012,10 @@
         }
 
         // ==============================================================
-        // APPROVAL SYSTEM & DASHBOARDS
+        // DASHBOARDS & APPROVAL
         // ==============================================================
         let workflowRecords = [];
-        let idCardsRecords = []; // For Admin Sync view
+        let idCardsRecords = []; 
         let currentWfTab = 'pending';
 
         function initWorkflowDashboard() {
@@ -1048,14 +1026,12 @@
             if(role === 'approver_mantri') titleEl.innerText = "Mantri Dashboard";
             if(role === 'approver_convener') titleEl.innerText = "Convener Dashboard";
 
-            // Listen to Member Requests
             db.collection("memberRequests").orderBy("timestamp", "desc").onSnapshot(snapshot => {
                 workflowRecords = [];
                 snapshot.forEach(doc => workflowRecords.push({ docId: doc.id, ...doc.data() }));
                 renderWfTable();
             });
 
-            // Listen to Generated ID Cards (Only for Approvers)
             if(role === 'approver_mantri' || role === 'approver_convener') {
                 document.getElementById('tab-idcards').style.display = 'inline-block';
                 db.collection("idCards").orderBy("timestamp", "desc").onSnapshot(snap => {
@@ -1079,24 +1055,17 @@
             const tbody = document.getElementById('wf-tableBody');
             tbody.innerHTML = "";
 
-            // If Approver wants to see Admin DB generated cards
             if(currentWfTab === 'idcards') {
-                if(idCardsRecords.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`; return;
-                }
+                if(idCardsRecords.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`; return; }
                 idCardsRecords.forEach(rec => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${rec.name}</td><td>${rec.mobile}</td><td>${rec.hometown}</td>
+                    tbody.innerHTML += `<tr><td>${rec.name}</td><td>${rec.mobile}</td><td>${rec.hometown}</td>
                             <td><span class="badge badge-success" style="background:#0f3460">ID Card Created</span></td>
-                            <td><button class="btn-sm btn-edit" onclick="viewIdCardDetails('${rec.docId}')"><i class="fa-solid fa-eye"></i> View</button></td>
-                        </tr>`;
+                            <td><button class="btn-sm btn-edit" onclick="viewIdCardDetails('${rec.docId}')"><i class="fa-solid fa-eye"></i> View</button></td></tr>`;
                 });
                 return;
             }
 
             let filtered = workflowRecords.filter(r => {
-                // Convert committeePhone to standard mapping format if needed
                 let reqCommPhone = r.committeePhone;
                 if(role === 'committee') {
                     if(reqCommPhone !== phone && convertToGujarati(phone) !== reqCommPhone && phone !== convertToGujarati(reqCommPhone)) return false;
@@ -1112,10 +1081,7 @@
                 return false;
             });
 
-            // Update Notification Badge
-            if(currentWfTab === 'pending') {
-                document.getElementById('badge-pending').innerText = filtered.length;
-            }
+            if(currentWfTab === 'pending') document.getElementById('badge-pending').innerText = filtered.length;
 
             if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">કોઈ રેકોર્ડ મળ્યો નથી!</td></tr>`; return; }
 
@@ -1125,15 +1091,11 @@
 
                 if(currentWfTab === 'pending') {
                     if(role === 'committee') {
-                        actionsHtml += `
-                            <button class="btn-sm btn-print-sm" onclick="wfAction('${rec.docId}', 'approve_committee')">Yes - I Know Him</button>
-                            <button class="btn-sm btn-delete" onclick="wfAction('${rec.docId}', 'reject_committee')">Reject</button>
-                        `;
+                        actionsHtml += `<button class="btn-sm btn-print-sm" onclick="wfAction('${rec.docId}', 'approve_committee')">Yes - I Know Him</button>
+                            <button class="btn-sm btn-delete" onclick="wfAction('${rec.docId}', 'reject_committee')">Reject</button>`;
                     } else {
-                        actionsHtml += `
-                            <button class="btn-sm btn-print-sm" onclick="wfAction('${rec.docId}', 'approve_approver')">Final Approve</button>
-                            <button class="btn-sm btn-delete" onclick="wfAction('${rec.docId}', 'reject_approver')">Reject</button>
-                        `;
+                        actionsHtml += `<button class="btn-sm btn-print-sm" onclick="wfAction('${rec.docId}', 'approve_approver')">Final Approve</button>
+                            <button class="btn-sm btn-delete" onclick="wfAction('${rec.docId}', 'reject_approver')">Reject</button>`;
                     }
                 }
                 tbody.innerHTML += `<tr><td>${rec.name}</td><td>${rec.mobile}</td><td>${rec.nativeName}</td><td>${statusBadge}</td><td class="action-btns">${actionsHtml}</td></tr>`;
@@ -1150,33 +1112,22 @@
             return `<span class="badge">${status}</span>`;
         }
 
-        // --- APPROVAL LOGIC (ANY ONE EITHER/OR) ---
         function wfAction(docId, action) {
             const userName = sessionStorage.getItem('userName');
             const docRef = db.collection("memberRequests").doc(docId);
             
-            if(action === 'approve_committee') {
-                docRef.update({ status: 'pending_approvers', committeeApprovedBy: `${userName}` });
-            }
+            if(action === 'approve_committee') docRef.update({ status: 'pending_approvers', committeeApprovedBy: `${userName}` });
             if(action === 'reject_committee') docRef.update({ status: 'rejected_committee', rejectedBy: userName });
             if(action === 'reject_approver') docRef.update({ status: 'rejected_approver', rejectedBy: userName });
-            
-            // ANY ONE (Mantri or Convener) approves -> Final Approved
-            if(action === 'approve_approver') {
-                docRef.update({ status: 'approved_final', finalApprovedBy: `${userName}` });
-            }
+            if(action === 'approve_approver') docRef.update({ status: 'approved_final', finalApprovedBy: `${userName}` });
         }
 
-        // --- SHOW FULL FORM DETAILS MODAL ---
         function viewWfDetails(docId) {
-            const rec = workflowRecords.find(r => r.docId === docId);
-            if(!rec) return;
+            const rec = workflowRecords.find(r => r.docId === docId); if(!rec) return;
             const body = document.getElementById('wfDetailsBody');
             
-            // Show Photo
             const photoEl = document.getElementById('wfDetailsPhoto');
-            if(rec.photo) { photoEl.src = rec.photo; photoEl.style.display = 'inline-block'; } 
-            else { photoEl.style.display = 'none'; }
+            if(rec.photo) { photoEl.src = rec.photo; photoEl.style.display = 'inline-block'; } else { photoEl.style.display = 'none'; }
             
             const addRow = (lbl, val) => `<tr><td style="padding:8px; border-bottom:1px solid #e2e8f0; font-weight:bold; width:35%;">${lbl}</td><td style="padding:8px; border-bottom:1px solid #e2e8f0;">${val || '-'}</td></tr>`;
             
@@ -1185,7 +1136,9 @@
             html += addRow('રહેઠાણ', rec.address + " - " + rec.pincode); html += addRow('મોબાઇલ', rec.mobile);
             html += addRow('વ્યવસાય', rec.vyavsay); html += addRow('વ્યવસાય સરનામું', rec.vyavsayAddress + " - " + rec.vyavsayPincode);
             html += addRow('જન્મ તારીખ', rec.dob); html += addRow('શિક્ષણ', rec.education); html += addRow('બ્લડ ગ્રુપ', rec.bloodGroup);
-            html += addRow('અન્ય સભાસદ વિગત', rec.familyMember);
+            
+            // Family Member fields
+            html += addRow('સભાસદની વિગત', (rec.familyMemberNo || "-") + " - " + (rec.familyMemberName || "-"));
             
             html += `<tr><td colspan="2" style="background:#f1f5f9; padding:8px; font-weight:bold; text-align:center; color:#0f3460;">Approval History (મંજૂરી ની વિગત)</td></tr>`;
             let reqCommPhoneObj = committeeList.find(c => c.phone === rec.committeePhone || convertToGujarati(c.phone) === rec.committeePhone);
@@ -1199,15 +1152,12 @@
             document.getElementById('wfDetailsModal').style.display = 'flex';
         }
 
-        // View for ID Cards Tab (Admin Save Sync)
         function viewIdCardDetails(docId) {
-            const rec = idCardsRecords.find(r => r.docId === docId);
-            if(!rec) return;
+            const rec = idCardsRecords.find(r => r.docId === docId); if(!rec) return;
             const body = document.getElementById('wfDetailsBody');
             
             const photoEl = document.getElementById('wfDetailsPhoto');
-            if(rec.photo) { photoEl.src = rec.photo; photoEl.style.display = 'inline-block'; } 
-            else { photoEl.style.display = 'none'; }
+            if(rec.photo) { photoEl.src = rec.photo; photoEl.style.display = 'inline-block'; } else { photoEl.style.display = 'none'; }
             
             const addRow = (lbl, val) => `<tr><td style="padding:8px; border-bottom:1px solid #e2e8f0; font-weight:bold; width:35%;">${lbl}</td><td style="padding:8px; border-bottom:1px solid #e2e8f0;">${val || '-'}</td></tr>`;
             
@@ -1219,15 +1169,14 @@
             html += addRow('બ્લડ ગ્રુપ', rec.bloodgroup);
             html += `</table>`;
             
-            body.innerHTML = html;
-            document.getElementById('wfDetailsModal').style.display = 'flex';
+            body.innerHTML = html; document.getElementById('wfDetailsModal').style.display = 'flex';
         }
 
         function closeWfDetailsModal() { document.getElementById('wfDetailsModal').style.display = 'none'; }
 
 
         // ==============================================================
-        // ADMIN PULL APPROVED DATA TO EXISTING FORM
+        // ADMIN UPDATE & ID CARD CREATION
         // ==============================================================
         function openAdminApprovedModal() {
             document.getElementById('adminApprovedModal').style.display = 'flex';
@@ -1254,11 +1203,7 @@
             let bgOpts = document.getElementById('bloodgroup').options;
             for(let i=0; i<bgOpts.length; i++){ if(bgOpts[i].value === dataObj.bloodGroup) { bgOpts[i].selected = true; break; } }
 
-            // Apply processed photo directly to admin form
-            if(dataObj.photo) {
-                currentPhotoBase64 = dataObj.photo;
-                document.getElementById('img-photo').src = currentPhotoBase64;
-            }
+            if(dataObj.photo) { currentPhotoBase64 = dataObj.photo; document.getElementById('img-photo').src = currentPhotoBase64; }
 
             ['name','address','hometown','dob','mobile','bloodgroup'].forEach(id => updateField(id, 'val-'+id));
             closeAdminApprovedModal();
@@ -1267,7 +1212,7 @@
 
 
         // ==============================================================
-        // EXISTING LOGIC (TRANSLITERATION, ID CARDS)
+        // EXISTING LOGIC (TRANSLITERATION, ADMIN SAVING)
         // ==============================================================
         let currentPhotoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
@@ -1299,8 +1244,7 @@
             let croppedCanvas = cropper.getCroppedCanvas({ width: 600, height: 800, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
             let enhancedCanvas = document.createElement('canvas'); enhancedCanvas.width = croppedCanvas.width; enhancedCanvas.height = croppedCanvas.height;
             let ctx = enhancedCanvas.getContext('2d'); ctx.filter = 'contrast(115%) saturate(110%) brightness(105%)'; ctx.drawImage(croppedCanvas, 0, 0);
-            currentPhotoBase64 = enhancedCanvas.toDataURL('image/jpeg', 0.95);
-            document.getElementById('img-photo').src = currentPhotoBase64;
+            currentPhotoBase64 = enhancedCanvas.toDataURL('image/jpeg', 0.95); document.getElementById('img-photo').src = currentPhotoBase64;
             closeCropper();
         }
 
@@ -1340,18 +1284,12 @@
             const el = document.getElementById(elementId);
             if (el) {
                 el.addEventListener('keyup', (e) => handleTransliteration(elementId, e, toggleId));
-                el.addEventListener('input', () => handleNumberConversion(elementId, toggleId));
             }
         }
 
         function setupRegTransliteration() {
-            const textFields = ['reg-name', 'reg-fatherName', 'reg-nativeName', 'reg-address', 'reg-vyavsay', 'reg-vyavsayAddress', 'reg-education', 'reg-familyMember'];
+            const textFields = ['reg-name', 'reg-fatherName', 'reg-nativeName', 'reg-address', 'reg-vyavsay', 'reg-vyavsayAddress', 'reg-education', 'reg-familyMemberName'];
             textFields.forEach(f => setupTransliteration(f, 'enableTransliterationReg'));
-            const numFields = ['reg-pincode', 'reg-mobile', 'reg-vyavsayPincode', 'reg-dob'];
-            numFields.forEach(f => {
-                const el = document.getElementById(f);
-                if(el) el.addEventListener('input', () => handleNumberConversion(f, 'enableTransliterationReg'));
-            });
         }
 
         let records = [];
@@ -1376,10 +1314,7 @@
             };
 
             const afterSave = (newDocId) => {
-                // If linked to a request, mark it generated so member can view card
-                if(reqId) {
-                    db.collection("memberRequests").doc(reqId).update({ status: 'card_generated', cardId: newDocId });
-                }
+                if(reqId) { db.collection("memberRequests").doc(reqId).update({ status: 'card_generated', cardId: newDocId }); }
                 alert("સેવ થઈ ગયું!"); clearForm(); resetBtn(saveBtn);
             };
 
@@ -1477,7 +1412,8 @@
         // ==============================================================
         function initializeSystem() {
             fetchFirebaseData(); 
-            ['memberNo','name','address','hometown','dob','mobile'].forEach(id => setupTransliteration(id));
+            setupTransliteration('name'); setupTransliteration('address'); setupTransliteration('hometown'); setupTransliteration('memberNo');
+            ['mobile','dob'].forEach(id => document.getElementById(id).addEventListener('input', function() { forceGujaratiNumbers(this); updateField(id, 'val-'+id); }));
         }
 
         window.onload = function() {
