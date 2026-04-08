@@ -351,9 +351,9 @@
                 </select>
             </div>
             
-            <!-- FAMILY MEMBER FIELDS -->
+            <!-- FAMILY MEMBER FIELDS (OPTIONAL) -->
             <div class="form-group full-width" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #cbd5e1;">
-                <label style="color:var(--primary); border-bottom:1px solid #cbd5e1; padding-bottom:5px; margin-bottom:10px; font-size:14px;">આપના ઘરમાંથી અન્ય વ્યક્તિઓ સભાસદ હોય તો વિગતો લખો</label>
+                <label style="color:var(--primary); border-bottom:1px solid #cbd5e1; padding-bottom:5px; margin-bottom:10px; font-size:14px;">આપના ઘરમાંથી અન્ય વ્યક્તિઓ સભાસદ હોય તો વિગતો લખો <span style="color:#ef4444; font-size:12px;">(જો હોય તો જ લખવું - Optional)</span></label>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group" style="margin:0;">
                         <label style="font-size:12px;">સભાસદ નંબર (Member Number)</label>
@@ -790,7 +790,7 @@
         // MOBILE VERIFY BEFORE FORM (NEW MEMBER LOGIN SYSTEM)
         // ==============================================================
         function showMobileVerify() {
-            document.getElementById('login-wrapper').style.display = 'none';
+            document.getElementById('main-login-box').style.display = 'none';
             document.getElementById('mobile-verify-wrapper').style.display = 'flex';
         }
 
