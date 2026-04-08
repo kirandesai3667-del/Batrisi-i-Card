@@ -828,7 +828,9 @@
                         btn.innerHTML = oldText; btn.disabled = false;
                         hideAllAuth();
                         // CASE 3: FOUND IN WORKFLOW -> SHOW STATUS
-                        showMemberStatus(snap.docs[0].data());
+                        let reqData = snap.docs[0].data();
+                        reqData.docId = snap.docs[0].id; // Add ID for Try Again logic
+                        showMemberStatus(reqData);
                     }
                 }).catch(err => { console.error(err); btn.innerHTML = oldText; btn.disabled = false; alert("Network Error: " + err.message); });
             } catch(e) {
@@ -874,11 +876,18 @@
                     </div>`;
             }
             else if(reqData.status.includes('rejected')) {
+                let reasonHtml = reqData.rejectReason ? `<div style="background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 8px; margin-top: 15px; font-weight: bold; border: 1px dashed #ef4444; text-align: left; font-size: 13px;">કારણ (Reason): ${reqData.rejectReason}</div>` : "";
+
                 container.innerHTML = `
                     <div class="status-box" style="background: #fef2f2; border: 2px solid #ef4444;">
                         <i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i>
                         <h2 style="color: #991b1b; margin-top:0;">એપ્લિકેશન રદ (Application rejected)</h2>
-                        <p style="color: #b91c1c; font-weight: 600;">વધુ માહિતી માટે કમિટી મેમ્બર નો સંપર્ક કરો.</p>
+                        <p style="color: #b91c1c; font-weight: 600;">તમારી અરજી રદ કરવામાં આવી છે. વધુ માહિતી માટે કમિટી મેમ્બરનો સંપર્ક કરો.</p>
+                        ${reasonHtml}
+                        
+                        <button onclick="tryAgainForm('${reqData.docId}', '${reqData.mobile}')" class="btn btn-save" style="background-color: #ef4444; width: 100%; max-width: 300px; margin: 20px auto 0 auto; justify-content: center; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);">
+                            <i class="fa-solid fa-rotate-right"></i> ફરીથી નવું ફોર્મ ભરો (Try Again)
+                        </button>
                     </div>`;
             }
             else {
@@ -888,6 +897,25 @@
                         <h2 style="color: #b45309; margin-top:0;">Your application is under process</h2>
                         <p style="color: #d97706; font-weight: 600;">કમિટી દ્વારા મંજૂરી ની પ્રક્રિયા ચાલુ છે. કૃપા કરીને થોડી રાહ જુઓ.</p>
                     </div>`;
+            }
+        }
+
+        function tryAgainForm(docId, mobileNumber) {
+            if(!docId || docId === 'undefined') {
+                alert("Error: Document ID missing. Please reload and try again.");
+                return;
+            }
+            if(confirm("શું તમે ફરીથી નવું ફોર્મ ભરવા માંગો છો? \nઆ તમારી જૂની રિજેક્ટ થયેલી અરજી ડીલીટ કરી દેશે અને નવું ફોર્મ ખોલશે.")) {
+                db.collection("memberRequests").doc(docId).delete().then(() => {
+                    document.getElementById('member-status-wrapper').style.display = 'none';
+                    document.getElementById('public-registration-wrapper').style.display = 'block';
+                    document.getElementById('reg-mobile').value = mobileNumber;
+                    setupRegTransliteration();
+                    document.getElementById('reg-address').addEventListener('input', syncSameAsAbove);
+                    document.getElementById('reg-pincode').addEventListener('input', syncSameAsAbove);
+                }).catch(err => {
+                    alert("Error: " + err.message);
+                });
             }
         }
 
@@ -1144,8 +1172,18 @@
             const docRef = db.collection("memberRequests").doc(docId);
             
             if(action === 'approve_committee') docRef.update({ status: 'pending_approvers', committeeApprovedBy: `${userName}` });
-            if(action === 'reject_committee') docRef.update({ status: 'rejected_committee', rejectedBy: userName });
-            if(action === 'reject_approver') docRef.update({ status: 'rejected_approver', rejectedBy: userName });
+            
+            if(action === 'reject_committee' || action === 'reject_approver') {
+                let reason = prompt("કૃપા કરીને એપ્લિકેશન રદ કરવાનું કારણ જણાવો (Reason for rejection):");
+                if(reason === null) return; 
+                if(reason.trim() === "") {
+                    alert("રિજેક્ટ કરવાનું કારણ લખવું ફરજિયાત છે!");
+                    return;
+                }
+                if(action === 'reject_committee') docRef.update({ status: 'rejected_committee', rejectedBy: userName, rejectReason: reason });
+                if(action === 'reject_approver') docRef.update({ status: 'rejected_approver', rejectedBy: userName, rejectReason: reason });
+            }
+
             if(action === 'approve_approver') docRef.update({ status: 'approved_final', finalApprovedBy: `${userName}` });
         }
 
@@ -1171,7 +1209,10 @@
             html += addRow('Selected Committee', reqCommPhoneObj ? reqCommPhoneObj.name : rec.committeePhone);
             if(rec.committeeApprovedBy) html += addRow('Committee Approved By', rec.committeeApprovedBy);
             if(rec.finalApprovedBy) html += addRow('Final Approved By', rec.finalApprovedBy);
-            if(rec.rejectedBy) html += addRow('Rejected By', rec.rejectedBy);
+            if(rec.rejectedBy) {
+                html += addRow('Rejected By', rec.rejectedBy);
+                if(rec.rejectReason) html += addRow('<span style="color:#ef4444">Reject Reason</span>', `<b style="color:#ef4444">${rec.rejectReason}</b>`);
+            }
             
             html += `</table>`;
             body.innerHTML = html;
