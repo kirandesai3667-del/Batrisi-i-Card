@@ -142,9 +142,11 @@
 <body>
 
     <!-- ========================================================================= -->
-    <!-- LOGIN PAGE UPDATE -->
+    <!-- SECURE AUTH WRAPPER (Prevents Blank Blue Screen Bugs) -->
     <!-- ========================================================================= -->
-    <div id="login-wrapper" class="login-wrapper">
+    <div id="auth-bg" class="login-wrapper">
+        
+        <!-- MAIN ADMIN/COMMITTEE LOGIN -->
         <div class="login-box" id="main-login-box">
             <h2><i class="fa-solid fa-shield-halved"></i> Security Login</h2>
             <p>શ્રી બત્રીસી જૈન આઈડી કાર્ડ સિસ્ટમ</p>
@@ -176,13 +178,9 @@
                 * Admin, Mantri, Convener, and Committee Members can login securely.
             </p>
         </div>
-    </div>
 
-    <!-- ========================================================================= -->
-    <!-- MOBILE VERIFY BEFORE FORM (NEW MEMBER LOGIN SYSTEM) -->
-    <!-- ========================================================================= -->
-    <div id="mobile-verify-wrapper" class="login-wrapper" style="display: none;">
-        <div class="login-box">
+        <!-- MOBILE VERIFY BEFORE FORM (NEW MEMBER LOGIN SYSTEM) -->
+        <div class="login-box" id="mobile-verify-box" style="display: none;">
             <h2><i class="fa-solid fa-mobile-screen"></i> Check Status / Register</h2>
             <p style="margin-bottom:10px;">ફોર્મ ભરવા અથવા સ્ટેટસ જાણવા માટે તમારો WhatsApp મોબાઇલ નંબર નાખો</p>
             
@@ -197,6 +195,7 @@
                 <i class="fa-solid fa-arrow-left"></i> Back to Login
             </button>
         </div>
+
     </div>
 
     <!-- ========================================================================= -->
@@ -721,8 +720,12 @@
         }
 
         // ==============================================================
-        // LOGIN SYSTEM (SECURE ROLE-BASED)
+        // LOGIN SYSTEM (SECURE ROLE-BASED) & WRAPPER HANDLING
         // ==============================================================
+        function hideAllAuth() {
+            document.getElementById('auth-bg').style.display = 'none';
+        }
+
         function togglePassword(inputId, iconId) {
             const pwdInput = document.getElementById(inputId); const toggleIcon = document.getElementById(iconId);
             if (pwdInput.type === 'password') { pwdInput.type = 'text'; toggleIcon.classList.replace('fa-eye-slash', 'fa-eye'); } 
@@ -730,9 +733,9 @@
         }
 
         function showMainLogin() {
-            document.getElementById('login-wrapper').style.display = 'flex';
+            document.getElementById('auth-bg').style.display = 'flex';
             document.getElementById('main-login-box').style.display = 'block';
-            document.getElementById('mobile-verify-wrapper').style.display = 'none';
+            document.getElementById('mobile-verify-box').style.display = 'none';
         }
 
         function performLogin() {
@@ -767,8 +770,7 @@
         }
 
         function routeUser() {
-            document.getElementById('login-wrapper').style.display = 'none';
-            document.getElementById('mobile-verify-wrapper').style.display = 'none';
+            hideAllAuth();
             document.getElementById('public-registration-wrapper').style.display = 'none';
             document.getElementById('member-status-wrapper').style.display = 'none';
             
@@ -791,7 +793,7 @@
         // ==============================================================
         function showMobileVerify() {
             document.getElementById('main-login-box').style.display = 'none';
-            document.getElementById('mobile-verify-wrapper').style.display = 'flex';
+            document.getElementById('mobile-verify-box').style.display = 'block';
         }
 
         function verifyMobile() {
@@ -803,36 +805,41 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
             btn.disabled = true;
             
-            db.collection("memberRequests").where("mobile", "==", mob).get().then(snap => {
-                if(snap.empty) {
-                    db.collection("idCards").where("mobile", "==", mob).get().then(idSnap => {
+            try {
+                db.collection("memberRequests").where("mobile", "==", mob).get().then(snap => {
+                    if(snap.empty) {
+                        db.collection("idCards").where("mobile", "==", mob).get().then(idSnap => {
+                            btn.innerHTML = oldText; btn.disabled = false;
+                            if(idSnap.empty) {
+                                // CASE 1: NEW REGISTRATION (Not found anywhere) -> SHOW FULL FORM
+                                hideAllAuth();
+                                document.getElementById('public-registration-wrapper').style.display = 'block';
+                                document.getElementById('reg-mobile').value = mob;
+                                setupRegTransliteration();
+                                document.getElementById('reg-address').addEventListener('input', syncSameAsAbove);
+                                document.getElementById('reg-pincode').addEventListener('input', syncSameAsAbove);
+                            } else {
+                                // CASE 2: ALREADY CREATED (LEGACY ID CARD) -> SHOW STATUS
+                                hideAllAuth();
+                                showMemberStatus({ status: 'card_generated', idCardData: idSnap.docs[0].data() });
+                            }
+                        }).catch(err => { console.error(err); btn.innerHTML = oldText; btn.disabled = false; alert("Network Error: " + err.message); });
+                    } else {
                         btn.innerHTML = oldText; btn.disabled = false;
-                        if(idSnap.empty) {
-                            // CASE 1: NEW REGISTRATION (Not found anywhere) -> SHOW FULL FORM
-                            document.getElementById('mobile-verify-wrapper').style.display = 'none';
-                            document.getElementById('public-registration-wrapper').style.display = 'block';
-                            document.getElementById('reg-mobile').value = mob;
-                            setupRegTransliteration();
-                            document.getElementById('reg-address').addEventListener('input', syncSameAsAbove);
-                            document.getElementById('reg-pincode').addEventListener('input', syncSameAsAbove);
-                        } else {
-                            // CASE 2: ALREADY CREATED (LEGACY ID CARD) -> SHOW STATUS
-                            showMemberStatus({ status: 'card_generated', idCardData: idSnap.docs[0].data() });
-                        }
-                    }).catch(err => { console.error(err); btn.innerHTML = oldText; btn.disabled = false; alert("Network Error"); });
-                } else {
-                    btn.innerHTML = oldText; btn.disabled = false;
-                    // CASE 3: FOUND IN WORKFLOW -> SHOW STATUS
-                    showMemberStatus(snap.docs[0].data());
-                }
-            }).catch(err => { console.error(err); btn.innerHTML = oldText; btn.disabled = false; alert("Network Error"); });
+                        hideAllAuth();
+                        // CASE 3: FOUND IN WORKFLOW -> SHOW STATUS
+                        showMemberStatus(snap.docs[0].data());
+                    }
+                }).catch(err => { console.error(err); btn.innerHTML = oldText; btn.disabled = false; alert("Network Error: " + err.message); });
+            } catch(e) {
+                console.error(e); btn.innerHTML = oldText; btn.disabled = false; alert("Error: " + e.message);
+            }
         }
 
         // ==============================================================
         // MEMBER STATUS DISPLAY
         // ==============================================================
         function showMemberStatus(reqData) {
-            document.getElementById('mobile-verify-wrapper').style.display = 'none';
             document.getElementById('member-status-wrapper').style.display = 'block';
             const container = document.getElementById('member-status-container');
             const previewSection = document.getElementById('member-card-preview-section');
@@ -1440,6 +1447,7 @@
                 document.getElementById('rememberMe').checked = true;
             }
             if (sessionStorage.getItem('isSecuredLoggedIn') === 'true') { routeUser(); }
+            else { showMainLogin(); } // FIX: Ensure main login is explicitly shown on fresh load
         };
     </script>
 </body>
