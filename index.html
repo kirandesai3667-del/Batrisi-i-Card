@@ -179,7 +179,7 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MOBILE VERIFY BEFORE FORM & MEMBER LOGIN SYSTEM -->
+    <!-- MOBILE VERIFY BEFORE FORM (NEW MEMBER LOGIN SYSTEM) -->
     <!-- ========================================================================= -->
     <div id="mobile-verify-wrapper" class="login-wrapper" style="display: none;">
         <div class="login-box">
@@ -730,6 +730,7 @@
         }
 
         function showMainLogin() {
+            document.getElementById('login-wrapper').style.display = 'flex';
             document.getElementById('main-login-box').style.display = 'block';
             document.getElementById('mobile-verify-wrapper').style.display = 'none';
         }
@@ -789,7 +790,7 @@
         // MOBILE VERIFY BEFORE FORM (NEW MEMBER LOGIN SYSTEM)
         // ==============================================================
         function showMobileVerify() {
-            document.getElementById('main-login-box').style.display = 'none';
+            document.getElementById('login-wrapper').style.display = 'none';
             document.getElementById('mobile-verify-wrapper').style.display = 'flex';
         }
 
