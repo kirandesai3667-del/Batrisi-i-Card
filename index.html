@@ -88,7 +88,7 @@
         .card-scaler { transform-origin: top center; box-shadow: 0 12px 30px rgba(0,0,0,0.15); border-radius: 16px; margin-bottom: 20px;}
         @media(min-width: 600px) { .card-scaler { transform: scale(1.1); margin-bottom: 40px; } }
         
-        .id-card { width: var(--card-w); height: var(--card-h); background: #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; border-radius: 16px; border: 1px solid #cbd5e1; position: relative; overflow: hidden; box-sizing: border-box;}
+        .id-card { width: var(--card-w); height: var(--card-h); background: #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; border-radius: 16px; border: 1.5px solid #cbd5e1; position: relative; overflow: hidden; box-sizing: border-box;}
         
         /* APPLY AVENGENZ FONT STRICTLY TO THE ENTIRE CARD */
         .id-card, .id-card * { font-family: 'Avengenz', sans-serif !important; }
@@ -524,14 +524,20 @@
                         <input type="number" id="exist-reg-mobile" placeholder="MOBILE NO">
                     </div>
                     <div class="form-group">
-                        <label>DATE OF BIRTH (LOCKED)</label>
-                        <input type="text" id="exist-reg-dob" readonly style="background:#e2e8f0; color: #64748b; font-weight: bold;">
+                        <label>DATE OF BIRTH *</label>
+                        <input type="text" id="exist-reg-dob" placeholder="DD/MM/YYYY">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>BLOOD GROUP (LOCKED)</label>
-                    <input type="text" id="exist-reg-bloodgroup" readonly style="background:#e2e8f0; color: #64748b; font-weight: bold;">
+                    <label>BLOOD GROUP *</label>
+                    <select id="exist-reg-bloodgroup">
+                        <option value="-">SELECT</option>
+                        <option value="A+">A+</option> <option value="A-">A-</option>
+                        <option value="B+">B+</option> <option value="B-">B-</option>
+                        <option value="O+">O+</option> <option value="O-">O-</option>
+                        <option value="AB+">AB+</option> <option value="AB-">AB-</option>
+                    </select>
                 </div>
 
                 <button type="button" class="btn btn-save" onclick="submitExistingForm()" style="margin-top: 10px; font-size: 16px;">
@@ -1156,7 +1162,7 @@
             body{font-family:'Avengenz',sans-serif; margin:0;} 
             @media print { 
                 @page{margin:0;} html,body{width:100vw;height:100vh;margin:0;} 
-                #member-print-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:428px;height:270px;border:1px solid #cbd5e1;border-radius:16px !important;overflow:hidden !important;box-shadow:none;margin:0;display:flex;flex-direction:column;justify-content:space-between;background:#fff; font-family: 'Avengenz', sans-serif !important;} 
+                #member-print-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:428px;height:270px;border:1.5px solid #cbd5e1 !important;border-radius:16px !important;overflow:hidden !important;box-shadow:none;margin:0;display:flex;flex-direction:column;justify-content:space-between;background:#fff; font-family: 'Avengenz', sans-serif !important;} 
                 #member-print-card * { font-family: 'Avengenz', sans-serif !important; }
                 .card-header{text-align:center;border-bottom:3px solid #2563eb;padding:6px 10px 4px;background:#fff;flex-shrink:0;} 
                 .card-header h2{margin:0 0 2px;font-size:11.5px;color:#0f3460;font-weight:900;letter-spacing:0.3px;text-transform:uppercase;} 
@@ -1178,29 +1184,39 @@
             printWin.document.close();
         }
 
-        // Helper to generate perfectly crisp, unscaled PDF using off-screen cloning
+        // ==============================================================
+        // HIGH QUALITY NATIVE VECTOR PDF EXPORTER
+        // ==============================================================
         function downloadHighQualityPDF(cardId, nameElementId) {
             const originalCard = document.getElementById(cardId);
             
-            // Create a temporary container off-screen
+            // 1. Create a wrapper off-screen with white background
             const cloneContainer = document.createElement('div');
             cloneContainer.style.position = 'fixed';
             cloneContainer.style.top = '-9999px';
             cloneContainer.style.left = '-9999px';
+            cloneContainer.style.backgroundColor = '#ffffff'; 
+            cloneContainer.style.padding = '0';
             document.body.appendChild(cloneContainer);
             
-            // Clone the card and enforce strict dimensions
+            // 2. Clone the card exactly
             const clonedCard = originalCard.cloneNode(true);
-            clonedCard.style.transform = 'none'; // Critical for sharp rendering
+            clonedCard.style.transform = 'none'; 
             clonedCard.style.width = '428px';    
             clonedCard.style.height = '270px';   
             clonedCard.style.margin = '0';
             clonedCard.style.boxShadow = 'none';
+            
+            // VITAL FIX: Make CSS border transparent
+            clonedCard.style.borderColor = 'transparent';
+            clonedCard.style.borderRadius = '16px';
+            clonedCard.style.overflow = 'hidden';
+
             cloneContainer.appendChild(clonedCard);
 
             document.fonts.ready.then(() => {
                 html2canvas(clonedCard, { 
-                    scale: 5, // High resolution like Aadhaar
+                    scale: 6, 
                     useCORS: true, 
                     allowTaint: true,
                     backgroundColor: "#ffffff",
@@ -1208,7 +1224,14 @@
                 }).then(canvas => {
                     const { jsPDF } = window.jspdf; 
                     const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
+                    
                     pdf.addImage(canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 85.6, 54);
+                    
+                    // PREMIUM FINISH FIX: Draw crisp native vector border directly in PDF!
+                    pdf.setDrawColor(203, 213, 225); 
+                    pdf.setLineWidth(0.3); 
+                    pdf.roundedRect(0.15, 0.15, 85.3, 53.7, 3.2, 3.2, 'S'); 
+                    
                     let n = document.getElementById(nameElementId).innerText.trim(); 
                     pdf.save((n === "XXXX XXXX" ? "ID_Card" : n) + "_ID_Card.pdf");
                     
@@ -1455,7 +1478,6 @@
             const userName = sessionStorage.getItem('userName');
             const docRef = db.collection("memberRequests").doc(docId);
             
-            // Added Committee Approval Timestamp Tracking for Excel (NEW)
             if(action === 'approve_committee') {
                 docRef.update({ 
                     status: 'pending_approvers', 
@@ -1716,9 +1738,10 @@
         }
         
         function printFromTable(docId) { editRecord(docId); setTimeout(printCard, 800); }
+        
         function printCard() {
             const cardHTML = document.getElementById('print-card').outerHTML; 
-            const fontUrl = new URL('Avengenz.ttf', document.baseURI).href; // Ensures font is pulled correctly in print tab
+            const fontUrl = new URL('Avengenz.ttf', document.baseURI).href; 
             let printWin = window.open('', '_blank'); 
             printWin.document.write(`<html><head>
             <style>
@@ -1727,7 +1750,7 @@
             body{font-family:'Avengenz',sans-serif; margin:0;} 
             @media print { 
                 @page{margin:0;} html,body{width:100vw;height:100vh;margin:0;} 
-                #print-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:428px;height:270px;border:1px solid #cbd5e1;border-radius:16px !important;overflow:hidden !important;box-shadow:none;margin:0;display:flex;flex-direction:column;justify-content:space-between;background:#fff; font-family: 'Avengenz', sans-serif !important;} 
+                #print-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:428px;height:270px;border:1.5px solid #cbd5e1 !important;border-radius:16px !important;overflow:hidden !important;box-shadow:none;margin:0;display:flex;flex-direction:column;justify-content:space-between;background:#fff; font-family: 'Avengenz', sans-serif !important;} 
                 #print-card * { font-family: 'Avengenz', sans-serif !important; }
                 .card-header{text-align:center;border-bottom:3px solid #2563eb;padding:6px 10px 4px;background:#fff;flex-shrink:0;} 
                 .card-header h2{margin:0 0 2px;font-size:11.5px;color:#0f3460;font-weight:900;letter-spacing:0.3px;text-transform:uppercase;} 
@@ -1988,7 +2011,6 @@
             const memNo = document.getElementById('exist-reg-memberNo').value.trim().toUpperCase();
             const address = document.getElementById('exist-reg-address').value.trim();
             const mobile = document.getElementById('exist-reg-mobile').value.trim();
-            // DOB and BG remain locked from their initial fetched values
             const dob = document.getElementById('exist-reg-dob').value.trim();
             const bg = document.getElementById('exist-reg-bloodgroup').value;
 
@@ -2111,7 +2133,6 @@
             });
         }
 
-        // Updated for Custom Red Background Highlighting and simple Columns
         function exportExistingUpdatesExcel() {
             db.collection("existingUpdates").get().then(snap => {
                 if(snap.empty) return alert("NO EXISTING MEMBER UPDATES FOUND!");
@@ -2126,17 +2147,23 @@
                     '<th style="background-color: #0f3460; color: white;">ADDRESS (UPDATED)</th>' +
                     '<th style="background-color: #0f3460; color: white;">OLD ADDRESS</th>' +
                     '<th style="background-color: #0f3460; color: white;">DOB</th>' +
+                    '<th style="background-color: #0f3460; color: white;">OLD DOB</th>' +
                     '<th style="background-color: #0f3460; color: white;">BLOOD GROUP</th>' +
+                    '<th style="background-color: #0f3460; color: white;">OLD BLOOD GROUP</th>' +
                     '</tr></thead><tbody>';
 
                 snap.forEach(doc => {
                     let r = doc.data();
                     
-                    let mobileChanged = (r.newMobile !== r.oldMobile);
-                    let addressChanged = (r.newAddress !== r.oldAddress);
+                    let mobileChanged = (r.newMobile && r.oldMobile && r.newMobile !== r.oldMobile);
+                    let addressChanged = (r.newAddress && r.oldAddress && r.newAddress !== r.oldAddress);
+                    let dobChanged = (r.newDob && r.oldDob && r.newDob !== r.oldDob);
+                    let bgChanged = (r.newBloodGroup && r.oldBloodGroup && r.newBloodGroup !== r.oldBloodGroup);
                     
                     let mobileStyle = mobileChanged ? 'style="background-color: #ffcccc; color: #cc0000; font-weight: bold;"' : '';
                     let addressStyle = addressChanged ? 'style="background-color: #ffcccc; color: #cc0000; font-weight: bold;"' : '';
+                    let dobStyle = dobChanged ? 'style="background-color: #ffcccc; color: #cc0000; font-weight: bold;"' : '';
+                    let bgStyle = bgChanged ? 'style="background-color: #ffcccc; color: #cc0000; font-weight: bold;"' : '';
 
                     html += `<tr>
                         <td>${formatDateTime12Hour(r.timestamp)}</td>
@@ -2146,14 +2173,15 @@
                         <td>${r.oldMobile || "-"}</td>
                         <td ${addressStyle}>${r.newAddress || "-"}</td>
                         <td>${r.oldAddress || "-"}</td>
-                        <td>${r.newDob || r.oldDob || "-"}</td>
-                        <td>${r.newBloodGroup || r.oldBloodGroup || "-"}</td>
+                        <td ${dobStyle}>${r.newDob || "-"}</td>
+                        <td>${r.oldDob || "-"}</td>
+                        <td ${bgStyle}>${r.newBloodGroup || "-"}</td>
+                        <td>${r.oldBloodGroup || "-"}</td>
                     </tr>`;
                 });
                 
                 html += '</tbody></table></body></html>';
 
-                // Download natively via blob approach (preserves colors natively in Excel)
                 let blob = new Blob([html], { type: 'application/vnd.ms-excel' });
                 let url = URL.createObjectURL(blob);
                 let a = document.createElement('a');
