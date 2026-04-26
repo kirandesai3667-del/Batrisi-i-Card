@@ -101,21 +101,20 @@
         /* Optimized Spacing & Layout */
         .card-body { background: #e2e8f0; display: grid; grid-template-columns: 50px 1fr 65px; gap: 8px; align-items: start; padding: 4px 12px; flex-grow: 1; position: relative; overflow: hidden; }
         
-        /* EXACT WATERMARK LAYER METHOD (Shifted Up and Lighter) */
+        /* OVERLAY WATERMARK LAYER METHOD (Higher z-index, lighter opacity) */
         .watermark-logo-img {
             position: absolute;
-            top: 35%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 160px;
-            height: 160px;
+            width: 180px;
+            height: 180px;
             object-fit: contain;
-            opacity: 0.03;
-            z-index: 1;
-            pointer-events: none;
+            opacity: 0.07;
+            z-index: 99; /* FLOATING OVER EVERYTHING */
+            pointer-events: none; /* Text can still be selected under it */
         }
         
-        /* Ensure Text & Elements Are Solidly Above Watermark */
         .logo-box, .details-box, .photo-box { position: relative; z-index: 2; }
 
         .logo-box { width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; }
@@ -276,7 +275,7 @@
                             <p class="contact">PH: 079-27557668 | MOB: +91 95864 23232 | EMAIL: 32cedusociety@gmail.com</p>
                         </div>
                         <div class="card-body">
-                            <!-- SEPARATE IMAGE LAYER FOR WATERMARK -->
+                            <!-- OVERLAY WATERMARK LAYER -->
                             <img src="logo.png" class="watermark-logo-img" alt="watermark">
                             
                             <div class="logo-box"><img src="logo.png" alt="Logo"></div>
@@ -685,7 +684,7 @@
                                 <p class="contact">PH: 079-27557668 | MOB: +91 95864 23232 | EMAIL: 32cedusociety@gmail.com</p>
                             </div>
                             <div class="card-body">
-                                <!-- SEPARATE IMAGE LAYER FOR WATERMARK -->
+                                <!-- OVERLAY WATERMARK LAYER -->
                                 <img src="logo.png" class="watermark-logo-img" alt="watermark">
                                 
                                 <div class="logo-box"><img id="img-logo" src="logo.png" alt="Logo"></div>
@@ -1195,7 +1194,7 @@
                 .card-header p{margin:0;font-size:6px;font-weight:600;text-transform:uppercase;} 
                 .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;position:relative;overflow:hidden;} 
                 
-                .watermark-logo-img { position:absolute; top:35%; left:50%; transform:translate(-50%, -50%); width:160px; height:160px; opacity:0.03; z-index:1; pointer-events:none; object-fit:contain; }
+                .watermark-logo-img { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:180px; height:180px; opacity:0.07; z-index:99; pointer-events:none; object-fit:contain; }
                 
                 .logo-box, .details-box, .photo-box { position:relative; z-index:2; } 
                 .detail-item{display:flex;gap:4px;margin-bottom:1.5px;} 
@@ -1804,7 +1803,7 @@
                 .card-header p{margin:0;font-size:6px;font-weight:600;text-transform:uppercase;} 
                 .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;position:relative;overflow:hidden;} 
                 
-                .watermark-logo-img { position:absolute; top:35%; left:50%; transform:translate(-50%, -50%); width:160px; height:160px; opacity:0.03; z-index:1; pointer-events:none; object-fit:contain; }
+                .watermark-logo-img { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:180px; height:180px; opacity:0.07; z-index:99; pointer-events:none; object-fit:contain; }
                 
                 .logo-box, .details-box, .photo-box { position:relative; z-index:2; } 
                 .detail-item{display:flex;gap:4px;margin-bottom:1.5px;} 
