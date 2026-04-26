@@ -8,8 +8,8 @@
     <!-- Google Fonts: Poppins for App UI -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Preload Custom Troopers Roadwick Font for ID Cards -->
-    <link rel="preload" href="Troopers Roadwick.ttf" as="font" type="font/ttf" crossorigin>
+    <!-- Preload Custom Troopers Roadwick Font for ID Cards (URL encoded for safety) -->
+    <link rel="preload" href="Troopers%20Roadwick.ttf" as="font" type="font/ttf" crossorigin>
     
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -35,7 +35,7 @@
            ======================================================= */
         @font-face {
             font-family: 'Troopers Roadwick';
-            src: url('Troopers Roadwick.ttf') format('truetype');
+            src: url('Troopers%20Roadwick.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
             font-display: swap;
@@ -98,25 +98,25 @@
         .card-header .address { margin: 0 0 2px 0; font-size: 6px; color: #000000; font-weight: 600; line-height: 1.2; text-transform: uppercase;}
         .card-header .contact { margin: 0; font-size: 6.5px; color: #dc2626; font-weight: 700; }
         
-        /* Optimized Spacing & Layout to accommodate long addresses smoothly */
-        .card-body { background: #e2e8f0; display: grid; grid-template-columns: 50px 1fr 65px; gap: 8px; align-items: start; padding: 4px 12px; flex-grow: 1; position: relative; z-index: 1; }
+        /* Optimized Spacing & Layout */
+        .card-body { background: #e2e8f0; display: grid; grid-template-columns: 50px 1fr 65px; gap: 8px; align-items: start; padding: 4px 12px; flex-grow: 1; position: relative; overflow: hidden; }
         
-        /* Perfect Complete Shape Watermark using ::before */
-        .card-body::before {
-            content: "";
+        /* EXACT WATERMARK LAYER METHOD */
+        .watermark-logo-img {
             position: absolute;
-            top: 15px; bottom: 15px; left: 15px; right: 15px;
-            background-image: url('logo.png');
-            background-size: contain;
-            background-position: center center;
-            background-repeat: no-repeat;
-            opacity: 0.06;
-            z-index: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            opacity: 0.05;
+            z-index: 1;
             pointer-events: none;
         }
         
         /* Ensure Text & Elements Are Solidly Above Watermark */
-        .logo-box, .details-box, .photo-box, .detail-item { position: relative; z-index: 10; }
+        .logo-box, .details-box, .photo-box { position: relative; z-index: 2; }
 
         .logo-box { width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; }
         .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -276,6 +276,9 @@
                             <p class="contact">PH: 079-27557668 | MOB: +91 95864 23232 | EMAIL: 32cedusociety@gmail.com</p>
                         </div>
                         <div class="card-body">
+                            <!-- SEPARATE IMAGE LAYER FOR WATERMARK -->
+                            <img src="logo.png" class="watermark-logo-img" alt="watermark">
+                            
                             <div class="logo-box"><img src="logo.png" alt="Logo"></div>
                             <div class="details-box">
                                 <div class="detail-item"><div class="detail-label-box">MEMBER NO.</div><div class="detail-colon">:</div><div class="detail-value-box" id="m-val-memberNo"></div></div>
@@ -682,6 +685,9 @@
                                 <p class="contact">PH: 079-27557668 | MOB: +91 95864 23232 | EMAIL: 32cedusociety@gmail.com</p>
                             </div>
                             <div class="card-body">
+                                <!-- SEPARATE IMAGE LAYER FOR WATERMARK -->
+                                <img src="logo.png" class="watermark-logo-img" alt="watermark">
+                                
                                 <div class="logo-box"><img id="img-logo" src="logo.png" alt="Logo"></div>
                                 <div class="details-box">
                                     <div class="detail-item"><div class="detail-label-box">MEMBER NO.</div><div class="detail-colon">:</div><div class="detail-value-box" id="val-memberNo">XXXX</div></div>
@@ -1173,7 +1179,7 @@
 
         function printMemberCard() {
             const cardHTML = document.getElementById('member-print-card').outerHTML;
-            const fontUrl = new URL('Troopers Roadwick.ttf', document.baseURI).href; // Ensures font is pulled correctly in print tab
+            const fontUrl = new URL('Troopers%20Roadwick.ttf', document.baseURI).href; // Safe URL Encoding
             let printWin = window.open('', '_blank'); 
             printWin.document.write(`<html><head>
             <style>
@@ -1187,9 +1193,11 @@
                 .card-header{text-align:center;border-bottom:3px solid #2563eb;padding:6px 10px 4px;background:#fff;flex-shrink:0;position:relative;z-index:10;} 
                 .card-header h2{margin:0 0 2px;font-size:11.5px;color:#0f3460;font-weight:900;letter-spacing:0.3px;text-transform:uppercase;} 
                 .card-header p{margin:0;font-size:6px;font-weight:600;text-transform:uppercase;} 
-                .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;position:relative;z-index:1;} 
-                .card-body::before{content:"";position:absolute;top:15px;bottom:15px;left:15px;right:15px;background-image:url('logo.png');background-size:contain;background-position:center center;background-repeat:no-repeat;opacity:0.06;z-index:0;pointer-events:none;} 
-                .logo-box, .details-box, .photo-box, .detail-item { position:relative; z-index:10; } 
+                .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;position:relative;overflow:hidden;} 
+                
+                .watermark-logo-img { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:160px; height:160px; opacity:0.05; z-index:1; pointer-events:none; object-fit:contain; }
+                
+                .logo-box, .details-box, .photo-box { position:relative; z-index:2; } 
                 .detail-item{display:flex;gap:4px;margin-bottom:1.5px;} 
                 .detail-label-box{background:#cbd5e1;border-left:3px solid #0f3460;color:#0f3460;padding:2px 4px;font-size:8px;font-weight:700;width:80px;line-height:1.15;display:flex;align-items:center;} 
                 .detail-colon{font-size:8px;font-weight:bold;color:#0f3460;display:flex;align-items:center;} 
@@ -1780,7 +1788,7 @@
         
         function printCard() {
             const cardHTML = document.getElementById('print-card').outerHTML; 
-            const fontUrl = new URL('Troopers Roadwick.ttf', document.baseURI).href; 
+            const fontUrl = new URL('Troopers%20Roadwick.ttf', document.baseURI).href; // Safe URL Encoding
             let printWin = window.open('', '_blank'); 
             printWin.document.write(`<html><head>
             <style>
@@ -1794,9 +1802,11 @@
                 .card-header{text-align:center;border-bottom:3px solid #2563eb;padding:6px 10px 4px;background:#fff;flex-shrink:0;position:relative;z-index:10;} 
                 .card-header h2{margin:0 0 2px;font-size:11.5px;color:#0f3460;font-weight:900;letter-spacing:0.3px;text-transform:uppercase;} 
                 .card-header p{margin:0;font-size:6px;font-weight:600;text-transform:uppercase;} 
-                .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;position:relative;z-index:1;} 
-                .card-body::before{content:"";position:absolute;top:15px;bottom:15px;left:15px;right:15px;background-image:url('logo.png');background-size:contain;background-position:center center;background-repeat:no-repeat;opacity:0.06;z-index:0;pointer-events:none;} 
-                .logo-box, .details-box, .photo-box, .detail-item { position:relative; z-index:10; } 
+                .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;position:relative;overflow:hidden;} 
+                
+                .watermark-logo-img { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:160px; height:160px; opacity:0.05; z-index:1; pointer-events:none; object-fit:contain; }
+                
+                .logo-box, .details-box, .photo-box { position:relative; z-index:2; } 
                 .detail-item{display:flex;gap:4px;margin-bottom:1.5px;} 
                 .detail-label-box{background:#cbd5e1;border-left:3px solid #0f3460;color:#0f3460;padding:2px 4px;font-size:8px;font-weight:700;width:80px;line-height:1.15;display:flex;align-items:center;} 
                 .detail-colon{font-size:8px;font-weight:bold;color:#0f3460;display:flex;align-items:center;} 
