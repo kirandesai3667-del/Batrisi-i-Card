@@ -99,7 +99,14 @@
         .card-header .contact { margin: 0; font-size: 6.5px; color: #dc2626; font-weight: 700; }
         
         /* Optimized Spacing & Layout to accommodate long addresses smoothly */
-        .card-body { background: #e2e8f0; display: grid; grid-template-columns: 50px 1fr 65px; gap: 8px; align-items: start; padding: 4px 12px; flex-grow: 1; }
+        .card-body { background: #e2e8f0; display: grid; grid-template-columns: 50px 1fr 65px; gap: 8px; align-items: start; padding: 4px 12px; flex-grow: 1; position: relative; }
+        
+        /* New Watermark Styles */
+        .watermark-logo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 140px; height: 140px; opacity: 0.08; z-index: 0; pointer-events: none; display: flex; justify-content: center; align-items: center; }
+        .watermark-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .logo-box, .details-box, .photo-box { position: relative; z-index: 1; }
+
         .logo-box { width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; }
         .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .details-box { display: flex; flex-direction: column; gap: 1.5px; width: 100%; }
@@ -258,6 +265,7 @@
                             <p class="contact">PH: 079-27557668 | MOB: +91 95864 23232 | EMAIL: 32cedusociety@gmail.com</p>
                         </div>
                         <div class="card-body">
+                            <div class="watermark-logo"><img src="logo.png" alt="watermark"></div>
                             <div class="logo-box"><img src="logo.png" alt="Logo"></div>
                             <div class="details-box">
                                 <div class="detail-item"><div class="detail-label-box">MEMBER NO.</div><div class="detail-colon">:</div><div class="detail-value-box" id="m-val-memberNo"></div></div>
@@ -664,6 +672,7 @@
                                 <p class="contact">PH: 079-27557668 | MOB: +91 95864 23232 | EMAIL: 32cedusociety@gmail.com</p>
                             </div>
                             <div class="card-body">
+                                <div class="watermark-logo"><img src="logo.png" alt="watermark"></div>
                                 <div class="logo-box"><img id="img-logo" src="logo.png" alt="Logo"></div>
                                 <div class="details-box">
                                     <div class="detail-item"><div class="detail-label-box">MEMBER NO.</div><div class="detail-colon">:</div><div class="detail-value-box" id="val-memberNo">XXXX</div></div>
@@ -1169,7 +1178,7 @@
                 .card-header{text-align:center;border-bottom:3px solid #2563eb;padding:6px 10px 4px;background:#fff;flex-shrink:0;} 
                 .card-header h2{margin:0 0 2px;font-size:11.5px;color:#0f3460;font-weight:900;letter-spacing:0.3px;text-transform:uppercase;} 
                 .card-header p{margin:0;font-size:6px;font-weight:600;text-transform:uppercase;} 
-                .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;overflow:hidden;} 
+                .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;overflow:hidden; position: relative; z-index: 1;} .watermark-logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140px;height:140px;opacity:0.08;z-index:0;pointer-events:none;display:flex;justify-content:center;align-items:center;} .watermark-logo img{max-width:100%;max-height:100%;object-fit:contain;} .logo-box, .details-box, .photo-box { position:relative; z-index:1; } 
                 .detail-item{display:flex;gap:4px;margin-bottom:1.5px;} 
                 .detail-label-box{background:#cbd5e1;border-left:3px solid #0f3460;color:#0f3460;padding:2px 4px;font-size:8px;font-weight:700;width:80px;line-height:1.15;display:flex;align-items:center;} 
                 .detail-colon{font-size:8px;font-weight:bold;color:#0f3460;display:flex;align-items:center;} 
@@ -1774,7 +1783,7 @@
                 .card-header{text-align:center;border-bottom:3px solid #2563eb;padding:6px 10px 4px;background:#fff;flex-shrink:0;} 
                 .card-header h2{margin:0 0 2px;font-size:11.5px;color:#0f3460;font-weight:900;letter-spacing:0.3px;text-transform:uppercase;} 
                 .card-header p{margin:0;font-size:6px;font-weight:600;text-transform:uppercase;} 
-                .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;overflow:hidden;} 
+                .card-body{background:#e2e8f0;display:grid;grid-template-columns:50px 1fr 65px;gap:8px;padding:4px 12px;flex-grow:1;overflow:hidden; position: relative; z-index: 1;} .watermark-logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140px;height:140px;opacity:0.08;z-index:0;pointer-events:none;display:flex;justify-content:center;align-items:center;} .watermark-logo img{max-width:100%;max-height:100%;object-fit:contain;} .logo-box, .details-box, .photo-box { position:relative; z-index:1; } 
                 .detail-item{display:flex;gap:4px;margin-bottom:1.5px;} 
                 .detail-label-box{background:#cbd5e1;border-left:3px solid #0f3460;color:#0f3460;padding:2px 4px;font-size:8px;font-weight:700;width:80px;line-height:1.15;display:flex;align-items:center;} 
                 .detail-colon{font-size:8px;font-weight:bold;color:#0f3460;display:flex;align-items:center;} 
