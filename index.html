@@ -663,6 +663,17 @@
                         <input type="email" id="email" placeholder="EMAIL" class="uppercase-text" oninput="this.value = this.value.toUpperCase()">
                     </div>
 
+                    <div class="name-grid">
+                        <div class="form-group">
+                            <label>THARAV NUMBER</label>
+                            <input type="text" id="tharavNo" placeholder="E.G. TH-123" class="uppercase-text" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div class="form-group">
+                            <label>THARAV DATE</label>
+                            <input type="text" id="tharavDate" placeholder="DD/MM/YYYY">
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label>MEMBER PHOTO</label>
                         <input type="file" id="photoInput" accept="image/*" onchange="openCropper(event)" style="padding: 10px;">
@@ -1626,6 +1637,9 @@
             document.getElementById('mobile').value = dataObj.mobile || "";
             if(dataObj.email) document.getElementById('email').value = dataObj.email;
             
+            document.getElementById('tharavNo').value = dataObj.tharavNo || "";
+            document.getElementById('tharavDate').value = dataObj.tharavDate || "";
+
             let bgOpts = document.getElementById('bloodgroup').options;
             for(let i=0; i<bgOpts.length; i++){ if(bgOpts[i].value === dataObj.bloodGroup) { bgOpts[i].selected = true; break; } }
 
@@ -1693,7 +1707,9 @@
                 memberNo: memberNo, name: name, address: document.getElementById('address').value.toUpperCase(),
                 hometown: document.getElementById('hometown').value, dob: document.getElementById('dob').value,
                 mobile: document.getElementById('mobile').value, bloodgroup: document.getElementById('bloodgroup').value,
-                email: document.getElementById('email').value.toUpperCase(), photo: currentPhotoBase64
+                email: document.getElementById('email').value.toUpperCase(), photo: currentPhotoBase64,
+                tharavNo: document.getElementById('tharavNo').value.toUpperCase(),
+                tharavDate: document.getElementById('tharavDate').value
             };
 
             const afterSave = (newDocId) => {
@@ -1746,7 +1762,7 @@
             document.getElementById('middlename').value = nameParts.slice(2).join(" ") || "";
             combineAndDisplayAdminName();
 
-            ['memberNo','address','hometown','dob','mobile','email'].forEach(id => {
+            ['memberNo','address','hometown','dob','mobile','email','tharavNo','tharavDate'].forEach(id => {
                 if(document.getElementById(id)) document.getElementById(id).value = rec[id] || "";
             });
             document.getElementById('bloodgroup').value = rec.bloodgroup || "-";
@@ -1759,7 +1775,7 @@
 
         function clearForm() {
             document.getElementById('recordId').value = ""; document.getElementById('adminRequestId').value = "";
-            ['memberNo','surname','firstname','middlename','address','hometown','dob','mobile','email','searchInput','photoInput'].forEach(id => {
+            ['memberNo','surname','firstname','middlename','address','hometown','dob','mobile','email','searchInput','photoInput','tharavNo','tharavDate'].forEach(id => {
                 if(document.getElementById(id)) document.getElementById(id).value = "";
             });
             document.getElementById('bloodgroup').value = "-";
@@ -1770,7 +1786,7 @@
 
         function exportToExcel() {
             if(records.length === 0) return alert("NO DATA!");
-            let exportData = records.map(r => ({ "MEMBER NO": r.memberNo||"-", "FULL NAME": r.name||"-", "ADDRESS": r.address||"-", "NATIVE": r.hometown||"-", "DOB": r.dob||"-", "MOBILE": r.mobile||"-", "EMAIL": r.email||"-", "BLOOD GROUP": r.bloodgroup||"-" }));
+            let exportData = records.map(r => ({ "MEMBER NO": r.memberNo||"-", "FULL NAME": r.name||"-", "ADDRESS": r.address||"-", "NATIVE": r.hometown||"-", "DOB": r.dob||"-", "MOBILE": r.mobile||"-", "EMAIL": r.email||"-", "BLOOD GROUP": r.bloodgroup||"-", "THARAV NO": r.tharavNo||"-", "THARAV DATE": r.tharavDate||"-" }));
             let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(exportData), "Members"); XLSX.writeFile(wb, "Members.xlsx");
         }
         
